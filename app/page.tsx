@@ -52,11 +52,11 @@ export default function Home() {
           </h2>
           {/* SCORES */}
           <div className="mt-4 uppercase">
-            <div className="flex justify-center items-center gap-4 mb-4">
-              <h3 className="text-xl font-bold">
+            <div className="flex justify-center items-center gap-4 2xl:gap-16 mb-4">
+              <h3 className="text-xl 2xl:text-6xl font-bold">
                 Líderes: <span className="text-primary">{currentLeader}</span>
               </h3>
-              <h4 className="text-lg font-bold">
+              <h4 className="text-xl 2xl:text-6xl font-bold">
                 Partido:{" "}
                 <span className="text-primary font-sans">
                   {currentMatchNumber}/{couples.length - 1}
@@ -67,18 +67,18 @@ export default function Home() {
             <table className="table-auto border-collapse border border-gray-400 font-bold w-full text-2xl">
               <thead>
                 <tr>
-                  <th className="border border-gray-400 p-2 text-primary">
+                  <th className="border border-gray-400 p-2 text-primary text-lg 2xl:text-3xl 2xl:p-8">
                     Parejas
                   </th>
                   {couples.map((couple, index) => (
                     <th
                       key={index}
-                      className="border border-gray-400 p-2 text-lg"
+                      className="border border-gray-400 p-2 text-lg 2xl:text-3xl 2xl:p-8"
                     >
                       {couple}
                     </th>
                   ))}
-                  <th className="border border-gray-400 p-2 text-primary">
+                  <th className="border border-gray-400 p-2 text-primary text-lg 2xl:text-3xl 2xl:p-8">
                     Puntos
                   </th>
                 </tr>
@@ -86,13 +86,13 @@ export default function Home() {
               <tbody>
                 {scores.map((row, rowIndex) => (
                   <tr key={rowIndex}>
-                    <td className="border border-gray-400 p-2 font-bold text-lg">
+                    <td className="border border-gray-400 p-2 font-bold text-lg 2xl:text-3xl 2xl:p-8">
                       {couples[rowIndex]}
                     </td>
                     {row.map((score, colIndex) => (
                       <td
                         key={colIndex}
-                        className="border border-gray-400 p-2 text-center font-sans text-3xl"
+                        className="border border-gray-400 p-2 text-center font-sans text-3xl 2xl:text-6xl p-4"
                       >
                         {score === 6 ? (
                           <span className="text-primary">{score}</span>
@@ -103,7 +103,7 @@ export default function Home() {
                         )}
                       </td>
                     ))}
-                    <td className="border border-gray-400 p-2 text-center font-bold font-sans">
+                    <td className="border border-gray-400 p-2 text-center font-bold font-sans 2xl:text-6xl p-4">
                       {totalScores[rowIndex]}
                     </td>
                   </tr>
