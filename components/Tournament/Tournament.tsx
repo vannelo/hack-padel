@@ -1,3 +1,4 @@
+// components/TournamentComponent.tsx
 "use client";
 
 import { Match } from "@/domain/models/Match";
@@ -18,6 +19,7 @@ const TournamentComponent: React.FC = () => {
     Map<string, { couple1Score: number; couple2Score: number }>
   >(new Map());
   const [showScoreInputs, setShowScoreInputs] = useState<boolean>(false);
+  const [isTournamentOver, setIsTournamentOver] = useState<boolean>(false); // Add this line
 
   // Handler to start creating a new tournament
   const startCreateTournament = () => {
@@ -31,6 +33,7 @@ const TournamentComponent: React.FC = () => {
   ) => {
     setTournament(newTournament);
     setNumberOfCourts(courts);
+    setIsTournamentOver(false); // Reset the tournament over state
 
     // Generate initial matches
     const initialMatches = tournamentService.generateMatches(
@@ -67,7 +70,6 @@ const TournamentComponent: React.FC = () => {
       tournament,
       results,
     );
-    setTournament(updatedTournament);
 
     // Generate next matches
     const nextMatches = tournamentService.generateMatches(
@@ -75,8 +77,20 @@ const TournamentComponent: React.FC = () => {
       numberOfCourts,
     );
     setCurrentMatches(nextMatches);
+    setTournament(updatedTournament);
+
     setMatchResults(new Map());
     setShowScoreInputs(false);
+
+    if (nextMatches.length === 0) {
+      // Tournament is over
+      setIsTournamentOver(true);
+
+      // Calculate winners
+      const winners = tournamentService.calculateWinners(updatedTournament);
+      updatedTournament.winners = winners;
+      setTournament({ ...updatedTournament }); // Update state with winners
+    }
   };
 
   return (
@@ -97,6 +111,7 @@ const TournamentComponent: React.FC = () => {
           tournament={tournament}
           currentMatches={currentMatches}
           startRound={startRound}
+          isTournamentOver={isTournamentOver} // Pass the new prop
         />
       )}
       <TournamentModal

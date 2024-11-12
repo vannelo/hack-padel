@@ -9,4 +9,5 @@ export interface Tournament {
   currentLeader?: Couple;
   currentMatchNumber: number;
   scores: Map<string, number>;
+  winners?: Couple[];
 }

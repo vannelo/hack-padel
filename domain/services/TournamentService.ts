@@ -8,7 +8,7 @@ export class TournamentService implements ITournamentService {
   createTournament(
     name: string,
     couples: Couple[],
-    numberOfCourts: number
+    numberOfCourts: number,
   ): Tournament {
     const tournament: Tournament = {
       id: uuidv4(),
@@ -48,7 +48,7 @@ export class TournamentService implements ITournamentService {
 
     const unscheduledMatches = matches.filter(
       (match) =>
-        match.couple1Score === undefined && match.couple2Score === undefined
+        match.couple1Score === undefined && match.couple2Score === undefined,
     );
 
     const playingCouples = new Set<string>();
@@ -92,7 +92,7 @@ export class TournamentService implements ITournamentService {
           (m.couple1.id === result.couple1.id &&
             m.couple2.id === result.couple2.id) ||
           (m.couple1.id === result.couple2.id &&
-            m.couple2.id === result.couple1.id)
+            m.couple2.id === result.couple1.id),
       );
 
       if (match) {
@@ -116,5 +116,23 @@ export class TournamentService implements ITournamentService {
     tournament.currentLeader = this.calculateLeader(tournament);
 
     return tournament;
+  }
+
+  calculateWinners(tournament: Tournament): Couple[] {
+    let maxScore = -1;
+    const winners: Couple[] = [];
+
+    for (const couple of tournament.couples) {
+      const totalScore = tournament.scores.get(couple.id) || 0;
+      if (totalScore > maxScore) {
+        maxScore = totalScore;
+        winners.length = 0; // Clear the winners array
+        winners.push(couple);
+      } else if (totalScore === maxScore) {
+        winners.push(couple);
+      }
+    }
+
+    return winners;
   }
 }
