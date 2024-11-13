@@ -1,5 +1,5 @@
 import Image from "next/image";
-import TournamentComponent from "../../components/Tournament/Tournament";
+import TournamentCreation from "@/components/Tournament/TournamentCreation/TournamentCreation";
 
 export default function Home() {
   return (
@@ -11,7 +11,7 @@ export default function Home() {
           width={200}
           height={150}
         />
-        <TournamentComponent />
+        <TournamentCreation />
       </div>
     </main>
   );

@@ -14,18 +14,10 @@ export class TournamentService implements ITournamentService {
       id: uuidv4(),
       name,
       couples,
-      matches: [],
+      matches: this.generateAllPossibleMatches(couples),
       currentMatchNumber: 1,
-      scores: new Map<string, number>(),
+      scores: new Map(couples.map((couple) => [couple.id, 0])),
     };
-
-    tournament.matches = this.generateAllPossibleMatches(couples);
-
-    // Initialize scores
-    couples.forEach((couple) => {
-      tournament.scores.set(couple.id, 0);
-    });
-
     return tournament;
   }
 
@@ -34,6 +26,7 @@ export class TournamentService implements ITournamentService {
     for (let i = 0; i < couples.length; i++) {
       for (let j = i + 1; j < couples.length; j++) {
         matches.push({
+          id: uuidv4(),
           couple1: couples[i],
           couple2: couples[j],
         });
@@ -43,79 +36,65 @@ export class TournamentService implements ITournamentService {
   }
 
   generateMatches(tournament: Tournament, numberOfCourts: number): Match[] {
-    const { matches } = tournament;
-    const scheduledMatches: Match[] = [];
-
-    const unscheduledMatches = matches.filter(
+    const unplayedMatches = tournament.matches.filter(
       (match) =>
         match.couple1Score === undefined && match.couple2Score === undefined,
     );
-
-    const playingCouples = new Set<string>();
-
-    for (const match of unscheduledMatches) {
-      if (
-        !playingCouples.has(match.couple1.id) &&
-        !playingCouples.has(match.couple2.id)
-      ) {
-        scheduledMatches.push(match);
-        playingCouples.add(match.couple1.id);
-        playingCouples.add(match.couple2.id);
-
-        if (scheduledMatches.length >= numberOfCourts) break;
-      }
-    }
-
-    return scheduledMatches;
+    return unplayedMatches.slice(0, numberOfCourts);
   }
 
   calculateLeader(tournament: Tournament): Couple | undefined {
     let maxScore = -1;
-    let leader: Couple | undefined;
+    let leader: Couple | undefined = undefined;
 
     for (const couple of tournament.couples) {
-      const totalScore = tournament.scores.get(couple.id) || 0;
-      if (totalScore > maxScore) {
-        maxScore = totalScore;
+      const score = tournament.scores.get(couple.id) || 0;
+      if (score > maxScore) {
+        maxScore = score;
         leader = couple;
       }
     }
-
     return leader;
   }
 
-  updateScores(tournament: Tournament, matchResults: Match[]): Tournament {
-    for (const result of matchResults) {
-      // Update match scores
-      const match = tournament.matches.find(
-        (m) =>
-          (m.couple1.id === result.couple1.id &&
-            m.couple2.id === result.couple2.id) ||
-          (m.couple1.id === result.couple2.id &&
-            m.couple2.id === result.couple1.id),
-      );
+  // In TournamentService.ts
 
-      if (match) {
+  updateScores(tournament: Tournament, matchResults: Match[]): Tournament {
+    // Create a copy of the tournament to avoid mutating the original
+    const updatedTournament: Tournament = {
+      ...tournament,
+      matches: tournament.matches.map((match) => ({ ...match })),
+      scores: new Map(tournament.scores),
+    };
+
+    for (const result of matchResults) {
+      const matchIndex = updatedTournament.matches.findIndex(
+        (m) => m.id === result.id,
+      );
+      if (matchIndex !== -1) {
+        const match = updatedTournament.matches[matchIndex];
         match.couple1Score = result.couple1Score;
         match.couple2Score = result.couple2Score;
 
-        // Update total scores
-        const couple1TotalScore =
-          (tournament.scores.get(match.couple1.id) || 0) +
-          (result.couple1Score || 0);
-        const couple2TotalScore =
-          (tournament.scores.get(match.couple2.id) || 0) +
-          (result.couple2Score || 0);
+        const couple1Score =
+          updatedTournament.scores.get(match.couple1.id) || 0;
+        const couple2Score =
+          updatedTournament.scores.get(match.couple2.id) || 0;
 
-        tournament.scores.set(match.couple1.id, couple1TotalScore);
-        tournament.scores.set(match.couple2.id, couple2TotalScore);
+        updatedTournament.scores.set(
+          match.couple1.id,
+          couple1Score + (result.couple1Score || 0),
+        );
+        updatedTournament.scores.set(
+          match.couple2.id,
+          couple2Score + (result.couple2Score || 0),
+        );
       }
     }
 
-    tournament.currentMatchNumber += 1;
-    tournament.currentLeader = this.calculateLeader(tournament);
-
-    return tournament;
+    updatedTournament.currentMatchNumber += 1;
+    updatedTournament.currentLeader = this.calculateLeader(updatedTournament);
+    return updatedTournament;
   }
 
   calculateWinners(tournament: Tournament): Couple[] {
@@ -126,7 +105,7 @@ export class TournamentService implements ITournamentService {
       const totalScore = tournament.scores.get(couple.id) || 0;
       if (totalScore > maxScore) {
         maxScore = totalScore;
-        winners.length = 0; // Clear the winners array
+        winners.length = 0;
         winners.push(couple);
       } else if (totalScore === maxScore) {
         winners.push(couple);

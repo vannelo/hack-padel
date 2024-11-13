@@ -1,0 +1,41 @@
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Tournament {
+  id                 String    @id @default(uuid())
+  name               String
+  currentLeaderId    String?
+  currentMatchNumber Int
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  couples            Couple[]
+  matches            Match[]
+}
+
+model Couple {
+  id            String      @id @default(uuid())
+  name          String
+  tournamentId  String
+  tournament    Tournament  @relation(fields: [tournamentId], references: [id])
+  matchesAsCouple1 Match[]  @relation("couple1Matches")
+  matchesAsCouple2 Match[]  @relation("couple2Matches")
+}
+
+model Match {
+  id           String     @id @default(uuid())
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  couple1Id    String
+  couple2Id    String
+  couple1      Couple     @relation("couple1Matches", fields: [couple1Id], references: [id])
+  couple2      Couple     @relation("couple2Matches", fields: [couple2Id], references: [id])
+  couple1Score Int?
+  couple2Score Int?
+}
