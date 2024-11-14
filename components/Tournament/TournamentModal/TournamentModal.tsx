@@ -1,5 +1,6 @@
 "use client";
 
+import Button from "@/components/UI/Button/Button";
 import { Match } from "@/domain/models/Match";
 
 interface TournamentModalProps {
@@ -12,6 +13,7 @@ interface TournamentModalProps {
     >
   >;
   endRound: () => void;
+  isSettingScores: boolean;
 }
 
 const TournamentModal: React.FC<TournamentModalProps> = ({
@@ -20,6 +22,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
   matchResults,
   setMatchResults,
   endRound,
+  isSettingScores,
 }) => {
   return (
     <div
@@ -79,12 +82,13 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
               </div>
             ))}
             <div className="mt-8">
-              <button
+              <Button
                 className="w-full rounded bg-primary px-4 py-2 font-bold uppercase text-black"
                 onClick={endRound}
+                isLoading={isSettingScores}
               >
                 Continuar
-              </button>
+              </Button>
             </div>
           </div>
         )}

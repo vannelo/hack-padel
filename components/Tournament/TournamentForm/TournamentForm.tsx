@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Couple } from "@/domain/models/Couple";
 import { tournamentService } from "@/domain";
 import { Tournament } from "@/domain/models/Tournament";
+import Button from "@/components/UI/Button/Button";
 
 interface TournamentFormProps {
   onTournamentCreated: (tournament: Tournament, numberOfCourts: number) => void;
@@ -17,6 +18,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   const [numberOfCourts, setNumberOfCourts] = useState<number>(1);
   const [coupleInputs, setCoupleInputs] = useState<string[]>(["", "", "", ""]);
   const [validationError, setValidationError] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // Handler to add more couple inputs
   const addCoupleInput = () => {
@@ -24,7 +26,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   };
 
   // Handler to create a new tournament
-  const createTournament = (e: React.FormEvent) => {
+  const createTournament = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const initialCouples: Couple[] = coupleInputs
@@ -39,15 +41,22 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
     }
 
     setValidationError("");
+    setIsSubmitting(true);
 
-    const newTournament = tournamentService.createTournament(
-      tournamentName,
-      initialCouples,
-      numberOfCourts,
-    );
+    try {
+      const newTournament = tournamentService.createTournament(
+        tournamentName,
+        initialCouples,
+        numberOfCourts,
+      );
 
-    // Call the parent handler
-    onTournamentCreated(newTournament, numberOfCourts);
+      // Call the parent handler
+      await onTournamentCreated(newTournament, numberOfCourts);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -73,6 +82,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         onChange={(e) => setTournamentName(e.target.value)}
         className="mb-4 w-full border p-2 text-center"
         required
+        disabled={isSubmitting}
       />
 
       {/* Number of Courts */}
@@ -86,11 +96,12 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         type="number"
         id="numberOfCourts"
         min="1"
-        placeholder="Number of Courts"
+        placeholder="Número de canchas"
         value={numberOfCourts}
         onChange={(e) => setNumberOfCourts(parseInt(e.target.value))}
         className="mb-4 w-full border p-2"
         required
+        disabled={isSubmitting}
       />
 
       {/* Couple Inputs */}
@@ -105,7 +116,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
           <input
             type="text"
             id={`couple-${index}`}
-            placeholder={`Ej. Ivan / Gabriel`}
+            placeholder="Ej. Ivan / Gabriel"
             value={couple}
             onChange={(e) => {
               const newCoupleInputs = [...coupleInputs];
@@ -113,6 +124,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
               setCoupleInputs(newCoupleInputs);
             }}
             className="mb-2 w-full border p-2"
+            disabled={isSubmitting}
           />
         </div>
       ))}
@@ -123,6 +135,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
           type="button"
           className="mt-2 rounded bg-secondary px-4 py-2 text-sm font-bold text-white"
           onClick={addCoupleInput}
+          disabled={isSubmitting}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -141,19 +154,16 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
           Agregar pareja
         </button>
       </div>
-
-      {/* Validation Error */}
       {validationError && (
         <p className="mt-2 text-red-500">{validationError}</p>
       )}
-
-      {/* Submit Button */}
-      <button
-        className="mt-4 w-full rounded bg-primary px-4 py-2 font-bold uppercase text-black"
+      <Button
         type="submit"
+        isLoading={isSubmitting}
+        className="mt-4 w-full rounded bg-primary px-4 py-2 font-bold uppercase text-black"
       >
         Comenzar torneo
-      </button>
+      </Button>
     </form>
   );
 };

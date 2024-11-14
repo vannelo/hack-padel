@@ -25,6 +25,7 @@ const TournamentComponent: React.FC<TournamentComponentProps> = ({
   >(new Map());
   const [showScoreInputs, setShowScoreInputs] = useState<boolean>(false);
   const [isTournamentOver, setIsTournamentOver] = useState<boolean>(false);
+  const [isSettingScores, setIsSettingScores] = useState<boolean>(false);
 
   useEffect(() => {
     if (tournament) {
@@ -48,6 +49,7 @@ const TournamentComponent: React.FC<TournamentComponentProps> = ({
 
   const endRound = async () => {
     if (!tournament) return;
+    setIsSettingScores(true);
 
     // Collect match results
     const results: Match[] = currentMatches.map((match) => {
@@ -80,6 +82,7 @@ const TournamentComponent: React.FC<TournamentComponentProps> = ({
 
     setMatchResults(new Map());
     setShowScoreInputs(false);
+    setIsSettingScores(false);
   };
 
   return (
@@ -97,6 +100,7 @@ const TournamentComponent: React.FC<TournamentComponentProps> = ({
           setMatchResults={setMatchResults}
           endRound={endRound}
           showScoreInputs={showScoreInputs}
+          isSettingScores={isSettingScores}
         />
       </>
     )

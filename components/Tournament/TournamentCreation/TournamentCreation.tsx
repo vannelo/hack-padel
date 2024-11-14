@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Tournament } from "@/domain/models/Tournament";
 import TournamentForm from "../TournamentForm/TournamentForm";
+import Button from "@/components/UI/Button/Button";
 
 const TournamentCreation: React.FC = () => {
   const [isCreatingTournament, setIsCreatingTournament] =
@@ -19,36 +20,38 @@ const TournamentCreation: React.FC = () => {
     newTournament: Tournament,
     courts: number,
   ) => {
-    // Save to server
-    const response = await fetch("/api/tournaments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: newTournament.name,
-        couples: newTournament.couples.map((c) => c.name),
-        numberOfCourts: courts,
-      }),
-    });
+    try {
+      const response = await fetch("/api/tournaments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newTournament.name,
+          couples: newTournament.couples.map((c) => c.name),
+          numberOfCourts: courts,
+        }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      router.push(`/torneos/${data.id}`);
-    } else {
-      // Handle error
-      console.error(data.error);
+      if (response.ok) {
+        router.push(`/torneos/${data.id}`);
+      } else {
+        console.error(data.error);
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
     }
   };
 
   return (
     <>
       {!isCreatingTournament && (
-        <button
+        <Button
           className="mt-4 rounded bg-primary px-4 py-2 font-black uppercase text-black"
           onClick={startCreateTournament}
         >
-          Crear Torneo
-        </button>
+          Crear torneo
+        </Button>
       )}
       {isCreatingTournament && (
         <TournamentForm onTournamentCreated={handleTournamentCreated} />
