@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Tournament } from "@/domain/models/Tournament";
-import TournamentForm from "../TournamentForm/TournamentForm";
 import Button from "@/components/UI/Button/Button";
+import TournamentForm from "../TournamentForm/TournamentForm";
 
 const TournamentCreation: React.FC = () => {
   const [isCreatingTournament, setIsCreatingTournament] =
     useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -18,8 +19,9 @@ const TournamentCreation: React.FC = () => {
 
   const handleTournamentCreated = async (
     newTournament: Tournament,
-    courts: number,
+    numberOfCourts: number,
   ) => {
+    setIsSubmitting(true);
     try {
       const response = await fetch("/api/tournaments", {
         method: "POST",
@@ -27,7 +29,7 @@ const TournamentCreation: React.FC = () => {
         body: JSON.stringify({
           name: newTournament.name,
           couples: newTournament.couples.map((c) => c.name),
-          numberOfCourts: courts,
+          numberOfCourts: numberOfCourts,
         }),
       });
 
@@ -39,7 +41,9 @@ const TournamentCreation: React.FC = () => {
         console.error(data.error);
       }
     } catch (error) {
-      console.error("An error occurred:", error);
+      console.error("Error in handleTournamentCreated:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -49,8 +53,9 @@ const TournamentCreation: React.FC = () => {
         <Button
           className="mt-4 rounded bg-primary px-4 py-2 font-black uppercase text-black"
           onClick={startCreateTournament}
+          isLoading={isSubmitting}
         >
-          Crear torneo
+          Crear Torneo
         </Button>
       )}
       {isCreatingTournament && (

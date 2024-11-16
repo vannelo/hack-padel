@@ -1,4 +1,3 @@
-// components/TournamentTable/TournamentTable.tsx
 "use client";
 
 import { Match } from "@/domain/models/Match";
@@ -17,7 +16,6 @@ const TournamentTable: React.FC<TournamentProps> = ({
   startRound,
   isTournamentOver,
 }) => {
-  // Compute the highest score and the leader(s)
   const highestScore = Math.max(...Array.from(tournament.scores.values()));
   const leaders = Array.from(tournament.scores.entries())
     .filter(([_, score]) => score === highestScore)
@@ -31,10 +29,7 @@ const TournamentTable: React.FC<TournamentProps> = ({
       {isTournamentOver ? (
         <div className="flex gap-8 p-4 text-xl font-bold uppercase text-white">
           <p>
-            Ganador
-            {tournament.winners && tournament.winners.length > 1
-              ? "es"
-              : ""}:{" "}
+            Ganadores:{" "}
             <span className="text-primary">
               {tournament.winners?.map((winner) => winner.name).join(", ")}
             </span>
@@ -58,11 +53,9 @@ const TournamentTable: React.FC<TournamentProps> = ({
           </p>
         </div>
       )}
-      {/* TOURNAMENT CONTAINER */}
       <div className="flex w-full gap-4 border-gray-400 bg-black text-white">
         {!isTournamentOver && (
           <div className="w-1/6 border-r border-primary">
-            {/* MATCHES */}
             {currentMatches.length > 0 && (
               <div className="p-4 text-center">
                 <h3 className="mb-4 text-xl font-bold">Partidos actuales</h3>
@@ -89,7 +82,6 @@ const TournamentTable: React.FC<TournamentProps> = ({
           </div>
         )}
         <div className={`${!isTournamentOver ? "w-5/6" : "w-full"}`}>
-          {/* TABLE */}
           <div className="my-4 uppercase">
             <table className="w-full table-auto border-collapse border border-gray-400 text-lg font-bold 2xl:text-xl">
               <thead>
@@ -174,7 +166,7 @@ const TournamentTable: React.FC<TournamentProps> = ({
                         </td>
                       );
                     })}
-                    {/* Highlight the total points if the couple is a leader */}
+
                     <td
                       className={`border border-gray-400 p-4 text-center font-sans font-bold ${
                         leaders.includes(couple.id) ? "text-primary" : ""

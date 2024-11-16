@@ -4,6 +4,7 @@ import { Match } from "./Match";
 export interface Tournament {
   id: string;
   name: string;
+  numberOfCourts: number;
   couples: Couple[];
   matches: Match[];
   currentLeader?: Couple;

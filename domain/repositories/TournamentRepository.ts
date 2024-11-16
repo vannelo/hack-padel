@@ -13,6 +13,7 @@ export class TournamentRepository implements ITournamentRepository {
         id: tournament.id,
         name: tournament.name,
         currentMatchNumber: tournament.currentMatchNumber,
+        numberOfCourts: tournament.numberOfCourts,
         couples: {
           create: tournament.couples.map((couple) => ({
             id: couple.id,
@@ -58,6 +59,7 @@ export class TournamentRepository implements ITournamentRepository {
       data: {
         currentLeaderId: tournament.currentLeader?.id,
         currentMatchNumber: tournament.currentMatchNumber,
+        numberOfCourts: tournament.numberOfCourts,
         matches: {
           upsert: tournament.matches.map((match) => ({
             where: { id: match.id },
@@ -119,6 +121,7 @@ export class TournamentRepository implements ITournamentRepository {
     const tournament: Tournament = {
       id: prismaTournament.id,
       name: prismaTournament.name,
+      numberOfCourts: prismaTournament.numberOfCourts,
       couples,
       matches,
       currentLeader: prismaTournament.currentLeaderId
@@ -126,7 +129,7 @@ export class TournamentRepository implements ITournamentRepository {
         : undefined,
       currentMatchNumber: prismaTournament.currentMatchNumber,
       scores,
-      winners: [], // You can calculate winners if needed
+      winners: [],
     };
 
     return tournament;

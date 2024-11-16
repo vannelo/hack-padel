@@ -20,12 +20,10 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   const [validationError, setValidationError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // Handler to add more couple inputs
   const addCoupleInput = () => {
     setCoupleInputs((prev) => [...prev, ""]);
   };
 
-  // Handler to create a new tournament
   const createTournament = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -50,10 +48,10 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         numberOfCourts,
       );
 
-      // Call the parent handler
+      // Pass numberOfCourts to onTournamentCreated
       await onTournamentCreated(newTournament, numberOfCourts);
     } catch (error) {
-      console.error(error);
+      console.error("Error in createTournament:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -66,8 +64,6 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
     >
       <h3 className="text-xl font-bold">CREAR TORNEO</h3>
       <p className="mb-4 text-sm">Ingresa los datos del torneo</p>
-
-      {/* Tournament Name */}
       <label
         htmlFor="tournamentName"
         className="mb-2 block text-left text-sm font-bold uppercase"
@@ -84,8 +80,6 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         required
         disabled={isSubmitting}
       />
-
-      {/* Number of Courts */}
       <label
         htmlFor="numberOfCourts"
         className="mb-2 block text-left text-sm font-bold uppercase"
@@ -103,8 +97,6 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         required
         disabled={isSubmitting}
       />
-
-      {/* Couple Inputs */}
       {coupleInputs.map((couple, index) => (
         <div key={index}>
           <label
@@ -128,8 +120,6 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
           />
         </div>
       ))}
-
-      {/* Add Couple Button */}
       <div className="flex">
         <button
           type="button"

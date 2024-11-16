@@ -8,7 +8,7 @@ export default function Home() {
         <Image
           src="/img/hack-logo.png"
           alt="Hack Padel Logo"
-          width={200}
+          width={500}
           height={150}
         />
         <TournamentCreation />

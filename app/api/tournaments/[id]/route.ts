@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 import { TournamentRepository } from "@/domain/repositories/TournamentRepository";
-import { Tournament } from "@/domain/models/Tournament";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  context: { params: { id: string } },
 ) {
   try {
     const tournamentRepository = new TournamentRepository();
-    const tournament = await tournamentRepository.getTournamentById(params.id);
+    const tournament = await tournamentRepository.getTournamentById(
+      context.params.id,
+    );
 
     if (!tournament) {
       return NextResponse.json(
@@ -29,12 +30,12 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } },
+  context: { params: { id: string } },
 ) {
   try {
     const tournamentRepository = new TournamentRepository();
     const existingTournament = await tournamentRepository.getTournamentById(
-      params.id,
+      context.params.id,
     );
 
     if (!existingTournament) {
@@ -45,9 +46,7 @@ export async function PUT(
     }
 
     const updates = await request.json();
-
-    // Merge updates into existing tournament
-    const updatedTournament: Tournament = {
+    const updatedTournament = {
       ...existingTournament,
       ...updates,
     };

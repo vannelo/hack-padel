@@ -9,6 +9,13 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, couples, numberOfCourts } = body;
 
+    if (!name || !couples || !numberOfCourts) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
+    }
+
     const initialCouples: Couple[] = couples.map((name: string) => ({
       id: uuidv4(),
       name,
@@ -24,8 +31,8 @@ export async function POST(request: Request) {
     await tournamentRepository.createTournament(tournament);
 
     return NextResponse.json({ id: tournament.id }, { status: 201 });
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error("Error in POST /api/tournaments:", error);
     return NextResponse.json(
       { error: "Failed to create tournament" },
       { status: 500 },

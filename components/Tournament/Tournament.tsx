@@ -1,4 +1,3 @@
-// components/TournamentComponent.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -18,7 +17,6 @@ const TournamentComponent: React.FC<TournamentComponentProps> = ({
   const [tournament, setTournament] = useState<Tournament | null>(
     initialTournament || null,
   );
-  const [numberOfCourts, setNumberOfCourts] = useState<number>(1);
   const [currentMatches, setCurrentMatches] = useState<Match[]>([]);
   const [matchResults, setMatchResults] = useState<
     Map<string, { couple1Score: number; couple2Score: number }>
@@ -29,10 +27,7 @@ const TournamentComponent: React.FC<TournamentComponentProps> = ({
 
   useEffect(() => {
     if (tournament) {
-      const nextMatches = tournamentService.generateMatches(
-        tournament,
-        numberOfCourts,
-      );
+      const nextMatches = tournamentService.generateMatches(tournament);
       setCurrentMatches(nextMatches);
       if (nextMatches.length === 0) {
         setIsTournamentOver(true);
@@ -41,7 +36,7 @@ const TournamentComponent: React.FC<TournamentComponentProps> = ({
         setTournament(updatedTournament);
       }
     }
-  }, [tournament, numberOfCourts]);
+  }, [tournament]);
 
   const startRound = () => {
     setShowScoreInputs(true);

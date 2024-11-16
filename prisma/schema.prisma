@@ -13,6 +13,7 @@ model Tournament {
   name               String
   currentLeaderId    String?
   currentMatchNumber Int
+  numberOfCourts     Int      
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   couples            Couple[]
@@ -20,12 +21,12 @@ model Tournament {
 }
 
 model Couple {
-  id            String      @id @default(uuid())
-  name          String
-  tournamentId  String
-  tournament    Tournament  @relation(fields: [tournamentId], references: [id])
-  matchesAsCouple1 Match[]  @relation("couple1Matches")
-  matchesAsCouple2 Match[]  @relation("couple2Matches")
+  id               String     @id @default(uuid())
+  name             String
+  tournamentId     String
+  tournament       Tournament @relation(fields: [tournamentId], references: [id])
+  matchesAsCouple1 Match[]    @relation("couple1Matches")
+  matchesAsCouple2 Match[]    @relation("couple2Matches")
 }
 
 model Match {

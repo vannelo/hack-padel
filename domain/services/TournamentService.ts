@@ -13,6 +13,7 @@ export class TournamentService implements ITournamentService {
     const tournament: Tournament = {
       id: uuidv4(),
       name,
+      numberOfCourts,
       couples,
       matches: this.generateAllPossibleMatches(couples),
       currentMatchNumber: 1,
@@ -35,12 +36,44 @@ export class TournamentService implements ITournamentService {
     return matches;
   }
 
-  generateMatches(tournament: Tournament, numberOfCourts: number): Match[] {
+  generateMatches(tournament: Tournament): Match[] {
+    const numberOfCourts = tournament.numberOfCourts;
     const unplayedMatches = tournament.matches.filter(
       (match) =>
         match.couple1Score === undefined && match.couple2Score === undefined,
     );
-    return unplayedMatches.slice(0, numberOfCourts);
+
+    // Shuffle unplayedMatches
+    const shuffledMatches = this.shuffleArray(unplayedMatches);
+
+    const matchesThisRound: Match[] = [];
+    const couplesInThisRound = new Set<string>();
+
+    for (const match of shuffledMatches) {
+      if (
+        !couplesInThisRound.has(match.couple1.id) &&
+        !couplesInThisRound.has(match.couple2.id)
+      ) {
+        matchesThisRound.push(match);
+        couplesInThisRound.add(match.couple1.id);
+        couplesInThisRound.add(match.couple2.id);
+
+        if (matchesThisRound.length >= numberOfCourts) {
+          break;
+        }
+      }
+    }
+
+    return matchesThisRound;
+  }
+
+  private shuffleArray<T>(array: T[]): T[] {
+    const shuffled = array.slice();
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
   }
 
   calculateLeader(tournament: Tournament): Couple | undefined {
@@ -56,8 +89,6 @@ export class TournamentService implements ITournamentService {
     }
     return leader;
   }
-
-  // In TournamentService.ts
 
   updateScores(tournament: Tournament, matchResults: Match[]): Tournament {
     // Create a copy of the tournament to avoid mutating the original
