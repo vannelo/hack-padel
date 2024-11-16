@@ -5,10 +5,11 @@ import Image from "next/image";
 export default async function TournamentPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const id = (await params).id;
   const tournamentRepository = new TournamentRepository();
-  const tournament = await tournamentRepository.getTournamentById(params.id);
+  const tournament = await tournamentRepository.getTournamentById(id);
 
   if (!tournament) {
     return <div>Tournament not found</div>;
@@ -23,7 +24,7 @@ export default async function TournamentPage({
           width={200}
           height={150}
         />
-        <TournamentComponent initialTournament={tournament} />;
+        <TournamentComponent initialTournament={tournament} />
       </div>
     </main>
   );
