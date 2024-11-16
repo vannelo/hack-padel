@@ -1,4 +1,3 @@
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -13,7 +12,7 @@ model Tournament {
   name               String
   currentLeaderId    String?
   currentMatchNumber Int
-  numberOfCourts     Int      
+  numberOfCourts     Int
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   couples            Couple[]
@@ -25,6 +24,10 @@ model Couple {
   name             String
   tournamentId     String
   tournament       Tournament @relation(fields: [tournamentId], references: [id])
+  player1Id        String?
+  player2Id        String?
+  player1          Player?    @relation("Player1Couple", fields: [player1Id], references: [id])
+  player2          Player?    @relation("Player2Couple", fields: [player2Id], references: [id])
   matchesAsCouple1 Match[]    @relation("couple1Matches")
   matchesAsCouple2 Match[]    @relation("couple2Matches")
 }
@@ -39,4 +42,30 @@ model Match {
   couple2      Couple     @relation("couple2Matches", fields: [couple2Id], references: [id])
   couple1Score Int?
   couple2Score Int?
+}
+
+enum Gender {
+  Varonil
+  Femenil
+  Indefinido
+}
+
+enum Level {
+  Quinta
+  Cuarta
+  Tercera
+  Segunda
+  Primera
+}
+
+model Player {
+  id      String   @id @default(uuid())
+  name    String
+  email   String? 
+  age     Int?
+  phone   String?
+  gender  Gender  @default(Indefinido)
+  level   Level   @default(Quinta)
+  couplesAsPlayer1 Couple[] @relation("Player1Couple")
+  couplesAsPlayer2 Couple[] @relation("Player2Couple")
 }

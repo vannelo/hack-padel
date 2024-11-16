@@ -48,7 +48,6 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         numberOfCourts,
       );
 
-      // Pass numberOfCourts to onTournamentCreated
       await onTournamentCreated(newTournament, numberOfCourts);
     } catch (error) {
       console.error("Error in createTournament:", error);
@@ -60,13 +59,13 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   return (
     <form
       onSubmit={createTournament}
-      className="mt-4 min-w-[500px] max-w-lg rounded bg-white p-4 text-center text-black shadow-lg"
+      className="mt-4 min-w-[400px] max-w-lg rounded bg-white p-4 text-center text-black shadow-lg"
     >
-      <h3 className="text-xl font-bold">CREAR TORNEO</h3>
-      <p className="mb-4 text-sm">Ingresa los datos del torneo</p>
+      <h3 className="text-center text-xl font-bold">CREAR TORNEO</h3>
+      <p className="mb-8 text-sm">Ingresa los datos del torneo</p>
       <label
         htmlFor="tournamentName"
-        className="mb-2 block text-left text-sm font-bold uppercase"
+        className="mb-2 block text-left text-center text-sm font-bold uppercase"
       >
         Nombre del torneo
       </label>
@@ -82,21 +81,27 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
       />
       <label
         htmlFor="numberOfCourts"
-        className="mb-2 block text-left text-sm font-bold uppercase"
+        className="mb-2 block text-left text-center text-sm font-bold uppercase"
       >
         Canchas Disponibles
       </label>
-      <input
-        type="number"
-        id="numberOfCourts"
-        min="1"
-        placeholder="Número de canchas"
-        value={numberOfCourts}
-        onChange={(e) => setNumberOfCourts(parseInt(e.target.value))}
-        className="mb-4 w-full border p-2"
-        required
-        disabled={isSubmitting}
-      />
+      <div className="mb-4 flex justify-center space-x-4">
+        {[1, 2, 3].map((num) => (
+          <button
+            key={num}
+            type="button"
+            className={`flex h-12 w-12 items-center justify-center rounded-full border-2 text-lg font-bold ${
+              numberOfCourts === num
+                ? "border-primary bg-primary"
+                : "border-gray-300 bg-white text-black"
+            } ${isSubmitting ? "cursor-not-allowed opacity-50" : ""}`}
+            onClick={() => setNumberOfCourts(num)}
+            disabled={isSubmitting}
+          >
+            {num}
+          </button>
+        ))}
+      </div>
       {coupleInputs.map((couple, index) => (
         <div key={index}>
           <label

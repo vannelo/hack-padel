@@ -10,6 +10,11 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.7",
+    "@mui/material": "^6.1.7",
+    "@mui/x-data-grid": "^7.22.2",
     "@prisma/client": "^5.22.0",
     "@vercel/postgres": "^0.10.0",
     "next": "15.0.2",
