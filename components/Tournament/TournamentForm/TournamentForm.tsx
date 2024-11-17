@@ -1,39 +1,56 @@
 "use client";
 
 import React, { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import { Couple } from "@/domain/models/Couple";
-import { tournamentService } from "@/domain";
-import { Tournament } from "@/domain/models/Tournament";
+import { useQuery } from "@tanstack/react-query";
+import { Player } from "@/domain/models/Player";
 import Button from "@/components/UI/Button/Button";
 
 interface TournamentFormProps {
-  onTournamentCreated: (tournament: Tournament, numberOfCourts: number) => void;
+  onTournamentCreated: (tournamentData: {
+    name: string;
+    couples: { player1Id: string; player2Id: string }[];
+    numberOfCourts: number;
+  }) => void;
 }
+
+const fetchPlayers = async (): Promise<Player[]> => {
+  const response = await fetch("/api/players");
+  if (!response.ok) {
+    throw new Error("Failed to fetch players");
+  }
+  return response.json();
+};
 
 const TournamentForm: React.FC<TournamentFormProps> = ({
   onTournamentCreated,
 }) => {
   const [tournamentName, setTournamentName] = useState<string>("");
   const [numberOfCourts, setNumberOfCourts] = useState<number>(1);
-  const [coupleInputs, setCoupleInputs] = useState<string[]>(["", "", "", ""]);
+  const [couples, setCouples] = useState<
+    { player1Id: string; player2Id: string }[]
+  >([{ player1Id: "", player2Id: "" }]);
   const [validationError, setValidationError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const addCoupleInput = () => {
-    setCoupleInputs((prev) => [...prev, ""]);
+  const { data: players, isLoading: playersLoading } = useQuery({
+    queryKey: ["players"],
+    queryFn: fetchPlayers,
+  });
+
+  const addCouple = () => {
+    setCouples((prev) => [...prev, { player1Id: "", player2Id: "" }]);
   };
 
   const createTournament = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const initialCouples: Couple[] = coupleInputs
-      .filter((name) => name.trim() !== "")
-      .map((name) => ({ id: uuidv4(), name }));
+    const validCouples = couples.filter(
+      (c) => c.player1Id && c.player2Id && c.player1Id !== c.player2Id,
+    );
 
-    if (initialCouples.length < 3) {
+    if (validCouples.length < 3) {
       setValidationError(
-        "Al menos se necesitan 3 parejas para comenzar el torneo",
+        "Al menos se necesitan 3 parejas completas para comenzar el torneo",
       );
       return;
     }
@@ -42,13 +59,11 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
     setIsSubmitting(true);
 
     try {
-      const newTournament = tournamentService.createTournament(
-        tournamentName,
-        initialCouples,
+      await onTournamentCreated({
+        name: tournamentName,
+        couples: validCouples,
         numberOfCourts,
-      );
-
-      await onTournamentCreated(newTournament, numberOfCourts);
+      });
     } catch (error) {
       console.error("Error in createTournament:", error);
     } finally {
@@ -56,10 +71,14 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
     }
   };
 
+  if (playersLoading) {
+    return <div>Cargando jugadores...</div>;
+  }
+
   return (
     <form
       onSubmit={createTournament}
-      className="mt-4 min-w-[400px] max-w-lg rounded bg-white p-4 text-center text-black shadow-lg"
+      className="mt-4 min-w-[550px] max-w-lg rounded bg-white p-4 text-center text-black shadow-lg"
     >
       <h3 className="text-center text-xl font-bold">CREAR TORNEO</h3>
       <p className="mb-8 text-sm">Ingresa los datos del torneo</p>
@@ -75,7 +94,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         placeholder="Ej. Retas 3ra, 4ta, padel beer, etc."
         value={tournamentName}
         onChange={(e) => setTournamentName(e.target.value)}
-        className="mb-4 w-full border p-2 text-center"
+        className="mb-4 w-full border p-2 text-center text-sm"
         required
         disabled={isSubmitting}
       />
@@ -102,55 +121,65 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
           </button>
         ))}
       </div>
-      {coupleInputs.map((couple, index) => (
-        <div key={index}>
-          <label
-            htmlFor={`couple-${index}`}
-            className="mb-2 block text-left text-sm font-bold uppercase"
-          >
+      {couples.map((couple, index) => (
+        <div key={index} className="mb-4">
+          <h4 className="mb-2 text-left text-sm font-bold uppercase">
             Pareja {index + 1}
-          </label>
-          <input
-            type="text"
-            id={`couple-${index}`}
-            placeholder="Ej. Ivan / Gabriel"
-            value={couple}
-            onChange={(e) => {
-              const newCoupleInputs = [...coupleInputs];
-              newCoupleInputs[index] = e.target.value;
-              setCoupleInputs(newCoupleInputs);
-            }}
-            className="mb-2 w-full border p-2"
-            disabled={isSubmitting}
-          />
+          </h4>
+          <div className="flex space-x-2">
+            <select
+              name="player1"
+              value={couple.player1Id}
+              onChange={(e) => {
+                const newCouples = [...couples];
+                newCouples[index].player1Id = e.target.value;
+                setCouples(newCouples);
+              }}
+              className="w-1/2 border p-2 text-sm"
+              required
+              disabled={isSubmitting}
+            >
+              <option value="">Selecciona Jugador 1</option>
+              {players?.map((player) => (
+                <option key={player.id} value={player.id}>
+                  {player.name}
+                </option>
+              ))}
+            </select>
+            <select
+              name="player2"
+              value={couple.player2Id}
+              onChange={(e) => {
+                const newCouples = [...couples];
+                newCouples[index].player2Id = e.target.value;
+                setCouples(newCouples);
+              }}
+              className="w-1/2 border p-2 text-sm"
+              required
+              disabled={isSubmitting}
+            >
+              <option value="">Selecciona Jugador 2</option>
+              {players?.map((player) => (
+                <option key={player.id} value={player.id}>
+                  {player.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       ))}
       <div className="flex">
         <button
           type="button"
           className="mt-2 rounded bg-secondary px-4 py-2 text-sm font-bold text-white"
-          onClick={addCoupleInput}
+          onClick={addCouple}
           disabled={isSubmitting}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="inline-block h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            />
-          </svg>
           Agregar pareja
         </button>
       </div>
       {validationError && (
-        <p className="mt-2 text-red-500">{validationError}</p>
+        <p className="mt-2 text-sm font-bold text-red-500">{validationError}</p>
       )}
       <Button
         type="submit"

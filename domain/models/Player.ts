@@ -15,9 +15,9 @@ export enum Level {
 export interface Player {
   id: string;
   name: string;
-  email?: string;
-  age?: number;
-  phone?: string;
-  gender: Gender;
-  level: Level;
+  email?: string | null;
+  age?: number | null;
+  phone?: string | null;
+  gender?: Gender | null;
+  level?: Level | null;
 }

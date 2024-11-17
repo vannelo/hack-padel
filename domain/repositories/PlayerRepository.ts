@@ -12,10 +12,12 @@ export class PlayerRepository {
         email: player.email,
         age: player.age,
         phone: player.phone,
-        gender: player.gender,
-        level: player.level,
+        gender: player.gender!,
+        level: player.level!,
       },
     });
+
+    // @ts-ignore
     return createdPlayer;
   }
 
@@ -23,6 +25,7 @@ export class PlayerRepository {
     const player = await prisma.player.findUnique({
       where: { id },
     });
+    // @ts-ignore
     return player;
   }
 }

@@ -1,5 +1,7 @@
+// components/Tournament/TournamentTable/TournamentTable.tsx
 "use client";
 
+import React from "react";
 import { Match } from "@/domain/models/Match";
 import { Tournament } from "@/domain/models/Tournament";
 
@@ -16,10 +18,22 @@ const TournamentTable: React.FC<TournamentProps> = ({
   startRound,
   isTournamentOver,
 }) => {
-  const highestScore = Math.max(...Array.from(tournament.scores.values()));
-  const leaders = Array.from(tournament.scores.entries())
+  // Ensure scores is defined
+  const scores = tournament.scores || new Map<string, number>();
+
+  // Calculate highest score
+  const highestScore = Math.max(...Array.from(scores.values()), 0);
+
+  // Identify leaders
+  const leaders = Array.from(scores.entries())
     .filter(([_, score]) => score === highestScore)
     .map(([coupleId, _]) => coupleId);
+
+  const getCoupleName = (couple: any) => {
+    const player1Name = couple.player1?.name || "Sin Jugador 1";
+    const player2Name = couple.player2?.name || "Sin Jugador 2";
+    return `${player1Name} / ${player2Name}`;
+  };
 
   return (
     <>
@@ -31,17 +45,26 @@ const TournamentTable: React.FC<TournamentProps> = ({
           <p>
             Ganadores:{" "}
             <span className="text-primary">
-              {tournament.winners?.map((winner) => winner.name).join(", ")}
+              {tournament.winners
+                ?.map((winner) => getCoupleName(winner))
+                .join(", ")}
             </span>
           </p>
         </div>
       ) : (
         <div className="flex gap-8 p-4 text-xl font-bold uppercase text-white">
-          {tournament.currentLeader && (
+          {leaders.length > 0 && (
             <p>
               Líderes:{" "}
               <span className="text-primary">
-                {tournament.currentLeader?.name}
+                {leaders
+                  .map((leaderId) => {
+                    const couple = tournament.couples.find(
+                      (c) => c.id === leaderId,
+                    );
+                    return couple ? getCoupleName(couple) : "";
+                  })
+                  .join(", ")}
               </span>
             </p>
           )}
@@ -64,11 +87,11 @@ const TournamentTable: React.FC<TournamentProps> = ({
                     key={index}
                     className="mb-4 border-b border-primary p-2 text-center font-bold"
                   >
-                    {match.couple1.name}
-                    <br></br>
+                    {getCoupleName(match.couple1)}
+                    <br />
                     vs
-                    <br></br>
-                    {match.couple2.name}
+                    <br />
+                    {getCoupleName(match.couple2)}
                   </div>
                 ))}
                 <button
@@ -91,7 +114,7 @@ const TournamentTable: React.FC<TournamentProps> = ({
                   </th>
                   {tournament.couples.map((couple, index) => (
                     <th key={index} className="border border-gray-400 p-4">
-                      {couple.name}
+                      {getCoupleName(couple)}
                     </th>
                   ))}
                   <th className="border border-gray-400 p-4 text-primary">
@@ -102,13 +125,12 @@ const TournamentTable: React.FC<TournamentProps> = ({
               <tbody className="text-lg 2xl:text-xl">
                 {tournament.couples.map((couple, rowIndex) => (
                   <tr key={rowIndex}>
-                    {/* Highlight the couple's name if they are a leader */}
                     <td
                       className={`border border-gray-400 p-4 font-bold ${
                         leaders.includes(couple.id) ? "text-primary" : ""
                       }`}
                     >
-                      {couple.name}
+                      {getCoupleName(couple)}
                     </td>
                     {tournament.couples.map((opponent, colIndex) => {
                       const match = tournament.matches.find(
@@ -146,8 +168,8 @@ const TournamentTable: React.FC<TournamentProps> = ({
                         ) {
                           isWinner = true;
                         } else if (coupleScore === opponentScore) {
-                          // It's a tie; you can decide how to handle this
-                          isWinner = false; // Or set to true if you want to highlight ties
+                          // It's a tie
+                          isWinner = false;
                         }
                       }
 
@@ -172,7 +194,7 @@ const TournamentTable: React.FC<TournamentProps> = ({
                         leaders.includes(couple.id) ? "text-primary" : ""
                       }`}
                     >
-                      {tournament.scores.get(couple.id)}
+                      {scores.get(couple.id) || 0}
                     </td>
                   </tr>
                 ))}

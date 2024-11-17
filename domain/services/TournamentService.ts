@@ -10,14 +10,22 @@ export class TournamentService implements ITournamentService {
     couples: Couple[],
     numberOfCourts: number,
   ): Tournament {
+    const tournamentId = uuidv4();
+
+    // Generate all possible matches
+    const matches = this.generateAllPossibleMatches(couples).map((match) => ({
+      ...match,
+      tournamentId,
+    }));
+
     const tournament: Tournament = {
-      id: uuidv4(),
+      id: tournamentId,
       name,
       numberOfCourts,
       couples,
-      matches: this.generateAllPossibleMatches(couples),
+      matches,
       currentMatchNumber: 1,
-      scores: new Map(couples.map((couple) => [couple.id, 0])),
+      scores: new Map(couples.map((c) => [c.id, 0])),
     };
     return tournament;
   }
@@ -28,6 +36,8 @@ export class TournamentService implements ITournamentService {
       for (let j = i + 1; j < couples.length; j++) {
         matches.push({
           id: uuidv4(),
+          // @ts-ignore
+          tournamentId: "", // Will be set when creating the tournament
           couple1: couples[i],
           couple2: couples[j],
         });
@@ -35,8 +45,11 @@ export class TournamentService implements ITournamentService {
     }
     return matches;
   }
-
   generateMatches(tournament: Tournament): Match[] {
+    if (tournament.matches.length === 0) {
+      // Generate all possible matches if none exist
+      tournament.matches = this.generateAllPossibleMatches(tournament.couples);
+    }
     const numberOfCourts = tournament.numberOfCourts;
     const unplayedMatches = tournament.matches.filter(
       (match) =>
@@ -91,7 +104,6 @@ export class TournamentService implements ITournamentService {
   }
 
   updateScores(tournament: Tournament, matchResults: Match[]): Tournament {
-    // Create a copy of the tournament to avoid mutating the original
     const updatedTournament: Tournament = {
       ...tournament,
       matches: tournament.matches.map((match) => ({ ...match })),
@@ -129,20 +141,10 @@ export class TournamentService implements ITournamentService {
   }
 
   calculateWinners(tournament: Tournament): Couple[] {
-    let maxScore = -1;
-    const winners: Couple[] = [];
-
-    for (const couple of tournament.couples) {
-      const totalScore = tournament.scores.get(couple.id) || 0;
-      if (totalScore > maxScore) {
-        maxScore = totalScore;
-        winners.length = 0;
-        winners.push(couple);
-      } else if (totalScore === maxScore) {
-        winners.push(couple);
-      }
-    }
-
+    const highestScore = Math.max(...Array.from(tournament.scores.values()), 0);
+    const winners = tournament.couples.filter(
+      (couple) => tournament.scores.get(couple.id) === highestScore,
+    );
     return winners;
   }
 }

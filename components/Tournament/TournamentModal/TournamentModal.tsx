@@ -24,6 +24,12 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
   endRound,
   isSettingScores,
 }) => {
+  const getCoupleName = (couple: any) => {
+    const player1Name = couple.player1?.name || "Sin Jugador 1";
+    const player2Name = couple.player2?.name || "Sin Jugador 2";
+    return `${player1Name} / ${player2Name}`;
+  };
+
   return (
     <div
       className={`fixed left-0 top-0 h-full w-full bg-black bg-opacity-50 ${
@@ -42,7 +48,8 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
             {currentMatches.map((match, index) => (
               <div key={index} className="mb-4">
                 <h4 className="mb-2 text-lg font-bold">
-                  {match.couple1.name} vs {match.couple2.name}
+                  {getCoupleName(match.couple1)} vs{" "}
+                  {getCoupleName(match.couple2)}
                 </h4>
                 <div className="flex items-center gap-4">
                   <input

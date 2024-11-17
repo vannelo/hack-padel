@@ -1,11 +1,12 @@
+// components/Tournament/Tournament.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Match } from "@/domain/models/Match";
 import { Tournament } from "@/domain/models/Tournament";
-import { tournamentService } from "@/domain";
 import TournamentTable from "./TournamentTable/TournamentTable";
 import TournamentModal from "./TournamentModal/TournamentModal";
+import { tournamentService } from "@/domain";
 
 interface TournamentComponentProps {
   initialTournament?: Tournament;
@@ -22,18 +23,24 @@ const TournamentComponent: React.FC<TournamentComponentProps> = ({
     Map<string, { couple1Score: number; couple2Score: number }>
   >(new Map());
   const [showScoreInputs, setShowScoreInputs] = useState<boolean>(false);
-  const [isTournamentOver, setIsTournamentOver] = useState<boolean>(false);
+  const [isTournamentOver, setIsTournamentOver] = useState<boolean>(
+    !!initialTournament?.winners,
+  );
   const [isSettingScores, setIsSettingScores] = useState<boolean>(false);
 
   useEffect(() => {
     if (tournament) {
       const nextMatches = tournamentService.generateMatches(tournament);
       setCurrentMatches(nextMatches);
+
       if (nextMatches.length === 0) {
+        if (!tournament.winners || tournament.winners.length === 0) {
+          const winners = tournamentService.calculateWinners(tournament);
+          setTournament({ ...tournament, winners });
+        }
         setIsTournamentOver(true);
-        const winners = tournamentService.calculateWinners(tournament);
-        const updatedTournament = { ...tournament, winners };
-        setTournament(updatedTournament);
+      } else {
+        setIsTournamentOver(false);
       }
     }
   }, [tournament]);
@@ -63,16 +70,18 @@ const TournamentComponent: React.FC<TournamentComponentProps> = ({
       results,
     );
 
-    // Create a new tournament object to ensure immutability
-    const newTournament = { ...updatedTournament };
+    const payload = {
+      ...updatedTournament,
+      scores: Object.fromEntries(updatedTournament.scores), // Serialize scores Map
+    };
 
-    setTournament(newTournament);
+    setTournament(updatedTournament);
 
     // Save updates to server
     await fetch(`/api/tournaments/${tournament.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newTournament),
+      body: JSON.stringify(payload),
     });
 
     setMatchResults(new Map());

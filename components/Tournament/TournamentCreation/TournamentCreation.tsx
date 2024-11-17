@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Tournament } from "@/domain/models/Tournament";
 import Button from "@/components/UI/Button/Button";
 import TournamentForm from "../TournamentForm/TournamentForm";
 
@@ -17,20 +16,17 @@ const TournamentCreation: React.FC = () => {
     setIsCreatingTournament(true);
   };
 
-  const handleTournamentCreated = async (
-    newTournament: Tournament,
-    numberOfCourts: number,
-  ) => {
+  const handleTournamentCreated = async (tournamentData: {
+    name: string;
+    couples: { player1Id: string; player2Id: string }[];
+    numberOfCourts: number;
+  }) => {
     setIsSubmitting(true);
     try {
       const response = await fetch("/api/tournaments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: newTournament.name,
-          couples: newTournament.couples.map((c) => c.name),
-          numberOfCourts: numberOfCourts,
-        }),
+        body: JSON.stringify(tournamentData),
       });
 
       const data = await response.json();
@@ -38,7 +34,7 @@ const TournamentCreation: React.FC = () => {
       if (response.ok) {
         router.push(`/torneos/${data.id}`);
       } else {
-        console.error(data.error);
+        console.error("Error creating tournament:", data.error);
       }
     } catch (error) {
       console.error("Error in handleTournamentCreated:", error);

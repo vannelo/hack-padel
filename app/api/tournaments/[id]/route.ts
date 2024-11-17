@@ -59,10 +59,16 @@ export async function PUT(request: NextRequest) {
 
     const updates = await request.json();
 
-    // Merge updates into existing tournament
-    const updatedTournament: Tournament = {
+    // Handle scores: Convert plain object back to Map
+    const scores =
+      updates.scores && typeof updates.scores === "object"
+        ? new Map(Object.entries(updates.scores))
+        : new Map();
+
+    const updatedTournament = {
       ...existingTournament,
       ...updates,
+      scores, // Replace with the processed scores Map
     };
 
     await tournamentRepository.updateTournament(updatedTournament);
