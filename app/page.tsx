@@ -2,8 +2,8 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="min-h-[100vh] flex justify-center items-center">
-      <div className="absolute inset-0 z-20 min-h-[100vh] flex justify-center items-center">
+    <div className="flex min-h-[100vh] items-center justify-center bg-black">
+      <div className="absolute inset-0 z-20 flex min-h-[100vh] items-center justify-center">
         <div className="flex flex-col items-center">
           <Image
             src="/img/hack-logo.png"
@@ -11,7 +11,7 @@ export default function Home() {
             width={300}
             height={150}
           />
-          <h2 className="text-white text-xl font-bold mt-4 uppercase">
+          <h2 className="mt-4 text-xl font-bold uppercase text-white">
             Próximamente
           </h2>
         </div>

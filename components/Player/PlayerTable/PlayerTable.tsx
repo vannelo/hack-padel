@@ -17,15 +17,36 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players }) => {
     { field: "level", headerName: "Nivel", flex: 1 },
   ];
 
-  // Map players to rows with unique `id`
   const rows = players.map((player) => ({
     id: player.id,
     name: player.name,
-    email: player.email || "",
-    phone: player.phone || "",
+    email: player.email || "No especificado",
+    phone: player.phone || "No especificado",
     gender: player.gender,
     level: player.level,
   }));
+
+  const gridStyles = {
+    "& .MuiDataGrid-columnHeader": {
+      backgroundColor: "#c0ff00",
+    },
+    "& .MuiDataGrid-columnHeaderTitle": {
+      color: "black",
+      fontWeight: "bold",
+    },
+    "& .MuiDataGrid-cell": {
+      color: "white",
+    },
+    "& .MuiDataGrid-row": {
+      "&:nth-of-type(odd)": {
+        backgroundColor: "#222",
+      },
+    },
+    "& .MuiTablePagination-root": {
+      color: "#c0ff00",
+    },
+    fontWeight: "bold",
+  };
 
   return (
     <div style={{ width: "100%" }}>
@@ -34,27 +55,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players }) => {
         columns={columns}
         pageSizeOptions={[5, 10, 25]}
         disableRowSelectionOnClick
-        sx={{
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#c0ff00",
-          },
-          "& .MuiDataGrid-columnHeaderTitle": {
-            color: "black",
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-cell": {
-            color: "white",
-          },
-          "& .MuiDataGrid-row": {
-            "&:nth-of-type(odd)": {
-              backgroundColor: "#222",
-            },
-          },
-          "& .MuiTablePagination-root": {
-            color: "#c0ff00",
-          },
-          fontWeight: "bold",
-        }}
+        sx={gridStyles}
       />
     </div>
   );

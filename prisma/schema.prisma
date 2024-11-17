@@ -14,12 +14,12 @@ model Tournament {
   currentLeader      Couple?    @relation("CurrentLeader", fields: [currentLeaderId], references: [id])
   currentMatchNumber Int
   numberOfCourts     Int
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
   couples            Couple[]
   matches            Match[]
   winners            Couple[]   @relation("TournamentWinners")
   scoresJson         Json?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
 }
 
 model Couple {
@@ -51,7 +51,6 @@ model Match {
 enum Gender {
   Varonil
   Femenil
-  Indefinido
 }
 
 enum Level {
@@ -68,8 +67,8 @@ model Player {
   email            String? 
   age              Int?
   phone            String?
-  gender           Gender  @default(Indefinido)
-  level            Level   @default(Quinta)
+  gender           Gender
+  level            Level
   couplesAsPlayer1 Couple[] @relation("Player1Couple")
   couplesAsPlayer2 Couple[] @relation("Player2Couple")
 }

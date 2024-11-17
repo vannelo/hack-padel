@@ -1,14 +1,12 @@
 import Image from "next/image";
 import PlayerCreation from "@/components/Player/PlayerCreation/PlayerCreation";
-import PlayerTable from "@/components/Player/PlayerTable/PlayerTable";
-import { prisma } from "@/lib/prisma";
-import { Player } from "@/domain/models/Player";
+import PlayerTableWrapper from "@/components/Player/PlayerTable/PlayerTableWrapper";
+import PlayerTableLoader from "@/components/Player/PlayerTable/PlayerTableLoader";
+import { Suspense } from "react";
 
-export default async function Home() {
-  const players = await prisma.player.findMany();
-
+export default function Home() {
   return (
-    <main className="flex min-h-[100vh] items-center justify-center p-8">
+    <main className="flex min-h-[100vh] items-center justify-center bg-black p-8">
       <div className="flex w-full flex-col items-center">
         <div className="flex w-full justify-between">
           <Image
@@ -20,7 +18,9 @@ export default async function Home() {
           <PlayerCreation />
         </div>
         <div className="mt-8 w-full">
-          <PlayerTable players={players as Player[]} />
+          <Suspense fallback={<PlayerTableLoader />}>
+            <PlayerTableWrapper />
+          </Suspense>
         </div>
       </div>
     </main>

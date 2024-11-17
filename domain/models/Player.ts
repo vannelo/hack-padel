@@ -1,16 +1,4 @@
-export enum Gender {
-  Varonil = "Varonil",
-  Femenil = "Femenil",
-  Indefinido = "Indefinido",
-}
-
-export enum Level {
-  Quinta = "Quinta",
-  Cuarta = "Cuarta",
-  Tercera = "Tercera",
-  Segunda = "Segunda",
-  Primera = "Primera",
-}
+import { Gender, Level } from "@prisma/client";
 
 export interface Player {
   id: string;
@@ -18,6 +6,6 @@ export interface Player {
   email?: string | null;
   age?: number | null;
   phone?: string | null;
-  gender?: Gender | null;
-  level?: Level | null;
+  gender: Gender;
+  level: Level;
 }

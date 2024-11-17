@@ -12,5 +12,7 @@ export class PlayerService {
     return this.playerRepository.getPlayerById(id);
   }
 
-  // Add other business logic methods as needed
+  async getAllPlayers(): Promise<Player[]> {
+    return this.playerRepository.getAllPlayers();
+  }
 }
