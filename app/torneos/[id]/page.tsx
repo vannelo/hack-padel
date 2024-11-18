@@ -1,5 +1,5 @@
+import { getTournamentById } from "@/app/actions/tournamentActions";
 import TournamentComponent from "@/components/Tournament/Tournament";
-import { TournamentRepository } from "@/domain/repositories/TournamentRepository";
 import Image from "next/image";
 
 export default async function TournamentPage({
@@ -8,8 +8,7 @@ export default async function TournamentPage({
   params: Promise<{ id: string }>;
 }) {
   const id = (await params).id;
-  const tournamentRepository = new TournamentRepository();
-  const tournament = await tournamentRepository.getTournamentById(id);
+  const tournament = await getTournamentById(id);
 
   if (!tournament) {
     return <div>Tournament not found</div>;
@@ -24,7 +23,7 @@ export default async function TournamentPage({
           width={200}
           height={150}
         />
-        <TournamentComponent initialTournament={tournament} />
+        <TournamentComponent fetchedTournament={tournament} />
       </div>
     </main>
   );

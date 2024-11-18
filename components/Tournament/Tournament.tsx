@@ -4,21 +4,23 @@
 
 import React, { useState, useEffect } from "react";
 import { Match } from "@/domain/models/Match";
-import { Tournament } from "@/domain/models/Tournament";
 import TournamentScores from "./TournamentScores/TournamentScores";
 import TournamentModal from "./TournamentModal/TournamentModal";
 import { tournamentService } from "@/domain";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Tournament } from "@prisma/client";
+import { updateTournament } from "@/app/actions/tournamentActions";
 
 interface TournamentComponentProps {
-  initialTournament?: Tournament;
+  fetchedTournament: Tournament;
 }
 
 // @ts-ignore
 const TournamentComponent: React.FC<TournamentComponentProps> = ({
-  initialTournament,
+  fetchedTournament,
 }) => {
   const [tournament, setTournament] = useState<Tournament | null>(
-    initialTournament || null,
+    fetchedTournament || null,
   );
   const [currentMatches, setCurrentMatches] = useState<Match[]>([]);
   const [matchResults, setMatchResults] = useState<
@@ -90,7 +92,6 @@ const TournamentComponent: React.FC<TournamentComponentProps> = ({
         results,
       );
 
-      // Determine if all matches are complete
       const allMatchesCompleted = updatedTournament.matches.every(
         (match) =>
           match.couple1Score !== undefined && match.couple2Score !== undefined,
@@ -100,21 +101,31 @@ const TournamentComponent: React.FC<TournamentComponentProps> = ({
         ? tournamentService.calculateWinners(updatedTournament)
         : updatedTournament.winners;
 
-      // Prepare payload for the backend
-      const payload = {
+      // Flatten the payload
+      const flattenedPayload = {
         ...updatedTournament,
+        couples: updatedTournament.couples.map((couple: any) => ({
+          id: couple.id,
+          tournamentId: couple.tournamentId,
+          player1Id: couple.player1.id,
+          player2Id: couple.player2.id,
+        })),
+        matches: updatedTournament.matches.map((match: any) => ({
+          id: match.id,
+          tournamentId: match.tournamentId,
+          couple1Id: match.couple1.id,
+          couple2Id: match.couple2.id,
+          couple1Score: match.couple1Score,
+          couple2Score: match.couple2Score,
+        })),
         scores: Object.fromEntries(updatedTournament.scores),
-        winners: winners.map((winner) => ({ id: winner.id })),
+        winners: winners.map((winner: any) => ({ id: winner.id })),
       };
 
-      // Persist updated data to the backend
-      await fetch(`/api/tournaments/${tournament.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      // Call the action to persist changes
+      await updateTournament(flattenedPayload);
 
-      // Update local state with updated tournament data
+      // Update local state
       setTournament({
         ...updatedTournament,
         winners,
@@ -137,14 +148,24 @@ const TournamentComponent: React.FC<TournamentComponentProps> = ({
           startRound={startRound}
           isTournamentOver={isTournamentOver}
         />
-        <TournamentModal
-          currentMatches={currentMatches}
-          matchResults={matchResults}
-          setMatchResults={setMatchResults}
-          endRound={endRound}
-          showScoreInputs={showScoreInputs}
-          isSettingScores={isSettingScores}
-        />
+        <Dialog
+          open={showScoreInputs}
+          onClose={() => setShowScoreInputs(false)}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle textAlign="center">Agregar Resultados</DialogTitle>
+          <DialogContent>
+            <TournamentModal
+              currentMatches={currentMatches}
+              matchResults={matchResults}
+              setMatchResults={setMatchResults}
+              endRound={endRound}
+              showScoreInputs={showScoreInputs}
+              isSettingScores={isSettingScores}
+            />
+          </DialogContent>
+        </Dialog>
       </>
     )
   );

@@ -79,18 +79,19 @@ const TournamentScores: React.FC<TournamentScoresProps> = ({
       )}
       <div className="flex w-full gap-4 border-gray-400 bg-black text-white">
         {!isTournamentOver && (
-          <div className="w-1/6 border-r border-primary">
+          <div className="w-1/6">
             {currentMatches.length > 0 && (
               <div className="p-4 text-center">
                 <h3 className="mb-4 text-xl font-bold">Partidos actuales</h3>
                 {currentMatches.map((match, index) => (
                   <div
                     key={index}
-                    className="mb-4 border-b border-primary p-2 text-center font-bold"
+                    className="mb-4 border-b border-t border-primary p-2 text-center font-bold"
                   >
+                    <p className="text-sm text-primary">Cancha {index + 1}</p>
                     {getCoupleName(match.couple1)}
                     <br />
-                    vs
+                    <span className="text-primary">vs</span>
                     <br />
                     {getCoupleName(match.couple2)}
                   </div>

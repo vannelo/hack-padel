@@ -122,7 +122,7 @@ export class TournamentRepository {
             player2: true,
           },
         },
-        matches: true, // Ensure matches are included
+        matches: true,
         currentLeader: {
           include: {
             player1: true,

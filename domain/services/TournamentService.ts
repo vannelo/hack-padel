@@ -27,8 +27,16 @@ export class TournamentService {
     return this.tournamentRepository.createTournament(tournament);
   }
 
+  async getTournamentById(tournamentId: string): Promise<Tournament | null> {
+    return this.tournamentRepository.getTournamentById(tournamentId);
+  }
+
   async getAllTournaments(): Promise<Tournament[]> {
     return this.tournamentRepository.getAllTournaments();
+  }
+
+  async updateTournament(updatedTournament: any): Promise<void> {
+    await this.tournamentRepository.updateTournament(updatedTournament);
   }
 
   generateAllPossibleMatches(couples: Couple[]): Match[] {
@@ -110,11 +118,14 @@ export class TournamentService {
     return leader;
   }
 
-  updateScores(tournament: any, matchResults: Match[]): Tournament {
-    const updatedTournament: any = {
+  updateScores(tournament: any, matchResults: Match[]): any {
+    const updatedTournament = {
       ...tournament,
       matches: tournament.matches.map((match: any) => ({ ...match })),
-      scores: new Map(tournament.scores),
+      scores:
+        tournament.scores instanceof Map
+          ? new Map(tournament.scores)
+          : new Map(),
     };
 
     for (const result of matchResults) {
@@ -144,6 +155,18 @@ export class TournamentService {
 
     updatedTournament.currentMatchNumber += 1;
     updatedTournament.currentLeader = this.calculateLeader(updatedTournament);
+
+    const allMatchesCompleted = updatedTournament.matches.every(
+      (match: any) =>
+        match.couple1Score !== undefined && match.couple2Score !== undefined,
+    );
+
+    if (allMatchesCompleted) {
+      updatedTournament.winners = this.calculateWinners(updatedTournament);
+    } else {
+      updatedTournament.winners = [];
+    }
+
     return updatedTournament;
   }
 
