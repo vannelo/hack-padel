@@ -31,67 +31,31 @@ export class TournamentRepository {
         },
       });
 
-      // Step 2: Create Couples and map original IDs to new ones
-      const coupleIdMap = new Map<string, string>(); // Original ID -> Created ID
-      for (const couple of tournament.couples) {
-        const createdCouple = await tx.couple.create({
-          data: {
-            id: couple.id,
-            player1: { connect: { id: couple.player1Id! } },
-            player2: { connect: { id: couple.player2Id! } },
-            tournament: { connect: { id: createdTournament.id } },
-          },
-        });
+      // Step 2: Create Couples in bulk
+      const coupleData = tournament.couples.map((couple) => ({
+        id: couple.id,
+        player1Id: couple.player1Id!,
+        player2Id: couple.player2Id!,
+        tournamentId: createdTournament.id,
+      }));
 
-        coupleIdMap.set(couple.id, createdCouple.id);
-      }
-
-      console.log("Couple ID Map:", coupleIdMap);
-
-      // Step 3: Update Matches with valid Couple IDs
-      const updatedMatches = tournament.matches.map((match: any) => {
-        const couple1Id = coupleIdMap.get(match.couple1.id);
-        const couple2Id = coupleIdMap.get(match.couple2.id);
-
-        if (!couple1Id || !couple2Id) {
-          throw new Error(
-            `Match creation failed because Couple IDs ${match.couple1.id} or ${match.couple2.id} are invalid.`,
-          );
-        }
-
-        return {
-          ...match,
-          couple1Id, // Replace with mapped ID
-          couple2Id, // Replace with mapped ID
-        };
+      await tx.couple.createMany({
+        data: coupleData,
       });
 
-      console.log("Updated Matches:", updatedMatches);
+      // Step 3: Create Matches in bulk
+      const matchData = tournament.matches.map((match: any) => ({
+        id: match.id,
+        couple1Id: match.couple1.id,
+        couple2Id: match.couple2.id,
+        couple1Score: match.couple1Score,
+        couple2Score: match.couple2Score,
+        tournamentId: createdTournament.id,
+      }));
 
-      // Step 4: Create Matches
-      for (const match of updatedMatches) {
-        const couple1 = match.couple1Id;
-        const couple2 = match.couple2Id;
-
-        if (!couple1 || !couple2) {
-          throw new Error(
-            `Match creation failed because Couple IDs ${match.couple1Id} or ${match.couple2Id} are invalid.`,
-          );
-        }
-
-        const createdMatch = await tx.match.create({
-          data: {
-            id: match.id,
-            couple1: { connect: { id: couple1 } },
-            couple2: { connect: { id: couple2 } },
-            couple1Score: match.couple1Score,
-            couple2Score: match.couple2Score,
-            tournament: { connect: { id: createdTournament.id } },
-          },
-        });
-
-        console.log("Created Match:", createdMatch);
-      }
+      await tx.match.createMany({
+        data: matchData,
+      });
 
       // Fetch and return the complete tournament
       const completeTournament = await tx.tournament.findUnique({

@@ -1,6 +1,7 @@
 import { getTournamentById } from "@/app/actions/tournamentActions";
 import TournamentComponent from "@/components/Tournament/Tournament";
 import Image from "next/image";
+import { notFound } from "next/navigation";
 
 export default async function TournamentPage({
   params,
@@ -11,7 +12,7 @@ export default async function TournamentPage({
   const tournament = await getTournamentById(id);
 
   if (!tournament) {
-    return <div>Tournament not found</div>;
+    notFound();
   }
 
   return (

@@ -12,7 +12,7 @@ export default function Home() {
             height={150}
           />
           <h2 className="mt-4 text-xl font-bold uppercase text-white">
-            Próximamente
+            Primera cancha de padel en Lindavista
           </h2>
         </div>
       </div>

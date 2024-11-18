@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useTransition, useMemo } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useQuery } from "@tanstack/react-query";
 import { getAllPlayers } from "@/app/actions/playerActions";
@@ -12,40 +12,81 @@ interface TournamentFormProps {
   onTournamentCreated: () => void;
 }
 
+interface Player {
+  id: string;
+  name: string;
+}
+
 const TournamentForm: React.FC<TournamentFormProps> = ({
   onTournamentCreated,
 }) => {
   const [tournamentData, setTournamentData] = useState({
     name: "",
     numberOfCourts: 1,
-    couples: [{ id: uuidv4(), tournamentId: "", player1Id: "", player2Id: "" }],
+    couples: [
+      {
+        id: uuidv4(),
+        tournamentId: "",
+        player1Id: "",
+        player2Id: "",
+        player1Name: "",
+        player2Name: "",
+      },
+    ],
   });
   const [validationError, setValidationError] = useState<string>("");
   const [isPending, startTransition] = useTransition();
+  const [openDropdown, setOpenDropdown] = useState<{
+    index: number;
+    player: "player1" | "player2";
+  } | null>(null);
 
-  const { data: players, isLoading: playersLoading } = useQuery({
+  const { data: players, isLoading: playersLoading } = useQuery<Player[]>({
     queryKey: ["players"],
     queryFn: getAllPlayers,
   });
+
+  const selectedPlayerIds = useMemo(() => {
+    return tournamentData.couples.flatMap((couple) =>
+      [couple.player1Id, couple.player2Id].filter(Boolean),
+    );
+  }, [tournamentData.couples]);
 
   const addCouple = () => {
     setTournamentData((prevData) => ({
       ...prevData,
       couples: [
         ...prevData.couples,
-        { id: uuidv4(), tournamentId: "", player1Id: "", player2Id: "" },
+        {
+          id: uuidv4(),
+          tournamentId: "",
+          player1Id: "",
+          player2Id: "",
+          player1Name: "",
+          player2Name: "",
+        },
       ],
     }));
   };
 
   const handleCoupleChange = (
     index: number,
-    key: "player1Id" | "player2Id",
+    key: "player1Id" | "player2Id" | "player1Name" | "player2Name",
     value: string,
   ) => {
     setTournamentData((prevData) => {
       const updatedCouples = [...prevData.couples];
       updatedCouples[index][key] = value;
+
+      // If changing ID, update name as well
+      if (key === "player1Id" || key === "player2Id") {
+        const nameKey = key === "player1Id" ? "player1Name" : "player2Name";
+        const player = players?.find((p) => p.id === value);
+        if (player) {
+          updatedCouples[index][nameKey] = player.name;
+        }
+      }
+
       return { ...prevData, couples: updatedCouples };
     });
   };
@@ -76,6 +117,23 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         console.error("Error submitting tournament data:", error);
       }
     });
+  };
+
+  const filterPlayers = (
+    input: string,
+    coupleIndex: number,
+    playerKey: "player1" | "player2",
+  ) => {
+    if (!players) return [];
+    return players.filter(
+      (player) =>
+        player.name.toLowerCase().includes(input.toLowerCase()) &&
+        !selectedPlayerIds.includes(player.id) &&
+        player.id !==
+          tournamentData.couples[coupleIndex][
+            `${playerKey === "player1" ? "player2" : "player1"}Id`
+          ],
+    );
   };
 
   if (playersLoading) {
@@ -134,41 +192,61 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         ))}
       </div>
       {tournamentData.couples.map((couple, index) => (
-        <div key={index} className="mb-4">
+        <div key={couple.id} className="mb-4">
           <h4 className="mb-2 text-left text-sm font-bold uppercase">
             Pareja {index + 1}
           </h4>
           <div className="flex space-x-2">
-            <select
-              value={couple.player1Id}
-              onChange={(e) =>
-                handleCoupleChange(index, "player1Id", e.target.value)
-              }
-              className="w-1/2 border p-2 text-sm"
-              required
-            >
-              <option value="">Jugador 1</option>
-              {players?.map((player) => (
-                <option key={player.id} value={player.id}>
-                  {player.name}
-                </option>
-              ))}
-            </select>
-            <select
-              value={couple.player2Id}
-              onChange={(e) =>
-                handleCoupleChange(index, "player2Id", e.target.value)
-              }
-              className="w-1/2 border p-2 text-sm"
-              required
-            >
-              <option value="">Jugador 2</option>
-              {players?.map((player) => (
-                <option key={player.id} value={player.id}>
-                  {player.name}
-                </option>
-              ))}
-            </select>
+            {(["player1", "player2"] as const).map((player) => (
+              <div key={player} className="relative w-1/2">
+                <input
+                  type="text"
+                  value={couple[`${player}Name`]}
+                  onChange={(e) => {
+                    handleCoupleChange(index, `${player}Name`, e.target.value);
+                    handleCoupleChange(index, `${player}Id`, "");
+                    setOpenDropdown({ index, player });
+                  }}
+                  onFocus={() => setOpenDropdown({ index, player })}
+                  onBlur={() => setTimeout(() => setOpenDropdown(null), 200)}
+                  className="w-full border p-2 text-sm"
+                  placeholder={`Jugador ${player === "player1" ? "1" : "2"}`}
+                  required
+                />
+                {openDropdown?.index === index &&
+                  openDropdown.player === player &&
+                  couple[`${player}Name`].length >= 3 && (
+                    <ul className="absolute z-10 mt-1 max-h-40 w-full overflow-y-auto border border-gray-300 bg-white">
+                      {filterPlayers(
+                        couple[`${player}Name`],
+                        index,
+                        player,
+                      ).map((filteredPlayer) => (
+                        <li
+                          key={filteredPlayer.id}
+                          className="cursor-pointer p-2 hover:bg-gray-100"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            handleCoupleChange(
+                              index,
+                              `${player}Id`,
+                              filteredPlayer.id,
+                            );
+                            handleCoupleChange(
+                              index,
+                              `${player}Name`,
+                              filteredPlayer.name,
+                            );
+                            setOpenDropdown(null);
+                          }}
+                        >
+                          {filteredPlayer.name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+              </div>
+            ))}
           </div>
         </div>
       ))}
@@ -181,7 +259,6 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
           Agregar pareja
         </button>
       </div>
-
       {validationError && (
         <p className="mt-2 text-sm font-bold text-red-500">{validationError}</p>
       )}

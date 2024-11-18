@@ -2,6 +2,7 @@
 
 import Button from "@/components/UI/Button/Button";
 import { Match } from "@/domain/models/Match";
+import { formatCoupleName } from "@/utils/helpers";
 
 interface TournamentModalProps {
   currentMatches: Match[];
@@ -22,12 +23,6 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
   endRound,
   isSettingScores,
 }) => {
-  const getCoupleName = (couple: any) => {
-    const player1Name = couple.player1?.name || "Sin Jugador 1";
-    const player2Name = couple.player2?.name || "Sin Jugador 2";
-    return `${player1Name} / ${player2Name}`;
-  };
-
   return (
     <div className="text-black">
       {currentMatches.map((match, index) => (
@@ -36,7 +31,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
           key={index}
         >
           <div className="w-5/12">
-            <p className="mb-2">{getCoupleName(match.couple1)}</p>
+            <p className="mb-2">{formatCoupleName(match.couple1)}</p>
             <input
               type="number"
               min="0"
@@ -59,7 +54,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
             <span className="text-xl font-bold">vs</span>
           </div>
           <div className="w-5/12">
-            <p className="mb-2">{getCoupleName(match.couple2)}</p>
+            <p className="mb-2">{formatCoupleName(match.couple2)}</p>
             <input
               type="number"
               min="0"
