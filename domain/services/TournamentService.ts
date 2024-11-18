@@ -1,24 +1,20 @@
-import { ITournamentService } from "../interfaces/ITournamentService";
-import { Tournament } from "../models/Tournament";
-import { Couple } from "../models/Couple";
-import { Match } from "../models/Match";
 import { v4 as uuidv4 } from "uuid";
+import { TournamentRepository } from "../repositories/TournamentRepository";
+import { Couple, Match, Tournament } from "@prisma/client";
+import { CreateTournamentInput } from "../models/Tournament";
 
-export class TournamentService implements ITournamentService {
-  createTournament(
-    name: string,
-    couples: Couple[],
-    numberOfCourts: number,
-  ): Tournament {
+export class TournamentService {
+  private tournamentRepository = new TournamentRepository();
+
+  createTournament(name: string, couples: Couple[], numberOfCourts: number) {
     const tournamentId = uuidv4();
 
-    // Generate all possible matches
     const matches = this.generateAllPossibleMatches(couples).map((match) => ({
       ...match,
       tournamentId,
     }));
 
-    const tournament: Tournament = {
+    const tournament: CreateTournamentInput = {
       id: tournamentId,
       name,
       numberOfCourts,
@@ -27,7 +23,12 @@ export class TournamentService implements ITournamentService {
       currentMatchNumber: 1,
       scores: new Map(couples.map((c) => [c.id, 0])),
     };
-    return tournament;
+
+    return this.tournamentRepository.createTournament(tournament);
+  }
+
+  async getAllTournaments(): Promise<Tournament[]> {
+    return this.tournamentRepository.getAllTournaments();
   }
 
   generateAllPossibleMatches(couples: Couple[]): Match[] {
@@ -38,6 +39,7 @@ export class TournamentService implements ITournamentService {
           id: uuidv4(),
           // @ts-ignore
           tournamentId: "", // Will be set when creating the tournament
+          // @ts-ignore
           couple1: couples[i],
           couple2: couples[j],
         });
@@ -45,7 +47,8 @@ export class TournamentService implements ITournamentService {
     }
     return matches;
   }
-  generateMatches(tournament: Tournament): Match[] {
+
+  generateMatches(tournament: CreateTournamentInput): Match[] {
     if (tournament.matches.length === 0) {
       // Generate all possible matches if none exist
       tournament.matches = this.generateAllPossibleMatches(tournament.couples);
@@ -64,11 +67,15 @@ export class TournamentService implements ITournamentService {
 
     for (const match of shuffledMatches) {
       if (
+        // @ts-ignore
         !couplesInThisRound.has(match.couple1.id) &&
+        // @ts-ignore
         !couplesInThisRound.has(match.couple2.id)
       ) {
         matchesThisRound.push(match);
+        // @ts-ignore
         couplesInThisRound.add(match.couple1.id);
+        // @ts-ignore
         couplesInThisRound.add(match.couple2.id);
 
         if (matchesThisRound.length >= numberOfCourts) {
@@ -89,7 +96,7 @@ export class TournamentService implements ITournamentService {
     return shuffled;
   }
 
-  calculateLeader(tournament: Tournament): Couple | undefined {
+  calculateLeader(tournament: CreateTournamentInput): Couple | undefined {
     let maxScore = -1;
     let leader: Couple | undefined = undefined;
 
@@ -103,16 +110,16 @@ export class TournamentService implements ITournamentService {
     return leader;
   }
 
-  updateScores(tournament: Tournament, matchResults: Match[]): Tournament {
-    const updatedTournament: Tournament = {
+  updateScores(tournament: any, matchResults: Match[]): Tournament {
+    const updatedTournament: any = {
       ...tournament,
-      matches: tournament.matches.map((match) => ({ ...match })),
+      matches: tournament.matches.map((match: any) => ({ ...match })),
       scores: new Map(tournament.scores),
     };
 
     for (const result of matchResults) {
       const matchIndex = updatedTournament.matches.findIndex(
-        (m) => m.id === result.id,
+        (m: any) => m.id === result.id,
       );
       if (matchIndex !== -1) {
         const match = updatedTournament.matches[matchIndex];
@@ -140,7 +147,7 @@ export class TournamentService implements ITournamentService {
     return updatedTournament;
   }
 
-  calculateWinners(tournament: Tournament): Couple[] {
+  calculateWinners(tournament: CreateTournamentInput): Couple[] {
     const highestScore = Math.max(...Array.from(tournament.scores.values()), 0);
     const winners = tournament.couples.filter(
       (couple) => tournament.scores.get(couple.id) === highestScore,

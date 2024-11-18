@@ -1,17 +1,27 @@
 import Image from "next/image";
+import { Suspense } from "react";
+import TableLoader from "@/components/UI/TableLoader/TableLoader";
 import TournamentCreation from "@/components/Tournament/TournamentCreation/TournamentCreation";
+import TournamentTableWrapper from "@/components/Tournament/TournamentTable/TournamentTableWrapper";
 
-export default function Home() {
+export default function Torneos() {
   return (
-    <main className="flex min-h-[100vh] items-center justify-center p-8">
+    <main className="flex min-h-[100vh] items-center justify-center bg-black p-8">
       <div className="flex w-full flex-col items-center">
-        <Image
-          src="/img/hack-logo.png"
-          alt="Hack Padel Logo"
-          width={200}
-          height={150}
-        />
-        <TournamentCreation />
+        <div className="flex w-full justify-between">
+          <Image
+            src="/img/hack-logo.png"
+            alt="Hack Padel Logo"
+            width={200}
+            height={150}
+          />
+          <TournamentCreation />
+        </div>
+        <div className="mt-8 w-full">
+          <Suspense fallback={<TableLoader />}>
+            <TournamentTableWrapper />
+          </Suspense>
+        </div>
       </div>
     </main>
   );

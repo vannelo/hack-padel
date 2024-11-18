@@ -38,8 +38,8 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
           autoHideDuration={4000}
           onClose={handleClose}
           anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
+            vertical: "top",
+            horizontal: "center",
           }}
         >
           <Alert

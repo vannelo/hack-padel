@@ -1,7 +1,5 @@
-// app/api/tournaments/[id]/route.ts
 import { NextResponse, NextRequest } from "next/server";
 import { TournamentRepository } from "@/domain/repositories/TournamentRepository";
-import { Tournament } from "@/domain/models/Tournament";
 
 export async function GET(request: NextRequest) {
   try {
@@ -37,9 +35,7 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    // Extract the 'id' parameter from the request URL
     const id = request.nextUrl.pathname.split("/").pop();
-
     if (!id) {
       return NextResponse.json(
         { error: "Tournament ID is missing" },
@@ -59,19 +55,35 @@ export async function PUT(request: NextRequest) {
 
     const updates = await request.json();
 
-    // Handle scores: Convert plain object back to Map
-    const scores =
-      updates.scores && typeof updates.scores === "object"
-        ? new Map(Object.entries(updates.scores))
-        : new Map();
-
-    const updatedTournament = {
-      ...existingTournament,
+    // Process updates
+    const processedUpdates = {
       ...updates,
-      scores, // Replace with the processed scores Map
+      couples: updates.couples?.map((couple: any) => ({
+        id: couple.id,
+        tournamentId: couple.tournamentId,
+        player1Id: couple.player1?.id,
+        player2Id: couple.player2?.id,
+      })),
+      matches: updates.matches?.map((match: any) => ({
+        id: match.id,
+        tournamentId: match.tournamentId,
+        couple1Id: match.couple1?.id,
+        couple2Id: match.couple2?.id,
+        couple1Score: match.couple1Score,
+        couple2Score: match.couple2Score,
+      })),
+      scores:
+        updates.scores && typeof updates.scores === "object"
+          ? new Map(Object.entries(updates.scores))
+          : new Map(),
+      winners: updates.winners?.map((winner: any) => ({ id: winner.id })),
     };
 
-    await tournamentRepository.updateTournament(updatedTournament);
+    // Update the tournament in the database
+    await tournamentRepository.updateTournament({
+      ...existingTournament,
+      ...processedUpdates,
+    });
 
     return NextResponse.json({ message: "Tournament updated" });
   } catch (error) {

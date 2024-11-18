@@ -16,7 +16,7 @@ export default async function TournamentPage({
   }
 
   return (
-    <main className="flex min-h-[100vh] items-center justify-center p-8">
+    <main className="flex min-h-[100vh] items-center justify-center bg-black p-8">
       <div className="flex w-full flex-col items-center">
         <Image
           src="/img/hack-logo.png"

@@ -1,56 +1,115 @@
-// domain/repositories/TournamentRepository.ts
-import { PrismaClient } from "@prisma/client";
-import { ITournamentRepository } from "./ITournamentRepository";
-import { Tournament } from "../models/Tournament";
-import { Couple } from "../models/Couple";
-import { Match } from "../models/Match";
+import {
+  Couple,
+  Match,
+  PrismaClient,
+  Tournament as PrismaTournament,
+} from "@prisma/client";
+import { CreateTournamentInput } from "../models/Tournament";
 
 const prisma = new PrismaClient();
 
-export class TournamentRepository implements ITournamentRepository {
-  async createTournament(tournament: Tournament): Promise<Tournament> {
-    const createdTournament = await prisma.tournament.create({
-      data: {
-        id: tournament.id,
-        name: tournament.name,
-        currentMatchNumber: tournament.currentMatchNumber,
-        numberOfCourts: tournament.numberOfCourts,
-        couples: {
-          create: tournament.couples.map((couple) => ({
-            id: couple.id,
-            player1Id: couple.player1?.id!,
-            player2Id: couple.player2?.id!,
-          })),
+export interface Tournament extends PrismaTournament {
+  couples: Couple[];
+  matches: Match[];
+  scores: Map<string, number>;
+  currentLeader?: Couple;
+  winners: Couple[];
+}
+
+export class TournamentRepository {
+  async createTournament(
+    tournament: CreateTournamentInput,
+  ): Promise<Tournament> {
+    return await prisma.$transaction(async (tx) => {
+      // Step 1: Create the Tournament
+      const createdTournament = await tx.tournament.create({
+        data: {
+          id: tournament.id,
+          name: tournament.name,
+          currentMatchNumber: tournament.currentMatchNumber,
+          numberOfCourts: tournament.numberOfCourts,
         },
-        matches: {
-          create: tournament.matches.map((match) => ({
+      });
+
+      // Step 2: Create Couples and map original IDs to new ones
+      const coupleIdMap = new Map<string, string>(); // Original ID -> Created ID
+      for (const couple of tournament.couples) {
+        const createdCouple = await tx.couple.create({
+          data: {
+            id: couple.id,
+            player1: { connect: { id: couple.player1Id! } },
+            player2: { connect: { id: couple.player2Id! } },
+            tournament: { connect: { id: createdTournament.id } },
+          },
+        });
+
+        coupleIdMap.set(couple.id, createdCouple.id);
+      }
+
+      console.log("Couple ID Map:", coupleIdMap);
+
+      // Step 3: Update Matches with valid Couple IDs
+      const updatedMatches = tournament.matches.map((match: any) => {
+        const couple1Id = coupleIdMap.get(match.couple1.id);
+        const couple2Id = coupleIdMap.get(match.couple2.id);
+
+        if (!couple1Id || !couple2Id) {
+          throw new Error(
+            `Match creation failed because Couple IDs ${match.couple1.id} or ${match.couple2.id} are invalid.`,
+          );
+        }
+
+        return {
+          ...match,
+          couple1Id, // Replace with mapped ID
+          couple2Id, // Replace with mapped ID
+        };
+      });
+
+      console.log("Updated Matches:", updatedMatches);
+
+      // Step 4: Create Matches
+      for (const match of updatedMatches) {
+        const couple1 = match.couple1Id;
+        const couple2 = match.couple2Id;
+
+        if (!couple1 || !couple2) {
+          throw new Error(
+            `Match creation failed because Couple IDs ${match.couple1Id} or ${match.couple2Id} are invalid.`,
+          );
+        }
+
+        const createdMatch = await tx.match.create({
+          data: {
             id: match.id,
-            couple1Id: match.couple1.id,
-            couple2Id: match.couple2.id,
+            couple1: { connect: { id: couple1 } },
+            couple2: { connect: { id: couple2 } },
             couple1Score: match.couple1Score,
             couple2Score: match.couple2Score,
-          })),
-        },
-        currentLeaderId: tournament.currentLeader?.id,
-        winners: {
-          connect:
-            tournament.winners?.map((winner) => ({ id: winner.id })) || [],
-        },
-      },
-      include: {
-        couples: {
-          include: {
-            player1: true,
-            player2: true,
+            tournament: { connect: { id: createdTournament.id } },
           },
-        },
-        matches: true,
-        currentLeader: true,
-        winners: true,
-      },
-    });
+        });
 
-    return this.mapPrismaTournamentToDomain(createdTournament);
+        console.log("Created Match:", createdMatch);
+      }
+
+      // Fetch and return the complete tournament
+      const completeTournament = await tx.tournament.findUnique({
+        where: { id: createdTournament.id },
+        include: {
+          couples: { include: { player1: true, player2: true } },
+          matches: true,
+          currentLeader: true,
+          winners: true,
+        },
+      });
+
+      if (!completeTournament) {
+        throw new Error("Failed to fetch the created tournament");
+      }
+
+      return this.mapPrismaTournamentToDomain(completeTournament);
+    });
   }
 
   async getTournamentById(id: string): Promise<Tournament | null> {
@@ -84,11 +143,40 @@ export class TournamentRepository implements ITournamentRepository {
     return this.mapPrismaTournamentToDomain(prismaTournament);
   }
 
+  async getAllTournaments(): Promise<Tournament[]> {
+    const prismaTournaments = await prisma.tournament.findMany({
+      include: {
+        couples: {
+          include: {
+            player1: true,
+            player2: true,
+          },
+        },
+        matches: true,
+        currentLeader: {
+          include: {
+            player1: true,
+            player2: true,
+          },
+        },
+        winners: {
+          include: {
+            player1: true,
+            player2: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return prismaTournaments.map((t) => this.mapPrismaTournamentToDomain(t));
+  }
+
   async updateTournament(tournament: Tournament): Promise<Tournament> {
     const scoresObject =
       tournament.scores instanceof Map
         ? Object.fromEntries(tournament.scores)
-        : {};
+        : tournament.scores; // Ensure scores is an object for Prisma
 
     const updatedTournament = await prisma.tournament.update({
       where: { id: tournament.id },
@@ -102,8 +190,8 @@ export class TournamentRepository implements ITournamentRepository {
             where: { id: match.id },
             create: {
               id: match.id,
-              couple1Id: match.couple1.id,
-              couple2Id: match.couple2.id,
+              couple1Id: match.couple1Id,
+              couple2Id: match.couple2Id,
               couple1Score: match.couple1Score,
               couple2Score: match.couple2Score,
             },
@@ -184,6 +272,10 @@ export class TournamentRepository implements ITournamentRepository {
       currentMatchNumber: prismaTournament.currentMatchNumber,
       scores,
       winners,
+      currentLeaderId: prismaTournament.currentLeaderId,
+      scoresJson: prismaTournament.scoresJson,
+      createdAt: prismaTournament.createdAt,
+      updatedAt: prismaTournament.updatedAt,
     };
 
     return tournament;

@@ -1,10 +1,10 @@
 import Image from "next/image";
 import PlayerCreation from "@/components/Player/PlayerCreation/PlayerCreation";
 import PlayerTableWrapper from "@/components/Player/PlayerTable/PlayerTableWrapper";
-import PlayerTableLoader from "@/components/Player/PlayerTable/PlayerTableLoader";
 import { Suspense } from "react";
+import TableLoader from "@/components/UI/TableLoader/TableLoader";
 
-export default function Home() {
+export default function Jugadores() {
   return (
     <main className="flex min-h-[100vh] items-center justify-center bg-black p-8">
       <div className="flex w-full flex-col items-center">
@@ -18,7 +18,7 @@ export default function Home() {
           <PlayerCreation />
         </div>
         <div className="mt-8 w-full">
-          <Suspense fallback={<PlayerTableLoader />}>
+          <Suspense fallback={<TableLoader />}>
             <PlayerTableWrapper />
           </Suspense>
         </div>
