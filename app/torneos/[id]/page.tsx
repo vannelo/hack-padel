@@ -15,6 +15,8 @@ export default async function TournamentPage({
     notFound();
   }
 
+  console.log("tournament", tournament);
+
   return (
     <main className="flex min-h-[100vh] items-center justify-center bg-black p-8">
       <div className="flex w-full flex-col items-center">

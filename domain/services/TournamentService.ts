@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { v4 as uuidv4 } from "uuid";
 import { TournamentRepository } from "../repositories/TournamentRepository";
 import { Couple, Match, Tournament } from "@prisma/client";
@@ -61,32 +63,59 @@ export class TournamentService {
       // Generate all possible matches if none exist
       tournament.matches = this.generateAllPossibleMatches(tournament.couples);
     }
-    const numberOfCourts = tournament.numberOfCourts;
+
+    const totalRounds = 5;
+    const matchesPerRound = 3;
+    const totalMatches = totalRounds * matchesPerRound;
+
     const unplayedMatches = tournament.matches.filter(
       (match) =>
         match.couple1Score === undefined && match.couple2Score === undefined,
     );
 
-    // Shuffle unplayedMatches
-    const shuffledMatches = this.shuffleArray(unplayedMatches);
+    if (unplayedMatches.length === 0) {
+      return []; // All matches have been played
+    }
+
+    const currentRound =
+      Math.floor((totalMatches - unplayedMatches.length) / matchesPerRound) + 1;
+
+    // Create a map to track how many times each couple has played
+    const couplePlayed = new Map<string, number>();
+    tournament.couples.forEach((couple) => {
+      const playedMatches = tournament.matches.filter(
+        (match) =>
+          (match.couple1.id === couple.id || match.couple2.id === couple.id) &&
+          match.couple1Score !== undefined &&
+          match.couple2Score !== undefined,
+      );
+      couplePlayed.set(couple.id, playedMatches.length);
+    });
+
+    // Sort unplayed matches by the total number of games played by both couples
+    const sortedMatches = this.shuffleArray(unplayedMatches).sort((a, b) => {
+      const aPlayed =
+        (couplePlayed.get(a.couple1.id) || 0) +
+        (couplePlayed.get(a.couple2.id) || 0);
+      const bPlayed =
+        (couplePlayed.get(b.couple1.id) || 0) +
+        (couplePlayed.get(b.couple2.id) || 0);
+      return aPlayed - bPlayed;
+    });
 
     const matchesThisRound: Match[] = [];
     const couplesInThisRound = new Set<string>();
 
-    for (const match of shuffledMatches) {
+    for (const match of sortedMatches) {
       if (
-        // @ts-ignore
         !couplesInThisRound.has(match.couple1.id) &&
-        // @ts-ignore
         !couplesInThisRound.has(match.couple2.id)
       ) {
         matchesThisRound.push(match);
-        // @ts-ignore
         couplesInThisRound.add(match.couple1.id);
-        // @ts-ignore
         couplesInThisRound.add(match.couple2.id);
 
-        if (matchesThisRound.length >= numberOfCourts) {
+        if (matchesThisRound.length >= matchesPerRound) {
           break;
         }
       }

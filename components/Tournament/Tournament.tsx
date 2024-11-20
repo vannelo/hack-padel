@@ -139,6 +139,8 @@ const TournamentComponent: React.FC<TournamentComponentProps> = ({
     }
   };
 
+  console.log("currentMatches", currentMatches);
+
   return (
     tournament && (
       <>
