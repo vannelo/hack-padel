@@ -1,6 +1,6 @@
 import { getTournamentById } from "@/app/actions/tournamentActions";
-import TournamentComponent from "@/components/Tournament/Tournament";
-import Image from "next/image";
+import TournamentDetails from "@/components/Tournament/TournamentDetails/TournamentDetails";
+
 import { notFound } from "next/navigation";
 
 export default async function TournamentPage({
@@ -15,19 +15,14 @@ export default async function TournamentPage({
     notFound();
   }
 
-  console.log("tournament", tournament);
-
   return (
-    <main className="flex min-h-[100vh] items-center justify-center bg-black p-8">
-      <div className="flex w-full flex-col items-center">
-        <Image
-          src="/img/hack-logo.png"
-          alt="Hack Padel Logo"
-          width={200}
-          height={150}
-        />
-        <TournamentComponent fetchedTournament={tournament} />
+    <div className="bg-black">
+      <div className="container mx-auto bg-black px-4 py-8">
+        <h1 className="mb-6 text-3xl font-bold text-white">
+          Detalles del Torneo
+        </h1>
+        <TournamentDetails tournament={tournament} />
       </div>
-    </main>
+    </div>
   );
 }

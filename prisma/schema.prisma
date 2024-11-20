@@ -7,47 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Tournament {
-  id                 String     @id @default(uuid())
-  name               String
-  currentLeaderId    String?
-  currentLeader      Couple?    @relation("CurrentLeader", fields: [currentLeaderId], references: [id])
-  currentMatchNumber Int
-  numberOfCourts     Int
-  couples            Couple[]
-  matches            Match[]
-  winners            Couple[]   @relation("TournamentWinners")
-  scoresJson         Json?
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
-}
-
-model Couple {
-  id               String      @id @default(uuid())
-  tournamentId     String
-  tournament       Tournament  @relation(fields: [tournamentId], references: [id])
-  player1Id        String
-  player2Id        String
-  player1          Player      @relation("Player1Couple", fields: [player1Id], references: [id])
-  player2          Player      @relation("Player2Couple", fields: [player2Id], references: [id])
-  matchesAsCouple1 Match[]     @relation("couple1Matches")
-  matchesAsCouple2 Match[]     @relation("couple2Matches")
-  tournamentsWon   Tournament[] @relation("TournamentWinners")
-  currentLeaderIn  Tournament[] @relation("CurrentLeader")
-}
-
-model Match {
-  id           String     @id @default(uuid())
-  tournamentId String
-  tournament   Tournament @relation(fields: [tournamentId], references: [id])
-  couple1Id    String
-  couple2Id    String
-  couple1      Couple     @relation("couple1Matches", fields: [couple1Id], references: [id])
-  couple2      Couple     @relation("couple2Matches", fields: [couple2Id], references: [id])
-  couple1Score Int?
-  couple2Score Int?
-}
-
 enum Gender {
   Varonil
   Femenil
@@ -64,11 +23,58 @@ enum Level {
 model Player {
   id               String   @id @default(uuid())
   name             String
-  email            String? 
+  email            String?
   age              Int?
   phone            String?
   gender           Gender
   level            Level
-  couplesAsPlayer1 Couple[] @relation("Player1Couple")
-  couplesAsPlayer2 Couple[] @relation("Player2Couple")
+  couplesAsPlayer1 Couple[] @relation("Player1")
+  couplesAsPlayer2 Couple[] @relation("Player2")
+}
+
+model Tournament {
+  id           String   @id @default(uuid())
+  name         String
+  courts       Int
+  couples      Couple[]
+  rounds       Round[]
+  winnerId     String?
+  winner       Couple?    @relation("TournamentWinner", fields: [winnerId], references: [id])
+  isFinished   Boolean    @default(false)
+  currentRound Int        @default(1)
+}
+
+model Couple {
+  id             String        @id @default(uuid())
+  player1Id      String
+  player1        Player        @relation("Player1", fields: [player1Id], references: [id])
+  player2Id      String
+  player2        Player        @relation("Player2", fields: [player2Id], references: [id])
+  tournamentId   String
+  tournament     Tournament    @relation(fields: [tournamentId], references: [id])
+  matchesAsCouple1 Match[]     @relation("Couple1")
+  matchesAsCouple2 Match[]     @relation("Couple2")
+  wonTournaments   Tournament[] @relation("TournamentWinner")
+}
+
+model Round {
+  id           String   @id @default(uuid())
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  matches      Match[]
+  isActive     Boolean
+  roundNumber  Int       // Added roundNumber field
+}
+
+model Match {
+  id            String   @id @default(uuid())
+  roundId       String
+  round         Round    @relation(fields: [roundId], references: [id])
+  couple1Id     String
+  couple1       Couple   @relation("Couple1", fields: [couple1Id], references: [id])
+  couple2Id     String
+  couple2       Couple   @relation("Couple2", fields: [couple2Id], references: [id])
+  couple1Score  Int
+  couple2Score  Int
+  court         Int
 }

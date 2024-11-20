@@ -1,209 +1,180 @@
-// @ts-nocheck
-
-import { v4 as uuidv4 } from "uuid";
+import { Tournament } from "../models/Tournament";
 import { TournamentRepository } from "../repositories/TournamentRepository";
-import { Couple, Match, Tournament } from "@prisma/client";
-import { CreateTournamentInput } from "../models/Tournament";
+import { Couple } from "../models/Couple";
+import { Round } from "../models/Round";
+import { Match } from "../models/Match";
+import { v4 as uuidv4 } from "uuid";
 
 export class TournamentService {
   private tournamentRepository = new TournamentRepository();
 
-  createTournament(name: string, couples: Couple[], numberOfCourts: number) {
-    const tournamentId = uuidv4();
-
-    const matches = this.generateAllPossibleMatches(couples).map((match) => ({
-      ...match,
-      tournamentId,
-    }));
-
-    const tournament: CreateTournamentInput = {
-      id: tournamentId,
+  async createTournament(
+    name: string,
+    courts: number,
+    couples: Couple[],
+  ): Promise<Tournament> {
+    console.log("TournamentService.createTournament called with:", {
       name,
-      numberOfCourts,
+      courts,
       couples,
-      matches,
-      currentMatchNumber: 1,
-      scores: new Map(couples.map((c) => [c.id, 0])),
-    };
+    });
 
-    return this.tournamentRepository.createTournament(tournament);
+    if (!couples || couples.length < 4) {
+      throw new Error("At least 4 couples are required to create a tournament");
+    }
+
+    const rounds = this.generateRounds(couples, courts);
+    return this.tournamentRepository.createTournament(
+      name,
+      courts,
+      couples,
+      rounds,
+    );
   }
 
-  async getTournamentById(tournamentId: string): Promise<Tournament | null> {
-    return this.tournamentRepository.getTournamentById(tournamentId);
+  async getTournamentById(id: string): Promise<Tournament | null> {
+    return this.tournamentRepository.getTournamentById(id);
   }
 
   async getAllTournaments(): Promise<Tournament[]> {
     return this.tournamentRepository.getAllTournaments();
   }
 
-  async updateTournament(updatedTournament: any): Promise<void> {
-    await this.tournamentRepository.updateTournament(updatedTournament);
+  async updateMatchResults(
+    tournamentId: string,
+    roundId: string,
+    matchResults: {
+      [key: string]: { couple1Score: number; couple2Score: number };
+    },
+  ): Promise<void> {
+    console.log("Updating match results:", {
+      tournamentId,
+      roundId,
+      matchResults,
+    });
+    return this.tournamentRepository.updateMatchResults(
+      tournamentId,
+      roundId,
+      matchResults,
+    );
   }
 
-  generateAllPossibleMatches(couples: Couple[]): Match[] {
-    const matches: Match[] = [];
-    for (let i = 0; i < couples.length; i++) {
-      for (let j = i + 1; j < couples.length; j++) {
-        matches.push({
-          id: uuidv4(),
-          // @ts-ignore
-          tournamentId: "", // Will be set when creating the tournament
-          // @ts-ignore
+  async endRound(tournamentId: string, roundId: string): Promise<void> {
+    console.log("Starting endRound function:", { tournamentId, roundId });
+    const tournament = await this.getTournamentById(tournamentId);
+    if (!tournament) {
+      console.error("Tournament not found:", tournamentId);
+      throw new Error("Tournament not found");
+    }
+
+    console.log(
+      "Tournament state before ending round:",
+      JSON.stringify(tournament, null, 2),
+    );
+
+    const currentRound = tournament.rounds.find((r) => r.id === roundId);
+    if (!currentRound) {
+      console.error("Round not found:", roundId);
+      throw new Error("Round not found");
+    }
+
+    console.log("Current round number:", currentRound.roundNumber);
+
+    // Deactivate the current round
+    await this.tournamentRepository.updateRoundStatus(roundId, false);
+    console.log("Current round set to inactive");
+
+    // Find the next round by roundNumber
+    const nextRound = tournament.rounds.find(
+      (round) => round.roundNumber === currentRound.roundNumber + 1,
+    );
+
+    if (nextRound) {
+      // Activate the next round
+      await this.tournamentRepository.updateRoundStatus(nextRound.id, true);
+      await this.tournamentRepository.updateTournamentProgress(
+        tournamentId,
+        nextRound.roundNumber,
+      );
+      console.log("Moving to next round:", nextRound.roundNumber);
+    } else {
+      // No more rounds; mark the tournament as finished
+      await this.tournamentRepository.updateTournamentStatus(
+        tournamentId,
+        true,
+      );
+      console.log("Tournament finished");
+    }
+
+    // Fetch and log the updated tournament state
+    const updatedTournament = await this.getTournamentById(tournamentId);
+    console.log(
+      "Updated tournament state:",
+      JSON.stringify(updatedTournament, null, 2),
+    );
+  }
+
+  private generateRounds(couples: Couple[], courts: number): Round[] {
+    console.log("generateRounds called with:", { couples, courts });
+
+    if (!couples || couples.length === 0) {
+      throw new Error("No couples provided for generating rounds");
+    }
+
+    const rounds: Round[] = [];
+    const n = couples.length;
+    const totalMatches = (n * (n - 1)) / 2; // Total number of unique matches
+
+    // Generate all possible matches
+    const allMatches: { couple1: Couple; couple2: Couple }[] = [];
+    for (let i = 0; i < n - 1; i++) {
+      for (let j = i + 1; j < n; j++) {
+        allMatches.push({
           couple1: couples[i],
           couple2: couples[j],
         });
       }
     }
-    return matches;
-  }
 
-  generateMatches(tournament: CreateTournamentInput): Match[] {
-    if (tournament.matches.length === 0) {
-      // Generate all possible matches if none exist
-      tournament.matches = this.generateAllPossibleMatches(tournament.couples);
-    }
+    // Shuffle the matches to randomize them
+    allMatches.sort(() => Math.random() - 0.5);
 
-    const totalRounds = 5;
-    const matchesPerRound = 3;
-    const totalMatches = totalRounds * matchesPerRound;
+    const matchesPerRound = Math.min(courts, Math.floor(n / 2)); // Ensure matches per round doesn't exceed courts
+    const totalRounds = Math.ceil(totalMatches / matchesPerRound);
 
-    const unplayedMatches = tournament.matches.filter(
-      (match) =>
-        match.couple1Score === undefined && match.couple2Score === undefined,
-    );
+    let matchIndex = 0;
+    for (let roundNumber = 1; roundNumber <= totalRounds; roundNumber++) {
+      const roundMatches: Match[] = [];
+      const roundId = uuidv4();
 
-    if (unplayedMatches.length === 0) {
-      return []; // All matches have been played
-    }
+      for (let i = 0; i < matchesPerRound && matchIndex < totalMatches; i++) {
+        const matchInfo = allMatches[matchIndex];
+        const matchId = uuidv4();
 
-    const currentRound =
-      Math.floor((totalMatches - unplayedMatches.length) / matchesPerRound) + 1;
+        roundMatches.push({
+          id: matchId,
+          roundId,
+          couple1Id: matchInfo.couple1.id,
+          couple1: matchInfo.couple1,
+          couple2Id: matchInfo.couple2.id,
+          couple2: matchInfo.couple2,
+          couple1Score: 0,
+          couple2Score: 0,
+          court: i + 1,
+        });
 
-    // Create a map to track how many times each couple has played
-    const couplePlayed = new Map<string, number>();
-    tournament.couples.forEach((couple) => {
-      const playedMatches = tournament.matches.filter(
-        (match) =>
-          (match.couple1.id === couple.id || match.couple2.id === couple.id) &&
-          match.couple1Score !== undefined &&
-          match.couple2Score !== undefined,
-      );
-      couplePlayed.set(couple.id, playedMatches.length);
-    });
-
-    // Sort unplayed matches by the total number of games played by both couples
-    const sortedMatches = this.shuffleArray(unplayedMatches).sort((a, b) => {
-      const aPlayed =
-        (couplePlayed.get(a.couple1.id) || 0) +
-        (couplePlayed.get(a.couple2.id) || 0);
-      const bPlayed =
-        (couplePlayed.get(b.couple1.id) || 0) +
-        (couplePlayed.get(b.couple2.id) || 0);
-      return aPlayed - bPlayed;
-    });
-
-    const matchesThisRound: Match[] = [];
-    const couplesInThisRound = new Set<string>();
-
-    for (const match of sortedMatches) {
-      if (
-        !couplesInThisRound.has(match.couple1.id) &&
-        !couplesInThisRound.has(match.couple2.id)
-      ) {
-        matchesThisRound.push(match);
-        couplesInThisRound.add(match.couple1.id);
-        couplesInThisRound.add(match.couple2.id);
-
-        if (matchesThisRound.length >= matchesPerRound) {
-          break;
-        }
+        matchIndex++;
       }
+
+      rounds.push({
+        id: roundId,
+        tournamentId: "", // This will be set when the tournament is created
+        matches: roundMatches,
+        isActive: roundNumber === 1,
+        roundNumber: roundNumber, // Assign the round number
+      });
     }
 
-    return matchesThisRound;
-  }
-
-  private shuffleArray<T>(array: T[]): T[] {
-    const shuffled = array.slice();
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  }
-
-  calculateLeader(tournament: CreateTournamentInput): Couple | undefined {
-    let maxScore = -1;
-    let leader: Couple | undefined = undefined;
-
-    for (const couple of tournament.couples) {
-      const score = tournament.scores.get(couple.id) || 0;
-      if (score > maxScore) {
-        maxScore = score;
-        leader = couple;
-      }
-    }
-    return leader;
-  }
-
-  updateScores(tournament: any, matchResults: Match[]): any {
-    const updatedTournament = {
-      ...tournament,
-      matches: tournament.matches.map((match: any) => ({ ...match })),
-      scores:
-        tournament.scores instanceof Map
-          ? new Map(tournament.scores)
-          : new Map(),
-    };
-
-    for (const result of matchResults) {
-      const matchIndex = updatedTournament.matches.findIndex(
-        (m: any) => m.id === result.id,
-      );
-      if (matchIndex !== -1) {
-        const match = updatedTournament.matches[matchIndex];
-        match.couple1Score = result.couple1Score;
-        match.couple2Score = result.couple2Score;
-
-        const couple1Score =
-          updatedTournament.scores.get(match.couple1.id) || 0;
-        const couple2Score =
-          updatedTournament.scores.get(match.couple2.id) || 0;
-
-        updatedTournament.scores.set(
-          match.couple1.id,
-          couple1Score + (result.couple1Score || 0),
-        );
-        updatedTournament.scores.set(
-          match.couple2.id,
-          couple2Score + (result.couple2Score || 0),
-        );
-      }
-    }
-
-    updatedTournament.currentMatchNumber += 1;
-    updatedTournament.currentLeader = this.calculateLeader(updatedTournament);
-
-    const allMatchesCompleted = updatedTournament.matches.every(
-      (match: any) =>
-        match.couple1Score !== undefined && match.couple2Score !== undefined,
-    );
-
-    if (allMatchesCompleted) {
-      updatedTournament.winners = this.calculateWinners(updatedTournament);
-    } else {
-      updatedTournament.winners = [];
-    }
-
-    return updatedTournament;
-  }
-
-  calculateWinners(tournament: CreateTournamentInput): Couple[] {
-    const highestScore = Math.max(...Array.from(tournament.scores.values()), 0);
-    const winners = tournament.couples.filter(
-      (couple) => tournament.scores.get(couple.id) === highestScore,
-    );
-    return winners;
+    return rounds;
   }
 }

@@ -1,5 +1,5 @@
-import { TournamentService } from "./services/TournamentService";
 import { PlayerService } from "./services/PlayerService";
+import { TournamentService } from "./services/TournamentService";
 
-export const tournamentService = new TournamentService();
 export const playerService = new PlayerService();
+export const tournamentService = new TournamentService();

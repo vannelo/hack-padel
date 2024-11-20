@@ -1,8 +1,8 @@
 import Image from "next/image";
+import TournamentCreation from "@/components/Tournament/TournamentCreation/TournamentCreation";
+import TournamentListWrapper from "@/components/Tournament/TournamentList/TournamentListWrapper";
 import { Suspense } from "react";
 import TableLoader from "@/components/UI/TableLoader/TableLoader";
-import TournamentCreation from "@/components/Tournament/TournamentCreation/TournamentCreation";
-import TournamentTableWrapper from "@/components/Tournament/TournamentTable/TournamentTableWrapper";
 
 export default function Torneos() {
   return (
@@ -19,7 +19,7 @@ export default function Torneos() {
         </div>
         <div className="mt-8 w-full">
           <Suspense fallback={<TableLoader />}>
-            <TournamentTableWrapper />
+            <TournamentListWrapper />
           </Suspense>
         </div>
       </div>
