@@ -20,33 +20,20 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({
 
   return (
     <div className="space-y-8">
-      <div className="rounded-lg bg-gray-800 p-6">
-        <h2 className="mb-4 text-2xl font-bold text-white">
-          {tournament.name}
-        </h2>
-        <p className="text-gray-300">Canchas: {tournament.courts}</p>
-        <p className="text-gray-300">Parejas: {tournament.couples.length}</p>
-        <p className="text-gray-300">Líder actual: {currentLeader}</p>
-        <p className="text-gray-300">
-          Estado: {tournament.isFinished ? "Finalizado" : "En progreso"}
-        </p>
-        {!tournament.isFinished && (
-          <p className="text-gray-300">
-            Ronda actual: {tournament.currentRound} de{" "}
-            {tournament.rounds.length}
-          </p>
-        )}
-      </div>
-
-      <div className="rounded-lg bg-gray-800 p-6">
-        <h3 className="mb-4 text-xl font-bold text-white">
-          Tabla de Puntuaciones
+      <h2 className="text-center text-3xl font-bold uppercase tracking-tighter text-primary">
+        {tournament.name}
+      </h2>
+      {!tournament.isFinished && (
+        <h3 className="text-center text-2xl font-bold text-gray-300">
+          Ronda:{" "}
+          <span className="text-primary">
+            {tournament.currentRound} de {tournament.rounds.length}
+          </span>
         </h3>
-        <ScoreTable tournament={tournament} />
-      </div>
-
+      )}
+      <ScoreTable tournament={tournament} />
       {currentRound && !tournament.isFinished && (
-        <div className="rounded-lg bg-gray-800 p-6">
+        <div className="rounded-lg bg-zinc-900 p-6">
           <h3 className="mb-4 text-xl font-bold text-white">
             Partidos de la Ronda Actual
           </h3>
@@ -54,7 +41,6 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({
           <RoundManager tournament={tournament} currentRound={currentRound} />
         </div>
       )}
-
       {tournament.isFinished && (
         <div className="rounded-lg bg-gray-800 p-6">
           <h3 className="mb-4 text-xl font-bold text-white">

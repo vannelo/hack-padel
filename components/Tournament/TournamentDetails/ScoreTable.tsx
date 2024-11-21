@@ -1,5 +1,4 @@
 import React from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Tournament } from "@/domain/models/Tournament";
 
 interface ScoreTableProps {
@@ -7,96 +6,138 @@ interface ScoreTableProps {
 }
 
 const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
-  const columns: GridColDef[] = [
-    { field: "couple", headerName: "Pareja", flex: 1 },
-    ...tournament.couples.map((couple, index) => ({
-      field: `opponent${index}`,
-      headerName: `vs ${couple.player1.name}/${couple.player2.name}`,
-      width: 120,
-      renderCell: (params: any) => {
-        const score = params.value as string;
-        return score === "-" ? (
-          score
-        ) : (
-          <span className="font-bold">{score}</span>
-        );
-      },
-    })),
-    { field: "totalScore", headerName: "Puntuación Total", width: 150 },
-  ];
-
-  const rows = tournament.couples.map((couple, index) => {
-    const row: any = {
-      id: couple.id,
-      couple: `${couple.player1.name}/${couple.player2.name}`,
-    };
-
-    tournament.couples.forEach((opponent, opponentIndex) => {
-      if (index === opponentIndex) {
-        row[`opponent${opponentIndex}`] = "-";
-      } else {
-        const score = getScoreAgainstOpponent(
-          tournament,
-          couple.id,
-          opponent.id,
-        );
-        row[`opponent${opponentIndex}`] = score;
-      }
-    });
-
-    row.totalScore = calculateTotalScore(tournament, couple.id);
-
-    return row;
+  console.log("tournament", tournament);
+  // Compute total scores for each couple
+  const totalScores = new Map<string, number>();
+  tournament.couples.forEach((couple) => {
+    const totalScore = calculateTotalScore(tournament, couple.id);
+    totalScores.set(couple.id, totalScore);
   });
 
-  const gridStyles = {
-    "& .MuiDataGrid-root": {
-      backgroundColor: "#1F2937",
-      color: "white",
-    },
-    "& .MuiDataGrid-columnHeader": {
-      backgroundColor: "#374151",
-    },
-    "& .MuiDataGrid-cell": {
-      borderColor: "#4B5563",
-    },
-    "& .MuiTablePagination-root": {
-      color: "white",
-    },
-  };
+  // Determine the highest score to identify leaders
+  let highestScore = 0;
+  totalScores.forEach((score) => {
+    if (score > highestScore) {
+      highestScore = score;
+    }
+  });
+
+  // Identify leaders based on the highest score
+  const leaders = tournament.couples
+    .filter((couple) => totalScores.get(couple.id) === highestScore)
+    .map((couple) => couple.id);
+
+  // Helper function to get the couple's display name
+  const getCoupleName = (couple: any) =>
+    `${couple.player1.name}/${couple.player2.name}`;
 
   return (
-    <div
-      style={{ height: 400, width: "100%", color: "white" }}
-      className="text-white"
-    >
-      <DataGrid rows={rows} columns={columns} sx={gridStyles} />
+    <div className="text-white">
+      <table className="w-full table-auto border-collapse border border-gray-400 text-lg font-bold">
+        {/* Table header */}
+        <thead>
+          <tr>
+            <th className="border border-gray-400 p-4 text-primary">Parejas</th>
+            {tournament.couples.map((couple, index) => (
+              <th key={index} className="border border-gray-400 p-4">
+                {getCoupleName(couple)}
+              </th>
+            ))}
+            <th className="border border-gray-400 p-4 text-primary">Puntos</th>
+          </tr>
+        </thead>
+        {/* Table body */}
+        <tbody className="text-lg">
+          {tournament.couples.map((couple, rowIndex) => (
+            <tr key={rowIndex}>
+              {/* First cell: Couple Name */}
+              <td
+                className={`border border-gray-400 p-4 font-bold ${
+                  leaders.includes(couple.id) ? "text-primary" : ""
+                }`}
+              >
+                {getCoupleName(couple)}
+              </td>
+              {/* Cells for scores against opponents */}
+              {tournament.couples.map((opponent, colIndex) => {
+                if (rowIndex === colIndex) {
+                  return (
+                    <td
+                      key={colIndex}
+                      className="border border-gray-400 p-4 text-center"
+                    >
+                      -
+                    </td>
+                  );
+                } else {
+                  // Find the match between the couple and opponent
+                  let match = null;
+                  for (const round of tournament.rounds) {
+                    match = round.matches.find(
+                      (m) =>
+                        (m.couple1Id === couple.id &&
+                          m.couple2Id === opponent.id) ||
+                        (m.couple1Id === opponent.id &&
+                          m.couple2Id === couple.id),
+                    );
+                    if (match) break;
+                  }
+
+                  let content = "-";
+                  let isWinner = false;
+
+                  if (match) {
+                    const coupleScore =
+                      couple.id === match.couple1Id
+                        ? match.couple1Score
+                        : match.couple2Score;
+                    const opponentScore =
+                      couple.id === match.couple1Id
+                        ? match.couple2Score
+                        : match.couple1Score;
+
+                    content = coupleScore.toString();
+
+                    if (
+                      coupleScore !== undefined &&
+                      opponentScore !== undefined
+                    ) {
+                      if (coupleScore > opponentScore) {
+                        isWinner = true;
+                      } else if (coupleScore === opponentScore) {
+                        // It's a tie
+                        isWinner = false;
+                      }
+                    }
+                  }
+
+                  return (
+                    <td
+                      key={colIndex}
+                      className={`border border-gray-400 p-4 text-center ${
+                        isWinner ? "text-primary" : ""
+                      }`}
+                    >
+                      {content}
+                    </td>
+                  );
+                }
+              })}
+              {/* Last cell: Total Score */}
+              <td
+                className={`border border-gray-400 p-4 text-center font-bold ${
+                  leaders.includes(couple.id) ? "text-primary" : ""
+                }`}
+              >
+                {totalScores.get(couple.id)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
-
-function getScoreAgainstOpponent(
-  tournament: Tournament,
-  coupleId: string,
-  opponentId: string,
-): string {
-  let score = 0;
-  tournament.rounds.forEach((round) => {
-    const match = round.matches.find(
-      (m) =>
-        (m.couple1Id === coupleId && m.couple2Id === opponentId) ||
-        (m.couple1Id === opponentId && m.couple2Id === coupleId),
-    );
-    if (match) {
-      if (match.couple1Id === coupleId) {
-        score += match.couple1Score;
-      } else {
-        score += match.couple2Score;
-      }
-    }
-  });
-  return score.toString();
-}
 
 function calculateTotalScore(tournament: Tournament, coupleId: string): number {
   let totalScore = 0;

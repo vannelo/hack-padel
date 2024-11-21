@@ -56,9 +56,10 @@ const RoundManager: React.FC<RoundManagerProps> = ({
         Gestionar Ronda Actual
       </h4>
       {currentRound.matches.map((match) => (
-        <div key={match.id} className="mb-4 rounded-lg bg-gray-700 p-4">
-          <p className="mb-2 text-white">
-            {match.couple1.player1.name}/{match.couple1.player2.name} vs{" "}
+        <div key={match.id} className="mb-4 rounded-lg bg-zinc-700 p-4">
+          <p className="mb-2 font-bold text-white">
+            {match.couple1.player1.name}/{match.couple1.player2.name}{" "}
+            <span className="text-primary">vs</span>{" "}
             {match.couple2.player1.name}/{match.couple2.player2.name}
           </p>
           <div className="flex items-center space-x-4">
@@ -69,7 +70,7 @@ const RoundManager: React.FC<RoundManagerProps> = ({
               onChange={(e) =>
                 handleScoreChange(match.id, 1, parseInt(e.target.value))
               }
-              className="rounded bg-gray-600 p-2 text-white"
+              className="rounded bg-zinc-600 p-2 text-primary"
             />
             <input
               type="number"
@@ -78,17 +79,19 @@ const RoundManager: React.FC<RoundManagerProps> = ({
               onChange={(e) =>
                 handleScoreChange(match.id, 2, parseInt(e.target.value))
               }
-              className="rounded bg-gray-600 p-2 text-white"
+              className="rounded bg-zinc-600 p-2 text-primary"
             />
           </div>
         </div>
       ))}
-      <button
-        onClick={handleEndRound}
-        className="mt-4 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
-      >
-        Finalizar Ronda
-      </button>
+      <div className="flex items-end justify-end">
+        <button
+          onClick={handleEndRound}
+          className="mt-4 rounded bg-primary px-4 py-2 font-bold text-black"
+        >
+          Finalizar Ronda
+        </button>
+      </div>
     </div>
   );
 };

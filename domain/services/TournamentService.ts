@@ -117,64 +117,72 @@ export class TournamentService {
   private generateRounds(couples: Couple[], courts: number): Round[] {
     console.log("generateRounds called with:", { couples, courts });
 
-    if (!couples || couples.length === 0) {
-      throw new Error("No couples provided for generating rounds");
+    if (!couples || couples.length < 2) {
+      throw new Error("At least 2 couples are required to create a tournament");
     }
 
     const rounds: Round[] = [];
     const n = couples.length;
-    const totalMatches = (n * (n - 1)) / 2; // Total number of unique matches
+    const totalRounds = n - 1; // In a round-robin, there are (n-1) rounds
+    const matchesPerRound = n / 2;
 
-    // Generate all possible matches
-    const allMatches: { couple1: Couple; couple2: Couple }[] = [];
-    for (let i = 0; i < n - 1; i++) {
-      for (let j = i + 1; j < n; j++) {
-        allMatches.push({
-          couple1: couples[i],
-          couple2: couples[j],
-        });
-      }
+    // Create a copy of the couples array to manipulate
+    const couplesArray = [...couples];
+
+    // If there's an odd number of couples, add a "bye" couple
+    if (n % 2 !== 0) {
+      couplesArray.push({
+        id: "bye",
+        player1: { name: "Bye" },
+        player2: { name: "Bye" },
+      } as Couple);
     }
 
-    // Shuffle the matches to randomize them
-    allMatches.sort(() => Math.random() - 0.5);
-
-    const matchesPerRound = Math.min(courts, Math.floor(n / 2)); // Ensure matches per round doesn't exceed courts
-    const totalRounds = Math.ceil(totalMatches / matchesPerRound);
-
-    let matchIndex = 0;
-    for (let roundNumber = 1; roundNumber <= totalRounds; roundNumber++) {
-      const roundMatches: Match[] = [];
+    for (let round = 0; round < totalRounds; round++) {
       const roundId = uuidv4();
+      const roundMatches: Match[] = [];
 
-      for (let i = 0; i < matchesPerRound && matchIndex < totalMatches; i++) {
-        const matchInfo = allMatches[matchIndex];
-        const matchId = uuidv4();
+      for (let match = 0; match < matchesPerRound; match++) {
+        const homeIndex = match;
+        const awayIndex = couplesArray.length - 1 - match;
 
-        roundMatches.push({
-          id: matchId,
-          roundId,
-          couple1Id: matchInfo.couple1.id,
-          couple1: matchInfo.couple1,
-          couple2Id: matchInfo.couple2.id,
-          couple2: matchInfo.couple2,
-          couple1Score: 0,
-          couple2Score: 0,
-          court: i + 1,
-        });
-
-        matchIndex++;
+        if (
+          couplesArray[homeIndex].id !== "bye" &&
+          couplesArray[awayIndex].id !== "bye"
+        ) {
+          roundMatches.push({
+            id: uuidv4(),
+            roundId,
+            couple1Id: couplesArray[homeIndex].id,
+            couple1: couplesArray[homeIndex],
+            couple2Id: couplesArray[awayIndex].id,
+            couple2: couplesArray[awayIndex],
+            couple1Score: 0,
+            couple2Score: 0,
+            court: (match % courts) + 1, // Assign courts cyclically
+          });
+        }
       }
 
       rounds.push({
         id: roundId,
         tournamentId: "", // This will be set when the tournament is created
         matches: roundMatches,
-        isActive: roundNumber === 1,
-        roundNumber: roundNumber, // Assign the round number
+        isActive: round === 0, // First round is active by default
+        roundNumber: round + 1,
       });
+
+      // Rotate the array for the next round (keeping the first element fixed)
+      const firstCouple = couplesArray[0];
+      const secondCouple = couplesArray[1];
+      for (let i = 1; i < couplesArray.length - 1; i++) {
+        couplesArray[i] = couplesArray[i + 1];
+      }
+      couplesArray[couplesArray.length - 1] = secondCouple;
     }
 
     return rounds;
   }
+
+  // ... other methods ...
 }
