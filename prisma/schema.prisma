@@ -42,6 +42,7 @@ model Tournament {
   winner       Couple?    @relation("TournamentWinner", fields: [winnerId], references: [id])
   isFinished   Boolean    @default(false)
   currentRound Int        @default(1)
+  createdAt    DateTime   @default(now())
 }
 
 model Couple {
@@ -63,7 +64,7 @@ model Round {
   tournament   Tournament @relation(fields: [tournamentId], references: [id])
   matches      Match[]
   isActive     Boolean
-  roundNumber  Int       // Added roundNumber field
+  roundNumber  Int       
 }
 
 model Match {
@@ -74,7 +75,7 @@ model Match {
   couple1       Couple   @relation("Couple1", fields: [couple1Id], references: [id])
   couple2Id     String
   couple2       Couple   @relation("Couple2", fields: [couple2Id], references: [id])
-  couple1Score  Int
-  couple2Score  Int
+  couple1Score  Int?
+  couple2Score  Int?
   court         Int
 }

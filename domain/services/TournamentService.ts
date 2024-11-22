@@ -159,7 +159,7 @@ export class TournamentService {
             couple2: couplesArray[awayIndex],
             couple1Score: 0,
             couple2Score: 0,
-            court: (match % courts) + 1, // Assign courts cyclically
+            court: (match % courts) + 1,
           });
         }
       }

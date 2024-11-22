@@ -1,8 +1,8 @@
 import Image from "next/image";
 import PlayerCreation from "@/components/Player/PlayerCreation/PlayerCreation";
-import PlayerTableWrapper from "@/components/Player/PlayerTable/PlayerTableWrapper";
 import { Suspense } from "react";
 import TableLoader from "@/components/UI/TableLoader/TableLoader";
+import PlayerListWrapper from "@/components/Player/PlayerList/PlayerListWrapper";
 
 export default function Jugadores() {
   return (
@@ -19,7 +19,7 @@ export default function Jugadores() {
         </div>
         <div className="mt-8 w-full">
           <Suspense fallback={<TableLoader />}>
-            <PlayerTableWrapper />
+            <PlayerListWrapper />
           </Suspense>
         </div>
       </div>

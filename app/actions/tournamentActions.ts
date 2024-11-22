@@ -10,7 +10,6 @@ export async function createTournament(
   courts: number,
   couples: Couple[],
 ): Promise<Tournament> {
-  console.log("Creating tournament:", { name, courts, couples });
   const newTournament = await tournamentService.createTournament(
     name,
     courts,
@@ -37,11 +36,6 @@ export async function updateMatchResults(
     [key: string]: { couple1Score: number; couple2Score: number };
   },
 ): Promise<void> {
-  console.log("Updating match results:", {
-    tournamentId,
-    roundId,
-    matchResults,
-  });
   await tournamentService.updateMatchResults(
     tournamentId,
     roundId,
@@ -54,7 +48,6 @@ export async function endRound(
   tournamentId: string,
   roundId: string,
 ): Promise<void> {
-  console.log("Ending round:", { tournamentId, roundId });
   await tournamentService.endRound(tournamentId, roundId);
   revalidatePath(`/torneos/${tournamentId}`);
 }

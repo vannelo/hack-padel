@@ -11,18 +11,35 @@ interface TournamentListProps {
 
 const TournamentList: React.FC<TournamentListProps> = ({ tournaments }) => {
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Nombre", flex: 1 },
+    {
+      field: "name",
+      headerName: "Nombre",
+      flex: 1,
+      renderCell: (params: GridRenderCellParams) => (
+        <Link
+          href={`/torneos/${params.row.id}`}
+          passHref
+          className="hover:text-primary"
+        >
+          {params.value}
+        </Link>
+      ),
+    },
     { field: "courts", headerName: "Canchas", flex: 1 },
     { field: "couples", headerName: "Parejas", flex: 1 },
     { field: "rounds", headerName: "Rondas", flex: 1 },
     { field: "activeRound", headerName: "Ronda Activa", flex: 1 },
     {
       field: "actions",
-      headerName: "Acciones",
+      headerName: "",
       flex: 1,
       renderCell: (params: GridRenderCellParams) => (
-        <Link href={`/torneos/${params.row.id}`} passHref>
-          Ver Detalles
+        <Link
+          href={`/torneos/${params.row.id}`}
+          passHref
+          className="hover:text-primary"
+        >
+          Ver Torneo
         </Link>
       ),
     },
@@ -37,8 +54,8 @@ const TournamentList: React.FC<TournamentListProps> = ({ tournaments }) => {
     activeRound:
       tournament.rounds && tournament.rounds.length > 0
         ? tournament.rounds.findIndex((round) => round.isActive) + 1 ||
-          "Ninguna"
-        : "Ninguna",
+          "Finalizado"
+        : "Finalizado",
   }));
 
   const gridStyles = {

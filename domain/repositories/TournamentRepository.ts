@@ -55,8 +55,8 @@ export class TournamentRepository {
               roundId: createdRound.id,
               couple1Id: coupleIdMap.get(match.couple1Id)!,
               couple2Id: coupleIdMap.get(match.couple2Id)!,
-              couple1Score: match.couple1Score,
-              couple2Score: match.couple2Score,
+              couple1Score: null,
+              couple2Score: null,
               court: match.court,
             })),
           });
@@ -111,6 +111,9 @@ export class TournamentRepository {
 
   async getAllTournaments(): Promise<Tournament[]> {
     return prisma.tournament.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
       include: {
         couples: {
           include: {
@@ -183,10 +186,6 @@ export class TournamentRepository {
     tournamentId: string,
     currentRound: number,
   ): Promise<void> {
-    console.log("Updating tournament progress:", {
-      tournamentId,
-      currentRound,
-    });
     await prisma.tournament.update({
       where: { id: tournamentId },
       data: { currentRound },

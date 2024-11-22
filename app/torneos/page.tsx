@@ -6,7 +6,7 @@ import TableLoader from "@/components/UI/TableLoader/TableLoader";
 
 export default function Torneos() {
   return (
-    <main className="flex min-h-[100vh] items-center justify-center bg-black p-8">
+    <main className="flex min-h-[100vh] bg-black p-8">
       <div className="flex w-full flex-col items-center">
         <div className="flex w-full justify-between">
           <Image

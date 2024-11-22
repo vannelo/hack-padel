@@ -63,7 +63,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
       alert("Se necesitan al menos 4 parejas para crear un torneo.");
       return;
     }
-    console.log("Submitting tournament data:", { ...tournamentData, couples });
+
     startTransition(async () => {
       try {
         await createTournament(
@@ -110,16 +110,27 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
       >
         Número de Canchas
       </label>
-      <input
-        type="number"
-        id="courts"
-        name="courts"
-        value={tournamentData.courts}
-        onChange={handleInputChange}
-        min={1}
-        className="mb-4 w-full border p-2 text-black"
-        required
-      />
+      <div className="mb-2 flex space-x-2">
+        {[1, 2, 3].map((court) => (
+          <button
+            key={court}
+            type="button"
+            onClick={() =>
+              setTournamentData((prevData) => ({
+                ...prevData,
+                courts: court,
+              }))
+            }
+            className={`flex h-12 w-12 items-center justify-center rounded-full border-2 text-lg font-bold ${
+              tournamentData.courts === court
+                ? "border-primary bg-primary"
+                : "border-gray-300 bg-white text-black"
+            }`}
+          >
+            {court}
+          </button>
+        ))}
+      </div>
       <div className="mb-4">
         <h3 className="mb-2 text-left text-sm font-bold uppercase">Parejas</h3>
         {couples.map((couple, index) => (

@@ -4,11 +4,11 @@ import React from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Player } from "@/domain/models/Player";
 
-interface PlayerTableProps {
+interface PlayerListProps {
   players: Player[];
 }
 
-const PlayerTable: React.FC<PlayerTableProps> = ({ players }) => {
+const PlayerList: React.FC<PlayerListProps> = ({ players }) => {
   const columns: GridColDef[] = [
     { field: "name", headerName: "Nombre", flex: 1 },
     { field: "email", headerName: "Email", flex: 1 },
@@ -61,4 +61,4 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players }) => {
   );
 };
 
-export default PlayerTable;
+export default PlayerList;

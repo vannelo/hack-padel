@@ -6,15 +6,12 @@ interface ScoreTableProps {
 }
 
 const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
-  console.log("tournament", tournament);
-  // Compute total scores for each couple
   const totalScores = new Map<string, number>();
   tournament.couples.forEach((couple) => {
     const totalScore = calculateTotalScore(tournament, couple.id);
     totalScores.set(couple.id, totalScore);
   });
 
-  // Determine the highest score to identify leaders
   let highestScore = 0;
   totalScores.forEach((score) => {
     if (score > highestScore) {
@@ -22,55 +19,55 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
     }
   });
 
-  // Identify leaders based on the highest score
   const leaders = tournament.couples
     .filter((couple) => totalScores.get(couple.id) === highestScore)
     .map((couple) => couple.id);
 
-  // Helper function to get the couple's display name
   const getCoupleName = (couple: any) =>
     `${couple.player1.name}/${couple.player2.name}`;
 
   return (
-    <div className="text-white">
-      <table className="w-full table-auto border-collapse border border-gray-400 text-lg font-bold">
-        {/* Table header */}
+    <div className="overflow-x-auto text-white">
+      <table className="w-full table-auto border-collapse border border-gray-600 text-sm font-bold md:text-lg">
         <thead>
           <tr>
-            <th className="border border-gray-400 p-4 text-primary">Parejas</th>
+            <th className="border border-gray-600 p-2 text-primary md:p-4">
+              Parejas
+            </th>
             {tournament.couples.map((couple, index) => (
-              <th key={index} className="border border-gray-400 p-4">
+              <th
+                key={index}
+                className="truncate border border-gray-600 p-2 md:p-4"
+              >
                 {getCoupleName(couple)}
               </th>
             ))}
-            <th className="border border-gray-400 p-4 text-primary">Puntos</th>
+            <th className="border border-gray-600 p-2 text-primary md:p-4">
+              Puntos
+            </th>
           </tr>
         </thead>
-        {/* Table body */}
-        <tbody className="text-lg">
+        <tbody>
           {tournament.couples.map((couple, rowIndex) => (
             <tr key={rowIndex}>
-              {/* First cell: Couple Name */}
               <td
-                className={`border border-gray-400 p-4 font-bold ${
+                className={`border border-gray-600 p-2 font-bold md:p-4 ${
                   leaders.includes(couple.id) ? "text-primary" : ""
                 }`}
               >
                 {getCoupleName(couple)}
               </td>
-              {/* Cells for scores against opponents */}
               {tournament.couples.map((opponent, colIndex) => {
                 if (rowIndex === colIndex) {
                   return (
                     <td
                       key={colIndex}
-                      className="border border-gray-400 p-4 text-center"
+                      className="border border-gray-600 p-2 text-center md:p-4"
                     >
                       -
                     </td>
                   );
                 } else {
-                  // Find the match between the couple and opponent
                   let match = null;
                   for (const round of tournament.rounds) {
                     match = round.matches.find(
@@ -96,7 +93,7 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
                         ? match.couple2Score
                         : match.couple1Score;
 
-                    content = coupleScore.toString();
+                    content = coupleScore ? coupleScore.toString() : "?";
 
                     if (
                       coupleScore !== undefined &&
@@ -104,9 +101,6 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
                     ) {
                       if (coupleScore > opponentScore) {
                         isWinner = true;
-                      } else if (coupleScore === opponentScore) {
-                        // It's a tie
-                        isWinner = false;
                       }
                     }
                   }
@@ -114,7 +108,7 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
                   return (
                     <td
                       key={colIndex}
-                      className={`border border-gray-400 p-4 text-center ${
+                      className={`border border-gray-600 p-2 text-center md:p-4 ${
                         isWinner ? "text-primary" : ""
                       }`}
                     >
@@ -123,9 +117,8 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
                   );
                 }
               })}
-              {/* Last cell: Total Score */}
               <td
-                className={`border border-gray-400 p-4 text-center font-bold ${
+                className={`border border-gray-600 p-2 text-center font-bold md:p-4 ${
                   leaders.includes(couple.id) ? "text-primary" : ""
                 }`}
               >

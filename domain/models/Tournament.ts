@@ -15,4 +15,6 @@ export type Tournament = {
     player2: Player;
   }[];
   rounds: Round[];
+  isFinished: boolean;
+  currentRound: number;
 };
