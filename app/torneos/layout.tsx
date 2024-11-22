@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
 import { Inter } from "next/font/google";
-import Providers from "@/providers/Providers";
-import { NotificationProvider } from "@/providers/NotificationContext";
-import ThemeProviders from "@/providers/ThemeProviders";
+import Nav from "@/components/Layout/Nav/Nav";
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -25,11 +23,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ThemeProviders>
-          <Providers>
-            <NotificationProvider>{children}</NotificationProvider>
-          </Providers>
-        </ThemeProviders>
+        <main>
+          <Nav />
+          {children}
+        </main>
       </body>
     </html>
   );

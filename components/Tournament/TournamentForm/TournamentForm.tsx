@@ -7,6 +7,7 @@ import Button from "@/components/UI/Button/Button";
 import { Player } from "@/domain/models/Player";
 import { Couple } from "@/domain/models/Couple";
 import { getAllPlayers } from "@/app/actions/playerActions";
+import Divider from "@/components/UI/Divider/Divider";
 
 interface TournamentFormProps {
   onTournamentCreated: () => void;
@@ -129,11 +130,8 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      <label
-        htmlFor="name"
-        className="mb-2 block text-left text-sm font-bold uppercase"
-      >
-        Nombre del Torneo
+      <label htmlFor="name" className="mb-2 block text-left text-sm font-bold">
+        Nombre del torneo
       </label>
       <input
         type="text"
@@ -141,14 +139,14 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         name="name"
         value={tournamentData.name}
         onChange={handleInputChange}
-        className="mb-4 w-full border p-2 text-black"
+        className="mb-4 w-full rounded border p-2 text-black"
         required
       />
       <label
         htmlFor="courts"
-        className="mb-2 block text-left text-sm font-bold uppercase"
+        className="mb-2 block text-left text-sm font-bold"
       >
-        Número de Canchas
+        Canchas disponibles
       </label>
       <div className="mb-2 flex space-x-2">
         {[1, 2, 3].map((court) => (
@@ -163,8 +161,8 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
             }
             className={`flex h-12 w-12 items-center justify-center rounded-full border-2 text-lg font-bold ${
               tournamentData.courts === court
-                ? "border-primary bg-primary"
-                : "border-gray-300 bg-white text-black"
+                ? "border-primary bg-primary text-black"
+                : "border-white bg-white text-black"
             }`}
           >
             {court}
@@ -172,7 +170,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         ))}
       </div>
       <div className="mb-4">
-        <h3 className="mb-2 text-left text-sm font-bold uppercase">Parejas</h3>
+        <h3 className="mb-2 text-left text-sm font-bold">Parejas</h3>
         {couples.map((couple, index) => (
           <div key={couple.id} className="mb-2">
             <div className="flex space-x-2">
@@ -193,14 +191,14 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                       setOpenDropdown({ index, player: playerKey })
                     }
                     onBlur={() => setTimeout(() => setOpenDropdown(null), 200)}
-                    className="w-full border p-2 text-sm text-black"
+                    className="w-full rounded border p-2 text-sm text-black"
                     placeholder={`Jugador ${playerKey === "player1" ? "1" : "2"}`}
                     required
                   />
                   {openDropdown?.index === index &&
                     openDropdown.player === playerKey &&
                     searchInputs[`${index}-${playerKey}`]?.length >= 3 && (
-                      <ul className="absolute z-10 mt-1 max-h-40 w-full overflow-y-auto border border-gray-300 bg-white">
+                      <ul className="absolute z-10 mt-1 max-h-40 w-full overflow-y-auto border border-gray-300 bg-white text-black">
                         {filterPlayers(
                           searchInputs[`${index}-${playerKey}`] || "",
                           index,
@@ -230,21 +228,47 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
             </div>
           </div>
         ))}
-        <Button
-          type="button"
-          onClick={handleAddCouple}
-          className="bg-secondary px-4 py-2 text-white"
-        >
-          Agregar Pareja
+        <div className="flex justify-start">
+          <Button type="button" onClick={handleAddCouple} variant="secondary">
+            Agregar pareja
+            <div className="flex h-4 w-4 items-center justify-center rounded-full bg-primary">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-3 w-3 text-black"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 2a1 1 0 00-1 1v6H3a1 1 0 100 2h6v6a1 1 0 102 0v-6h6a1 1 0 100-2h-6V3a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+          </Button>
+        </div>
+      </div>
+      <Divider />
+      <div className="flex justify-end">
+        <Button type="submit" isLoading={isPending}>
+          Crear
+          <div className="flex h-4 w-4 items-center justify-center rounded-full bg-primary">
+            <svg
+              xmlns="http://www.w3.org/
+              2000/svg"
+              className="h-3 w-3 text-black"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 2a1 1 0 00-1 1v6H3a1 1 0 100 2h6v6a1 1 0 102 0v-6h6a1 1 0 100-2h-6V3a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
         </Button>
       </div>
-      <Button
-        type="submit"
-        isLoading={isPending}
-        className="mt-4 w-full rounded bg-primary px-4 py-2 font-bold uppercase text-black"
-      >
-        Crear Torneo
-      </Button>
     </form>
   );
 };

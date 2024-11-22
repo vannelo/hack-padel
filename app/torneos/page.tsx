@@ -3,21 +3,18 @@ import TournamentCreation from "@/components/Tournament/TournamentCreation/Tourn
 import TournamentListWrapper from "@/components/Tournament/TournamentList/TournamentListWrapper";
 import { Suspense } from "react";
 import TableLoader from "@/components/UI/TableLoader/TableLoader";
+import Divider from "@/components/UI/Divider/Divider";
 
 export default function Torneos() {
   return (
     <main className="flex min-h-[100vh] bg-black p-8">
       <div className="flex w-full flex-col items-center">
-        <div className="flex w-full justify-between">
-          <Image
-            src="/img/hack-logo.png"
-            alt="Hack Padel Logo"
-            width={200}
-            height={150}
-          />
+        <div className="flex w-full items-end justify-between">
+          <h2 className="text-2xl font-bold text-white">Lista de torneos</h2>
           <TournamentCreation />
         </div>
-        <div className="mt-8 w-full">
+        <Divider />
+        <div className="w-full">
           <Suspense fallback={<TableLoader />}>
             <TournamentListWrapper />
           </Suspense>

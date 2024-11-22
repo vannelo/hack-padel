@@ -7,6 +7,7 @@ interface ButtonProps {
   children: React.ReactNode;
   type?: "button" | "submit" | "reset";
   className?: string;
+  variant?: "primary" | "secondary";
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -16,17 +17,27 @@ const Button: React.FC<ButtonProps> = ({
   children,
   type = "button",
   className = "",
+  variant = "primary",
 }) => {
+  const baseClasses =
+    "min-w-48 rounded-3xl font-bold flex items-center justify-center";
+  const variantClasses = {
+    primary: "min-h-12 border border-zinc-600 text-white hover:text-primary",
+    secondary: "min-h-10 bg-primary text-black text-sm hover:bg-primary-dark",
+  };
+
+  const buttonClasses = `${baseClasses} ${variantClasses[variant]} ${className}`;
+
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled || isLoading}
-      className={`relative inline-flex items-center justify-center rounded px-4 py-2 font-bold uppercase ${className} min-h-[40px] ${disabled ? "bg-zinc-400 text-zinc-600" : "bg-primary text-black"} `}
+      className={buttonClasses}
     >
-      {isLoading && (
+      {isLoading ? (
         <svg
-          className="h-5 w-5 animate-spin text-black"
+          className="h-5 w-5 animate-spin text-primary"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -47,9 +58,10 @@ const Button: React.FC<ButtonProps> = ({
             d="M4 12a8 8 0 018-8v4l4-4-4-4v4a8 8 0 100 16 8 8 0 01-8-8z"
           />
         </svg>
-      )}
-      {!isLoading && (
-        <span className={`${isLoading ? "opacity-0" : ""}`}>{children}</span>
+      ) : (
+        <span className="flex items-center justify-center gap-2">
+          {children}
+        </span>
       )}
     </button>
   );
