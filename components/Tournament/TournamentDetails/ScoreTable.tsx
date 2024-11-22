@@ -6,6 +6,7 @@ interface ScoreTableProps {
 }
 
 const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
+  console.log("tournament", tournament);
   const totalScores = new Map<string, number>();
   tournament.couples.forEach((couple) => {
     const totalScore = calculateTotalScore(tournament, couple.id);
@@ -93,7 +94,8 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
                         ? match.couple2Score
                         : match.couple1Score;
 
-                    content = coupleScore ? coupleScore.toString() : "?";
+                    content =
+                      coupleScore === null ? "?" : coupleScore.toString();
 
                     if (
                       coupleScore !== undefined &&

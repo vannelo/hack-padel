@@ -19,15 +19,15 @@ export default async function TournamentPage({
   return (
     <main className="flex min-h-[100vh] items-center justify-center bg-black p-8">
       <div className="flex w-full flex-col items-center">
-        <div className="flex w-full justify-between">
+        <div className="flex w-full justify-center">
           <Image
             src="/img/hack-logo.png"
             alt="Hack Padel Logo"
-            width={200}
+            width={120}
             height={150}
           />
         </div>
-        <div className="mt-8 w-full">
+        <div className="mt-4 w-full">
           <div className="container mx-auto bg-black px-4 py-8">
             <TournamentDetails tournament={tournament} />
           </div>

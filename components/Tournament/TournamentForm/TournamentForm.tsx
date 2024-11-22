@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition, useEffect } from "react";
+import React, { useState, useTransition, useEffect, useMemo } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { createTournament } from "@/app/actions/tournamentActions";
 import Button from "@/components/UI/Button/Button";
@@ -22,6 +22,13 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   const [couples, setCouples] = useState<Couple[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [isPending, startTransition] = useTransition();
+  const [openDropdown, setOpenDropdown] = useState<{
+    index: number;
+    player: "player1" | "player2";
+  } | null>(null);
+  const [searchInputs, setSearchInputs] = useState<{ [key: string]: string }>(
+    {},
+  );
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -30,6 +37,10 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
     };
     fetchPlayers();
   }, []);
+
+  const selectedPlayerIds = useMemo(() => {
+    return couples.flatMap((couple) => [couple.player1Id, couple.player2Id]);
+  }, [couples]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -41,20 +52,33 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
     }));
   };
 
-  const handleAddCouple = (player1Id: string, player2Id: string) => {
-    const player1 = players.find((p) => p.id === player1Id);
-    const player2 = players.find((p) => p.id === player2Id);
-    if (player1 && player2) {
-      const newCouple: Couple = {
-        id: uuidv4(),
-        player1Id: player1.id,
-        player1: player1,
-        player2Id: player2.id,
-        player2: player2,
-        tournamentId: "", // This will be set when the tournament is created
-      };
-      setCouples([...couples, newCouple]);
-    }
+  const handleAddCouple = () => {
+    const newCouple: any = {
+      id: uuidv4(),
+      player1Id: "",
+      player1: { id: "", name: "", gender: "", level: "" },
+      player2Id: "",
+      player2: { id: "", name: "", gender: "", level: "" },
+      tournamentId: "",
+    };
+    setCouples([...couples, newCouple]);
+  };
+
+  const handleCoupleChange = (
+    index: number,
+    playerKey: "player1" | "player2",
+    playerId: string,
+    playerName: string,
+  ) => {
+    const updatedCouples = [...couples];
+    const player = players.find((p) => p.id === playerId) || {
+      id: playerId,
+      name: playerName,
+    };
+    // @ts-ignore
+    updatedCouples[index][playerKey] = player;
+    updatedCouples[index][`${playerKey}Id`] = playerId;
+    setCouples(updatedCouples);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -85,6 +109,22 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         );
       }
     });
+  };
+
+  const filterPlayers = (
+    input: string,
+    coupleIndex: number,
+    playerKey: "player1" | "player2",
+  ) => {
+    return players.filter(
+      (player) =>
+        player.name.toLowerCase().includes(input.toLowerCase()) &&
+        !selectedPlayerIds.includes(player.id) &&
+        player.id !==
+          couples[coupleIndex][
+            playerKey === "player1" ? "player2Id" : "player1Id"
+          ],
+    );
   };
 
   return (
@@ -135,35 +175,68 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         <h3 className="mb-2 text-left text-sm font-bold uppercase">Parejas</h3>
         {couples.map((couple, index) => (
           <div key={couple.id} className="mb-2">
-            Pareja {index + 1}: {couple.player1.name} & {couple.player2.name}
+            <div className="flex space-x-2">
+              {(["player1", "player2"] as const).map((playerKey) => (
+                <div key={playerKey} className="relative w-1/2">
+                  <input
+                    type="text"
+                    value={couple[playerKey].name}
+                    onChange={(e) => {
+                      setSearchInputs({
+                        ...searchInputs,
+                        [`${index}-${playerKey}`]: e.target.value,
+                      });
+                      handleCoupleChange(index, playerKey, "", e.target.value);
+                      setOpenDropdown({ index, player: playerKey });
+                    }}
+                    onFocus={() =>
+                      setOpenDropdown({ index, player: playerKey })
+                    }
+                    onBlur={() => setTimeout(() => setOpenDropdown(null), 200)}
+                    className="w-full border p-2 text-sm text-black"
+                    placeholder={`Jugador ${playerKey === "player1" ? "1" : "2"}`}
+                    required
+                  />
+                  {openDropdown?.index === index &&
+                    openDropdown.player === playerKey &&
+                    searchInputs[`${index}-${playerKey}`]?.length >= 3 && (
+                      <ul className="absolute z-10 mt-1 max-h-40 w-full overflow-y-auto border border-gray-300 bg-white">
+                        {filterPlayers(
+                          searchInputs[`${index}-${playerKey}`] || "",
+                          index,
+                          playerKey,
+                        ).map((filteredPlayer) => (
+                          <li
+                            key={filteredPlayer.id}
+                            className="cursor-pointer p-2 hover:bg-gray-100"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              handleCoupleChange(
+                                index,
+                                playerKey,
+                                filteredPlayer.id,
+                                filteredPlayer.name,
+                              );
+                              setOpenDropdown(null);
+                            }}
+                          >
+                            {filteredPlayer.name}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                </div>
+              ))}
+            </div>
           </div>
         ))}
-        <div className="flex gap-2">
-          <select className="flex-1 border p-2 text-black">
-            {players.map((player) => (
-              <option key={player.id} value={player.id}>
-                {player.name}
-              </option>
-            ))}
-          </select>
-          <select className="flex-1 border p-2 text-black">
-            {players.map((player) => (
-              <option key={player.id} value={player.id}>
-                {player.name}
-              </option>
-            ))}
-          </select>
-          <Button
-            type="button"
-            onClick={() => {
-              const selects = document.querySelectorAll("select");
-              handleAddCouple(selects[0].value, selects[1].value);
-            }}
-            className="bg-secondary px-4 py-2 text-white"
-          >
-            Agregar Pareja
-          </Button>
-        </div>
+        <Button
+          type="button"
+          onClick={handleAddCouple}
+          className="bg-secondary px-4 py-2 text-white"
+        >
+          Agregar Pareja
+        </Button>
       </div>
       <Button
         type="submit"

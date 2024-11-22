@@ -5,6 +5,7 @@ import { Tournament } from "@/domain/models/Tournament";
 import { Round } from "@/domain/models/Round";
 import { endRound, updateMatchResults } from "@/app/actions/tournamentActions";
 import Button from "@/components/UI/Button/Button";
+import { formatCoupleName } from "@/utils/helpers";
 
 interface RoundManagerProps {
   tournament: Tournament;
@@ -80,13 +81,9 @@ const RoundManager: React.FC<RoundManagerProps> = ({
             <p className="mb-2 text-lg font-bold text-white">
               Cancha {match.court}
             </p>
-            <p className="text-gray-300">
-              {match.couple1.player1.name}/{match.couple1.player2.name}{" "}
-              <span className="text-primary">vs </span>
-              {match.couple2.player1.name}/{match.couple2.player2.name}
-            </p>
-            <div className="flex items-center justify-center space-x-4">
+            <div className="flex items-center justify-center space-x-4 text-white">
               <div>
+                {formatCoupleName(match.couple1)}
                 <p className="text-[12px] font-bold text-white">Puntos</p>
                 <input
                   type="number"
@@ -104,8 +101,11 @@ const RoundManager: React.FC<RoundManagerProps> = ({
                   className="rounded bg-zinc-600 p-2 text-center text-primary"
                 />
               </div>
-              <div className="font-bold text-primary">-</div>
+              <div className="font-bold text-primary">
+                <span className="text-primary">vs</span>
+              </div>
               <div>
+                {formatCoupleName(match.couple2)}
                 <p className="text-[12px] font-bold text-white">Puntos</p>
                 <input
                   type="number"
