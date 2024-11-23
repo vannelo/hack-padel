@@ -5,8 +5,7 @@ import { Tournament } from "@/domain/models/Tournament";
 import { Round } from "@/domain/models/Round";
 import { endRound, updateMatchResults } from "@/app/actions/tournamentActions";
 import Button from "@/components/UI/Button/Button";
-import { formatCoupleName } from "@/utils/helpers";
-import Divider from "@/components/UI/Divider/Divider";
+import CoupleName from "@/components/UI/CoupleName/CoupleName";
 
 interface RoundManagerProps {
   tournament: Tournament;
@@ -69,9 +68,9 @@ const RoundManager: React.FC<RoundManagerProps> = ({
   };
 
   return (
-    <div className="!mb-32">
-      <h2 className="mb-4 text-center text-2xl font-bold text-white">
-        Partidos
+    <div className="mb-4">
+      <h2 className="mb-4 text-center text-xl font-bold">
+        Ronda {tournament.currentRound} de {tournament.rounds.length}
       </h2>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {currentRound.matches.map((match) => (
@@ -79,12 +78,12 @@ const RoundManager: React.FC<RoundManagerProps> = ({
             key={match.id}
             className="rounded-3xl border border-zinc-600 p-8 text-center"
           >
-            <h3 className="mb-4 border border-black border-b-zinc-600 p-2 text-xl font-bold text-white">
+            <h3 className="mb-4 border border-black border-b-zinc-600 p-2 text-xl font-bold text-primary">
               Cancha {match.court}
             </h3>
             <div className="flex items-center justify-center space-x-4 text-white">
               <div>
-                {formatCoupleName(match.couple1)}
+                <CoupleName couple={match.couple1} />
                 <p className="mt-4 text-[12px] font-bold text-white">Puntos</p>
                 <input
                   type="number"
@@ -106,7 +105,7 @@ const RoundManager: React.FC<RoundManagerProps> = ({
                 <span className="text-primary">vs</span>
               </div>
               <div>
-                {formatCoupleName(match.couple2)}
+                <CoupleName couple={match.couple2} />
                 <p className="mt-4 text-[12px] font-bold text-white">Puntos</p>
                 <input
                   type="number"

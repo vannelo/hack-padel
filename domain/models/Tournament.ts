@@ -17,4 +17,5 @@ export type Tournament = {
   rounds: Round[];
   isFinished: boolean;
   currentRound: number;
+  createdAt: string;
 };

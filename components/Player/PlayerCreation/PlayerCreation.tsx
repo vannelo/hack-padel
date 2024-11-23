@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/UI/Button/Button";
 import PlayerForm from "../PlayerForm/PlayerForm";
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { useNotification } from "@/providers/NotificationContext";
+import Modal from "@/components/UI/Modal/Modal";
 
 const PlayerCreation: React.FC = () => {
   const [isCreatingPlayer, setIsCreatingPlayer] = useState<boolean>(false);
@@ -40,32 +40,13 @@ const PlayerCreation: React.FC = () => {
           </svg>
         </div>
       </Button>
-      <Dialog
+      <Modal
+        title="Crear Jugador"
         open={isCreatingPlayer}
         onClose={() => setIsCreatingPlayer(false)}
-        maxWidth="sm"
-        fullWidth
-        sx={{
-          ".MuiDialog-paper": {
-            backgroundColor: "black",
-            border: "1px solid #52525b",
-            borderRadius: "24px",
-            color: "var(--text-primary)",
-            padding: "24px",
-          },
-        }}
       >
-        <DialogTitle
-          sx={{
-            marginBottom: "32px",
-          }}
-        >
-          Crear Jugador
-        </DialogTitle>
-        <DialogContent>
-          <PlayerForm onPlayerCreated={handlePlayerCreated} />
-        </DialogContent>
-      </Dialog>
+        <PlayerForm onPlayerCreated={handlePlayerCreated} />
+      </Modal>
     </>
   );
 };

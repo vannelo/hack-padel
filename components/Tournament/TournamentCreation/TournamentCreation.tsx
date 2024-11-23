@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/UI/Button/Button";
 import TournamentForm from "../TournamentForm/TournamentForm";
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { useNotification } from "@/providers/NotificationContext";
+import Modal from "@/components/UI/Modal/Modal";
 
 const TournamentCreation: React.FC = () => {
   const [isCreatingTournament, setIsCreatingTournament] =
@@ -41,32 +41,13 @@ const TournamentCreation: React.FC = () => {
           </svg>
         </div>
       </Button>
-      <Dialog
+      <Modal
+        title="Crear Torneo"
         open={isCreatingTournament}
         onClose={() => setIsCreatingTournament(false)}
-        maxWidth="sm"
-        fullWidth
-        sx={{
-          ".MuiDialog-paper": {
-            backgroundColor: "black",
-            border: "1px solid #52525b",
-            borderRadius: "24px",
-            color: "var(--text-primary)",
-            padding: "24px",
-          },
-        }}
       >
-        <DialogTitle
-          sx={{
-            marginBottom: "32px",
-          }}
-        >
-          Crear Torneo
-        </DialogTitle>
-        <DialogContent>
-          <TournamentForm onTournamentCreated={handleTournamentCreated} />
-        </DialogContent>
-      </Dialog>
+        <TournamentForm onTournamentCreated={handleTournamentCreated} />
+      </Modal>
     </>
   );
 };

@@ -5,6 +5,7 @@ import { Tournament } from "@/domain/models/Tournament";
 import ScoreTable from "./ScoreTable";
 import RoundManager from "./RoundManager";
 import Confetti from "react-confetti";
+import { formatDateInSpanish } from "@/utils/helpers";
 
 interface TournamentDetailsProps {
   tournament: Tournament;
@@ -68,18 +69,15 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({
   const winner = getWinner();
 
   return (
-    <div className="space-y-8 overflow-y-hidden">
-      <h2 className="text-center text-3xl font-bold uppercase tracking-tighter text-primary">
-        {tournament.name}
-      </h2>
-      {!tournament.isFinished && (
-        <h3 className="text-center text-2xl font-bold text-gray-300">
-          Ronda:{" "}
-          <span className="text-primary">
-            {tournament.currentRound} de {tournament.rounds.length}
-          </span>
+    <div className="text-center text-white">
+      <div className="mb-4">
+        <h2 className="text-3xl font-bold uppercase text-primary">
+          {tournament.name}
+        </h2>
+        <h3 className="text-zinc-400">
+          {formatDateInSpanish(tournament.createdAt)}
         </h3>
-      )}
+      </div>
       <ScoreTable tournament={tournament} />
       {currentRound && !tournament.isFinished && (
         <RoundManager tournament={tournament} currentRound={currentRound} />

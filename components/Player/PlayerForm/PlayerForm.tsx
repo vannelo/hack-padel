@@ -142,17 +142,19 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
       <div className="flex justify-end text-white">
         <Button type="submit" isLoading={isPending}>
           Crear
-          <div className="flex h-4 w-4 items-center justify-center rounded-full bg-primary">
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-black">
             <svg
+              className="h-3 w-3"
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 text-black"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+              fill="black"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
               <path
-                fillRule="evenodd"
-                d="M10 2a1 1 0 00-1 1v6H3a1 1 0 100 2h6v6a1 1 0 102 0v-6h6a1 1 0 100-2h-6V3a1 1 0 00-1-1z"
-                clipRule="evenodd"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
               />
             </svg>
           </div>

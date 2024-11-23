@@ -1,5 +1,7 @@
 import React from "react";
 import { Tournament } from "@/domain/models/Tournament";
+import { calculateTotalScore } from "@/utils/helpers";
+import CoupleName from "@/components/UI/CoupleName/CoupleName";
 
 interface ScoreTableProps {
   tournament: Tournament;
@@ -24,26 +26,23 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
     .filter((couple) => totalScores.get(couple.id) === highestScore)
     .map((couple) => couple.id);
 
-  const getCoupleName = (couple: any) =>
-    `${couple.player1.name}/${couple.player2.name}`;
-
   return (
-    <div className="overflow-x-auto rounded-3xl border border-zinc-600 text-white">
-      <table className="w-full table-auto border-collapse rounded-3xl text-sm font-bold md:text-lg">
+    <div className="mb-4 overflow-x-auto rounded-3xl border border-zinc-600 text-white">
+      <table className="text-md w-full table-auto border-collapse font-bold">
         <thead>
           <tr>
-            <th className="border border-black border-b-zinc-600 border-r-zinc-600 p-2 text-primary">
+            <th className="border border-black border-b-zinc-600 border-r-zinc-600">
               Parejas
             </th>
             {tournament.couples.map((couple, index) => (
               <th
                 key={index}
-                className="truncate border border-black border-b-zinc-600 border-r-zinc-600 p-2"
+                className="border border-black border-b-zinc-600 border-r-zinc-600 p-2"
               >
-                {getCoupleName(couple)}
+                <CoupleName couple={couple} />
               </th>
             ))}
-            <th className="border border-black border-b-zinc-600 border-l-zinc-600 p-2 text-primary">
+            <th className="border border-black border-b-zinc-600 border-l-zinc-600">
               Puntos
             </th>
           </tr>
@@ -52,11 +51,11 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
           {tournament.couples.map((couple, rowIndex) => (
             <tr key={rowIndex}>
               <td
-                className={`border border-black border-b-zinc-600 border-r-zinc-600 px-4 py-2 font-bold ${
+                className={`border border-black border-b-zinc-600 border-r-zinc-600 p-2 ${
                   leaders.includes(couple.id) ? "text-primary" : ""
                 }`}
               >
-                {getCoupleName(couple)}
+                <CoupleName couple={couple} />
               </td>
               {tournament.couples.map((opponent, colIndex) => {
                 if (rowIndex === colIndex) {
@@ -133,19 +132,5 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
     </div>
   );
 };
-
-function calculateTotalScore(tournament: Tournament, coupleId: string): number {
-  let totalScore = 0;
-  tournament.rounds.forEach((round) => {
-    round.matches.forEach((match) => {
-      if (match.couple1Id === coupleId) {
-        totalScore += match.couple1Score;
-      } else if (match.couple2Id === coupleId) {
-        totalScore += match.couple2Score;
-      }
-    });
-  });
-  return totalScore;
-}
 
 export default ScoreTable;
