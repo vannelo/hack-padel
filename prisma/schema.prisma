@@ -79,3 +79,12 @@ model Match {
   couple2Score  Int?
   court         Int
 }
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  isAdmin   Boolean  @default(false) 
+  createdAt DateTime @default(now())
+}
