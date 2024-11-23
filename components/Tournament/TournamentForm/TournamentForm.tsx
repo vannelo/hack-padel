@@ -129,8 +129,11 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="name" className="mb-2 block text-left text-sm font-bold">
+    <form onSubmit={handleSubmit} className="text-white">
+      <label
+        htmlFor="name"
+        className="mb-2 block text-left text-sm font-bold text-white"
+      >
         Nombre del torneo
       </label>
       <input
@@ -144,7 +147,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
       />
       <label
         htmlFor="courts"
-        className="mb-2 block text-left text-sm font-bold"
+        className="mb-2 block text-left text-sm font-bold text-white"
       >
         Canchas disponibles
       </label>
@@ -170,7 +173,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         ))}
       </div>
       <div className="mb-4">
-        <h3 className="mb-2 text-left text-sm font-bold">Parejas</h3>
+        <h3 className="mb-2 text-left text-sm font-bold text-white">Parejas</h3>
         {couples.map((couple, index) => (
           <div key={couple.id} className="mb-2">
             <div className="flex space-x-2">
@@ -228,7 +231,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
             </div>
           </div>
         ))}
-        <div className="flex justify-start">
+        <div className="flex justify-start text-white">
           <Button type="button" onClick={handleAddCouple} variant="secondary">
             Agregar pareja
             <div className="flex h-4 w-4 items-center justify-center rounded-full bg-primary">
@@ -249,7 +252,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         </div>
       </div>
       <Divider />
-      <div className="flex justify-end">
+      <div className="flex justify-end text-white">
         <Button type="submit" isLoading={isPending}>
           Crear
           <div className="flex h-4 w-4 items-center justify-center rounded-full bg-primary">

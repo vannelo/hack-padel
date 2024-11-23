@@ -59,10 +59,10 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="text-white">
       <label
         htmlFor="name"
-        className="mb-2 block text-left text-sm font-bold uppercase"
+        className="mb-2 block text-left text-sm font-bold uppercase text-white"
       >
         Nombre
       </label>
@@ -77,7 +77,7 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
       />
       <label
         htmlFor="email"
-        className="mb-2 block text-left text-sm font-bold uppercase"
+        className="mb-2 block text-left text-sm font-bold uppercase text-white"
       >
         Email (opcional)
       </label>
@@ -91,7 +91,7 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
       />
       <label
         htmlFor="phone"
-        className="mb-2 block text-left text-sm font-bold uppercase"
+        className="mb-2 block text-left text-sm font-bold uppercase text-white"
       >
         Teléfono (opcional)
       </label>
@@ -105,7 +105,7 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
       />
       <label
         htmlFor="gender"
-        className="mb-2 block text-left text-sm font-bold uppercase"
+        className="mb-2 block text-left text-sm font-bold uppercase text-white"
       >
         Categoría (opcional)
       </label>
@@ -121,7 +121,7 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
       </select>
       <label
         htmlFor="level"
-        className="mb-2 block text-left text-sm font-bold uppercase"
+        className="mb-2 block text-left text-sm font-bold uppercase text-white"
       >
         Nivel (opcional)
       </label>
@@ -139,7 +139,7 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
         <option value={Level.Primera}>Primera</option>
       </select>
       <Divider />
-      <div className="flex justify-end">
+      <div className="flex justify-end text-white">
         <Button type="submit" isLoading={isPending}>
           Crear
           <div className="flex h-4 w-4 items-center justify-center rounded-full bg-primary">
