@@ -1,4 +1,3 @@
-import Image from "next/image";
 import TournamentCreation from "@/components/Tournament/TournamentCreation/TournamentCreation";
 import TournamentListWrapper from "@/components/Tournament/TournamentList/TournamentListWrapper";
 import { Suspense } from "react";

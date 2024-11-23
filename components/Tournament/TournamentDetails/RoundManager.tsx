@@ -6,6 +6,7 @@ import { Round } from "@/domain/models/Round";
 import { endRound, updateMatchResults } from "@/app/actions/tournamentActions";
 import Button from "@/components/UI/Button/Button";
 import { formatCoupleName } from "@/utils/helpers";
+import Divider from "@/components/UI/Divider/Divider";
 
 interface RoundManagerProps {
   tournament: Tournament;
@@ -76,15 +77,15 @@ const RoundManager: React.FC<RoundManagerProps> = ({
         {currentRound.matches.map((match) => (
           <div
             key={match.id}
-            className="rounded-lg bg-zinc-900 p-8 text-center"
+            className="rounded-3xl border border-zinc-600 p-8 text-center"
           >
-            <p className="mb-2 text-lg font-bold text-white">
+            <h3 className="mb-4 border border-black border-b-zinc-600 p-2 text-xl font-bold text-white">
               Cancha {match.court}
-            </p>
+            </h3>
             <div className="flex items-center justify-center space-x-4 text-white">
               <div>
                 {formatCoupleName(match.couple1)}
-                <p className="text-[12px] font-bold text-white">Puntos</p>
+                <p className="mt-4 text-[12px] font-bold text-white">Puntos</p>
                 <input
                   type="number"
                   min="0"
@@ -106,7 +107,7 @@ const RoundManager: React.FC<RoundManagerProps> = ({
               </div>
               <div>
                 {formatCoupleName(match.couple2)}
-                <p className="text-[12px] font-bold text-white">Puntos</p>
+                <p className="mt-4 text-[12px] font-bold text-white">Puntos</p>
                 <input
                   type="number"
                   min="0"
@@ -127,15 +128,29 @@ const RoundManager: React.FC<RoundManagerProps> = ({
           </div>
         ))}
       </div>
-      <div className="mx-auto mt-4 flex max-w-[400px] items-end justify-end">
+      <div className="my-8 flex w-full items-center justify-center">
         <Button
-          type="submit"
           isLoading={endingRound}
           onClick={handleEndRound}
           disabled={!allScoresFilled()}
-          className="mt-4 w-full rounded bg-primary px-4 py-2 font-bold uppercase text-black"
         >
           Terminar Ronda
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-black">
+            <svg
+              className="h-3 w-3"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="black"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
+            </svg>
+          </div>
         </Button>
       </div>
     </div>

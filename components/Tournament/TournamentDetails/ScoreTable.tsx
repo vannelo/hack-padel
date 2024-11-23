@@ -28,22 +28,22 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
     `${couple.player1.name}/${couple.player2.name}`;
 
   return (
-    <div className="overflow-x-auto text-white">
-      <table className="w-full table-auto border-collapse border border-gray-600 text-sm font-bold md:text-lg">
+    <div className="overflow-x-auto rounded-3xl border border-zinc-600 text-white">
+      <table className="w-full table-auto border-collapse rounded-3xl text-sm font-bold md:text-lg">
         <thead>
           <tr>
-            <th className="border border-gray-600 p-2 text-primary md:p-4">
+            <th className="border border-black border-b-zinc-600 border-r-zinc-600 p-2 text-primary">
               Parejas
             </th>
             {tournament.couples.map((couple, index) => (
               <th
                 key={index}
-                className="truncate border border-gray-600 p-2 md:p-4"
+                className="truncate border border-black border-b-zinc-600 border-r-zinc-600 p-2"
               >
                 {getCoupleName(couple)}
               </th>
             ))}
-            <th className="border border-gray-600 p-2 text-primary md:p-4">
+            <th className="border border-black border-b-zinc-600 border-l-zinc-600 p-2 text-primary">
               Puntos
             </th>
           </tr>
@@ -52,7 +52,7 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
           {tournament.couples.map((couple, rowIndex) => (
             <tr key={rowIndex}>
               <td
-                className={`border border-gray-600 p-2 font-bold md:p-4 ${
+                className={`border border-black border-b-zinc-600 border-r-zinc-600 px-4 py-2 font-bold ${
                   leaders.includes(couple.id) ? "text-primary" : ""
                 }`}
               >
@@ -63,7 +63,7 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
                   return (
                     <td
                       key={colIndex}
-                      className="border border-gray-600 p-2 text-center md:p-4"
+                      className="border border-zinc-600 p-2 text-center"
                     >
                       -
                     </td>
@@ -110,7 +110,7 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
                   return (
                     <td
                       key={colIndex}
-                      className={`border border-gray-600 p-2 text-center md:p-4 ${
+                      className={`border border-zinc-600 p-2 text-center ${
                         isWinner ? "text-primary" : ""
                       }`}
                     >
@@ -120,7 +120,7 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
                 }
               })}
               <td
-                className={`border border-gray-600 p-2 text-center font-bold md:p-4 ${
+                className={`border border-black border-b-zinc-600 p-2 text-center font-bold ${
                   leaders.includes(couple.id) ? "text-primary" : ""
                 }`}
               >
