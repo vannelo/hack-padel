@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const RankingNav: React.FC = () => {
+const AdminNav: React.FC = () => {
   const [pageActive, setPageActive] = React.useState<string>("");
 
   React.useEffect(() => {
@@ -13,7 +13,7 @@ const RankingNav: React.FC = () => {
 
   return (
     <nav className="flex items-center justify-between bg-black px-8 py-4 text-white">
-      <Link href="/ranking">
+      <Link href="/admin">
         <Image
           src="/img/hack-logo.png"
           alt="Hack Padel Logo"
@@ -24,7 +24,7 @@ const RankingNav: React.FC = () => {
       <ul className="flex gap-8 font-semibold">
         <li>
           <Link
-            href="/ranking/jugadores"
+            href="/admin/jugadores"
             className={`transition-colors duration-300 ${pageActive === "/jugadores" ? "text-primary" : "hover:text-primary"} `}
           >
             Jugadores
@@ -32,7 +32,7 @@ const RankingNav: React.FC = () => {
         </li>
         <li>
           <Link
-            href="/ranking/torneos"
+            href="/admin/torneos"
             className={`transition-colors duration-300 ${pageActive === "/torneos" ? "text-primary" : "hover:text-primary"} `}
           >
             Torneos
@@ -43,4 +43,4 @@ const RankingNav: React.FC = () => {
   );
 };
 
-export default RankingNav;
+export default AdminNav;

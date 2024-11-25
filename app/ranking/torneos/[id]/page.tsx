@@ -1,7 +1,6 @@
 import { getTournamentById } from "@/app/actions/tournamentActions";
 import TournamentDetails from "@/components/Tournament/TournamentDetails/TournamentDetails";
 import Image from "next/image";
-
 import { notFound } from "next/navigation";
 
 export default async function TournamentPage({
@@ -28,7 +27,7 @@ export default async function TournamentPage({
           />
         </div>
         <div className="mt-8 w-full">
-          <TournamentDetails initialTournament={tournament} isAdmin />
+          <TournamentDetails initialTournament={tournament} />
         </div>
       </div>
     </main>

@@ -1,8 +1,7 @@
-import PlayerCreation from "@/components/Player/PlayerCreation/PlayerCreation";
 import { Suspense } from "react";
 import TableLoader from "@/components/UI/TableLoader/TableLoader";
-import PlayerListWrapper from "@/components/Player/PlayerList/PlayerListWrapper";
 import Divider from "@/components/UI/Divider/Divider";
+import RankingPlayerListWrapper from "@/components/Ranking/RankingPlayerList/RankingPlayerListWrapper";
 
 export default function Jugadores() {
   return (
@@ -14,7 +13,7 @@ export default function Jugadores() {
         <Divider />
         <div className="w-full">
           <Suspense fallback={<TableLoader />}>
-            <PlayerListWrapper />
+            <RankingPlayerListWrapper />
           </Suspense>
         </div>
       </div>

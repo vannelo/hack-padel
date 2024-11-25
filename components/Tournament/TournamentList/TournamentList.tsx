@@ -8,9 +8,13 @@ import { gridStyles } from "@/utils/constants";
 
 interface TournamentListProps {
   tournaments: Tournament[];
+  isAdmin?: boolean;
 }
 
-const TournamentList: React.FC<TournamentListProps> = ({ tournaments }) => {
+const TournamentList: React.FC<TournamentListProps> = ({
+  tournaments,
+  isAdmin = false,
+}) => {
   const columns: GridColDef[] = [
     {
       field: "name",
@@ -18,7 +22,11 @@ const TournamentList: React.FC<TournamentListProps> = ({ tournaments }) => {
       flex: 1,
       renderCell: (params: GridRenderCellParams) => (
         <Link
-          href={`/torneos/${params.row.id}`}
+          href={`/${
+            isAdmin
+              ? `admin/torneos/${params.row.id}`
+              : `ranking/torneos/${params.row.id}`
+          }`}
           passHref
           className="hover:text-primary"
         >
@@ -49,7 +57,11 @@ const TournamentList: React.FC<TournamentListProps> = ({ tournaments }) => {
       flex: 1,
       renderCell: (params: GridRenderCellParams) => (
         <Link
-          href={`/torneos/${params.row.id}`}
+          href={`/${
+            isAdmin
+              ? `admin/torneos/${params.row.id}`
+              : `ranking/torneos/${params.row.id}`
+          }`}
           passHref
           className="hover:text-primary"
         >

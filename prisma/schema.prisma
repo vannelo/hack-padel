@@ -30,6 +30,7 @@ model Player {
   level            Level
   couplesAsPlayer1 Couple[] @relation("Player1")
   couplesAsPlayer2 Couple[] @relation("Player2")
+  points           Int       @default(0)
 }
 
 model Tournament {

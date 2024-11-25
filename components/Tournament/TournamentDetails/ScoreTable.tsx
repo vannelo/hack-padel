@@ -8,13 +8,14 @@ interface ScoreTableProps {
 }
 
 const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
-  console.log("tournament", tournament);
+  // Calculate total scores for each couple
   const totalScores = new Map<string, number>();
   tournament.couples.forEach((couple) => {
     const totalScore = calculateTotalScore(tournament, couple.id);
     totalScores.set(couple.id, totalScore);
   });
 
+  // Find the highest score
   let highestScore = 0;
   totalScores.forEach((score) => {
     if (score > highestScore) {
@@ -22,6 +23,7 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
     }
   });
 
+  // Identify leading couples
   const leaders = tournament.couples
     .filter((couple) => totalScores.get(couple.id) === highestScore)
     .map((couple) => couple.id);
@@ -59,6 +61,7 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
               </td>
               {tournament.couples.map((opponent, colIndex) => {
                 if (rowIndex === colIndex) {
+                  // Same couple, show a dash
                   return (
                     <td
                       key={colIndex}
@@ -68,6 +71,7 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
                     </td>
                   );
                 } else {
+                  // Find match between these two couples
                   let match = null;
                   for (const round of tournament.rounds) {
                     match = round.matches.find(

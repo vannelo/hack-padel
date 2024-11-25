@@ -1,19 +1,61 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Tournament } from "@/domain/models/Tournament";
 import ScoreTable from "./ScoreTable";
 import RoundManager from "./RoundManager";
 import Confetti from "react-confetti";
 import { formatDateInSpanish } from "@/utils/helpers";
+import { useTournamentUpdates } from "@/hooks/useTournamentUpdates/useTournamentUpdates";
 
 interface TournamentDetailsProps {
-  tournament: Tournament;
+  initialTournament: Tournament;
+  isAdmin?: boolean;
 }
 
 const TournamentDetails: React.FC<TournamentDetailsProps> = ({
-  tournament,
+  initialTournament,
+  isAdmin = false,
 }) => {
+  const [hasConnectionError, setHasConnectionError] = useState(false);
+  const tournament = useTournamentUpdates(initialTournament);
+
+  useEffect(() => {
+    let errorTimeout: NodeJS.Timeout;
+
+    const checkConnection = () => {
+      const testConnection = new EventSource(
+        `/api/tournaments/${tournament.id}/sse`,
+      );
+
+      testConnection.onerror = () => {
+        setHasConnectionError(true);
+        testConnection.close();
+      };
+
+      testConnection.onopen = () => {
+        setHasConnectionError(false);
+        testConnection.close();
+      };
+
+      // Cleanup after 5 seconds
+      errorTimeout = setTimeout(() => {
+        testConnection.close();
+      }, 5000);
+    };
+
+    // Check connection status periodically
+    const intervalId = setInterval(checkConnection, 30000);
+
+    // Initial check
+    checkConnection();
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(errorTimeout);
+    };
+  }, [tournament.id]);
+
   const currentRound = tournament.rounds.find((round) => round.isActive);
 
   // Helper to calculate the total scores for each couple
@@ -80,7 +122,11 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({
       </div>
       <ScoreTable tournament={tournament} />
       {currentRound && !tournament.isFinished && (
-        <RoundManager tournament={tournament} currentRound={currentRound} />
+        <RoundManager
+          tournament={tournament}
+          currentRound={currentRound}
+          isAdmin={isAdmin}
+        />
       )}
       {tournament.isFinished && (
         <div className="relative rounded-lg bg-zinc-900 p-6 text-center">

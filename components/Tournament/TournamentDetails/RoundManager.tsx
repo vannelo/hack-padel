@@ -10,11 +10,13 @@ import CoupleName from "@/components/UI/CoupleName/CoupleName";
 interface RoundManagerProps {
   tournament: Tournament;
   currentRound: Round;
+  isAdmin: boolean;
 }
 
 const RoundManager: React.FC<RoundManagerProps> = ({
   tournament,
   currentRound,
+  isAdmin,
 }) => {
   const [matchResults, setMatchResults] = useState<{
     [key: string]: { couple1Score: number; couple2Score: number };
@@ -84,74 +86,96 @@ const RoundManager: React.FC<RoundManagerProps> = ({
             <div className="flex items-center justify-center space-x-4 text-white">
               <div>
                 <CoupleName couple={match.couple1} />
-                <p className="mt-4 text-[12px] font-bold text-white">Puntos</p>
-                <input
-                  type="number"
-                  min="0"
-                  max={10}
-                  placeholder="0"
-                  value={
-                    matchResults[match.id]?.couple1Score !== undefined
-                      ? matchResults[match.id]?.couple1Score
-                      : ""
-                  }
-                  onChange={(e) =>
-                    handleScoreChange(match.id, 1, parseInt(e.target.value, 10))
-                  }
-                  className="rounded bg-zinc-600 p-2 text-center text-primary"
-                />
+                {isAdmin && (
+                  <>
+                    <p className="mt-4 text-[12px] font-bold text-white">
+                      Puntos
+                    </p>
+                    <input
+                      type="number"
+                      min="0"
+                      max={10}
+                      placeholder="0"
+                      value={
+                        matchResults[match.id]?.couple1Score !== undefined
+                          ? matchResults[match.id]?.couple1Score
+                          : ""
+                      }
+                      onChange={(e) =>
+                        handleScoreChange(
+                          match.id,
+                          1,
+                          parseInt(e.target.value, 10),
+                        )
+                      }
+                      className="rounded bg-zinc-600 p-2 text-center text-primary"
+                    />
+                  </>
+                )}
               </div>
               <div className="font-bold text-primary">
                 <span className="text-primary">vs</span>
               </div>
               <div>
                 <CoupleName couple={match.couple2} />
-                <p className="mt-4 text-[12px] font-bold text-white">Puntos</p>
-                <input
-                  type="number"
-                  min="0"
-                  max={10}
-                  placeholder="0"
-                  value={
-                    matchResults[match.id]?.couple2Score !== undefined
-                      ? matchResults[match.id]?.couple2Score
-                      : ""
-                  }
-                  onChange={(e) =>
-                    handleScoreChange(match.id, 2, parseInt(e.target.value, 10))
-                  }
-                  className="rounded bg-zinc-600 p-2 text-center text-primary"
-                />
+                {isAdmin && (
+                  <>
+                    <p className="mt-4 text-[12px] font-bold text-white">
+                      Puntos
+                    </p>
+                    <input
+                      type="number"
+                      min="0"
+                      max={10}
+                      placeholder="0"
+                      value={
+                        matchResults[match.id]?.couple2Score !== undefined
+                          ? matchResults[match.id]?.couple2Score
+                          : ""
+                      }
+                      onChange={(e) =>
+                        handleScoreChange(
+                          match.id,
+                          2,
+                          parseInt(e.target.value, 10),
+                        )
+                      }
+                      className="rounded bg-zinc-600 p-2 text-center text-primary"
+                    />
+                  </>
+                )}
               </div>
             </div>
           </div>
         ))}
       </div>
-      <div className="my-8 flex w-full items-center justify-center">
-        <Button
-          isLoading={endingRound}
-          onClick={handleEndRound}
-          disabled={!allScoresFilled()}
-        >
-          Terminar Ronda
-          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-black">
-            <svg
-              className="h-3 w-3"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="black"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
-            </svg>
-          </div>
-        </Button>
-      </div>
+      {isAdmin && (
+        <div className="my-8 flex w-full items-center justify-center">
+          <Button
+            isLoading={endingRound}
+            onClick={handleEndRound}
+            disabled={!allScoresFilled()}
+          >
+            Terminar Ronda
+            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-black">
+              <svg
+                className="h-3 w-3"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="black"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
+              </svg>
+            </div>
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
