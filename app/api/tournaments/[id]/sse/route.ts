@@ -1,14 +1,10 @@
-import { NextRequest } from "next/server";
 import { getTournamentById } from "@/app/actions/tournamentActions";
+import { NextRequest } from "next/server";
 
-// Remove the edge runtime directive
-
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } },
-) {
+export async function GET(request: NextRequest) {
   try {
-    const tournamentId = params.id;
+    const url = new URL(request.url);
+    const tournamentId = url.pathname.split("/")[3];
 
     // Verify tournament exists before starting stream
     const initialTournament = await getTournamentById(tournamentId);

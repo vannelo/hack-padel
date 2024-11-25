@@ -8,5 +8,5 @@ export interface Player {
   phone?: string | null;
   gender: Gender;
   level: Level;
-  points: number;
+  points?: number;
 }
