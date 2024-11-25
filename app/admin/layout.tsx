@@ -1,3 +1,4 @@
+import AdminLayout from "@/components/Layout/AdminLayout/AdminLayout";
 import AdminNav from "@/components/Layout/AdminNav/AdminNav";
 
 export default function RankingLayout({
@@ -9,7 +10,7 @@ export default function RankingLayout({
     <html lang="en">
       <body>
         <AdminNav />
-        {children}
+        <AdminLayout>{children}</AdminLayout>
       </body>
     </html>
   );

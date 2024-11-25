@@ -6,7 +6,6 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const tournamentId = url.pathname.split("/")[3];
 
-    // Verify tournament exists before starting stream
     const initialTournament = await getTournamentById(tournamentId);
     if (!initialTournament) {
       return new Response("Tournament not found", { status: 404 });

@@ -1,11 +1,9 @@
 // @ts-nocheck
 
-import { PrismaClient } from "@prisma/client";
 import { Tournament } from "../models/Tournament";
 import { Couple } from "../models/Couple";
 import { Round } from "../models/Round";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export class TournamentRepository {
   async createTournament(

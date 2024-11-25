@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { Player } from "../models/Player";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export class PlayerRepository {
   async createPlayer(playerData: Player): Promise<Player> {
