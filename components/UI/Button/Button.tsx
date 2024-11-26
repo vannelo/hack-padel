@@ -7,7 +7,7 @@ interface ButtonProps {
   children: React.ReactNode;
   type?: "button" | "submit" | "reset";
   className?: string;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "dark";
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -23,7 +23,8 @@ const Button: React.FC<ButtonProps> = ({
     "min-w-48 rounded-3xl font-bold flex items-center justify-center transition-colors duration-200";
   const variantClasses = {
     primary: "min-h-12 border border-zinc-600 text-white hover:text-primary",
-    secondary: "min-h-10 bg-primary text-black text-sm hover:bg-primary-dark",
+    secondary: "min-h-10 bg-black text-white text-sm hover:bg-primary-dark",
+    dark: "min-h-12 bg-black text-white hover:text-primary border border-zinc-600",
   };
   const disabledClasses =
     "min-h-12 text-zinc-600 border border-zinc-600 cursor-not-allowed";

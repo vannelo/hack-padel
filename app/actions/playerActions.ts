@@ -13,3 +13,8 @@ export async function createPlayer(playerData: Player): Promise<Player> {
 export async function getAllPlayers(): Promise<Player[]> {
   return await playerService.getAllPlayers();
 }
+
+export async function deletePlayer(playerId: string): Promise<void> {
+  await playerService.deletePlayer(playerId);
+  revalidatePath("/jugadores");
+}

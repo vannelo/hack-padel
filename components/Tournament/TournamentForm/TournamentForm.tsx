@@ -129,11 +129,8 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="text-white">
-      <label
-        htmlFor="name"
-        className="mb-2 block text-left text-sm font-bold text-white"
-      >
+    <form onSubmit={handleSubmit} className="text-black">
+      <label htmlFor="name" className="mb-2 block text-left text-sm font-bold">
         Nombre del torneo
       </label>
       <input
@@ -147,7 +144,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
       />
       <label
         htmlFor="courts"
-        className="mb-2 block text-left text-sm font-bold text-white"
+        className="mb-2 block text-left text-sm font-bold"
       >
         Canchas disponibles
       </label>
@@ -164,7 +161,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
             }
             className={`flex h-12 w-12 items-center justify-center rounded-full border-2 text-lg font-bold ${
               tournamentData.courts === court
-                ? "border-primary bg-primary text-black"
+                ? "border-black bg-black text-white"
                 : "border-white bg-white text-black"
             }`}
           >
@@ -173,7 +170,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         ))}
       </div>
       <div className="mb-4">
-        <h3 className="mb-2 text-left text-sm font-bold text-white">Parejas</h3>
+        <h3 className="mb-2 text-left text-sm font-bold">Parejas</h3>
         {couples.map((couple, index) => (
           <div key={couple.id} className="mb-2">
             <div className="flex space-x-2">
@@ -231,7 +228,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
             </div>
           </div>
         ))}
-        <div className="flex justify-start text-white">
+        <div className="flex justify-start">
           <Button type="button" onClick={handleAddCouple} variant="secondary">
             Agregar pareja
             <div className="flex h-4 w-4 items-center justify-center rounded-full bg-primary">
@@ -252,8 +249,8 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         </div>
       </div>
       <Divider />
-      <div className="flex justify-end text-white">
-        <Button type="submit" isLoading={isPending}>
+      <div className="flex justify-end">
+        <Button type="submit" isLoading={isPending} variant="dark">
           Crear
           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-black">
             <svg

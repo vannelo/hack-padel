@@ -1,14 +1,9 @@
-import Image from "next/image";
+import HackPadelLogo from "@/components/Layout/HackPadelLogo/HackPadelLogo";
 
 export default function Admin() {
   return (
     <div className="flex min-h-[100vh] flex-col items-center bg-black p-64 text-white">
-      <Image
-        src="/img/hack-logo.png"
-        alt="Hack Padel Logo"
-        width={300}
-        height={150}
-      />
+      <HackPadelLogo />
       <h3 className="mt-4 font-bold">Admin</h3>
     </div>
   );

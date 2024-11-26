@@ -59,11 +59,8 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="text-white">
-      <label
-        htmlFor="name"
-        className="mb-2 block text-left text-sm font-bold uppercase text-white"
-      >
+    <form onSubmit={handleSubmit} className="text-black">
+      <label htmlFor="name" className="mb-2 block text-left text-sm font-bold">
         Nombre
       </label>
       <input
@@ -72,13 +69,10 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
         name="name"
         value={playerData.name}
         onChange={handleInputChange}
-        className="mb-4 w-full border p-2 text-black"
+        className="mb-4 w-full border p-2"
         required
       />
-      <label
-        htmlFor="email"
-        className="mb-2 block text-left text-sm font-bold uppercase text-white"
-      >
+      <label htmlFor="email" className="mb-2 block text-left text-sm font-bold">
         Email (opcional)
       </label>
       <input
@@ -87,12 +81,9 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
         name="email"
         value={playerData.email}
         onChange={handleInputChange}
-        className="mb-4 w-full border p-2 text-black"
+        className="mb-4 w-full border p-2"
       />
-      <label
-        htmlFor="phone"
-        className="mb-2 block text-left text-sm font-bold uppercase text-white"
-      >
+      <label htmlFor="phone" className="mb-2 block text-left text-sm font-bold">
         Teléfono (opcional)
       </label>
       <input
@@ -101,11 +92,11 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
         name="phone"
         value={playerData.phone}
         onChange={handleInputChange}
-        className="mb-4 w-full border p-2 text-black"
+        className="mb-4 w-full border p-2"
       />
       <label
         htmlFor="gender"
-        className="mb-2 block text-left text-sm font-bold uppercase text-white"
+        className="mb-2 block text-left text-sm font-bold"
       >
         Categoría (opcional)
       </label>
@@ -119,10 +110,7 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
         <option value={Gender.Varonil}>Varonil</option>
         <option value={Gender.Femenil}>Femenil</option>
       </select>
-      <label
-        htmlFor="level"
-        className="mb-2 block text-left text-sm font-bold uppercase text-white"
-      >
+      <label htmlFor="level" className="mb-2 block text-left text-sm font-bold">
         Nivel (opcional)
       </label>
       <select
@@ -130,7 +118,7 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
         name="level"
         value={playerData.level}
         onChange={handleInputChange}
-        className="mb-4 w-full border p-2 text-black"
+        className="mb-4 w-full border p-2"
       >
         <option value={Level.Quinta}>Quinta</option>
         <option value={Level.Cuarta}>Cuarta</option>
@@ -139,8 +127,8 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
         <option value={Level.Primera}>Primera</option>
       </select>
       <Divider />
-      <div className="flex justify-end text-white">
-        <Button type="submit" isLoading={isPending}>
+      <div className="flex justify-end">
+        <Button type="submit" isLoading={isPending} variant="dark">
           Crear
           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-black">
             <svg

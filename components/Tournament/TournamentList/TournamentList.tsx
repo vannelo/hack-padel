@@ -1,7 +1,12 @@
 "use client";
 
-import React from "react";
-import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import React, { useState } from "react";
+import {
+  DataGrid,
+  GridColDef,
+  GridPaginationModel,
+  GridRenderCellParams,
+} from "@mui/x-data-grid";
 import { Tournament } from "@/domain/models/Tournament";
 import Link from "next/link";
 import { gridStyles } from "@/utils/constants";
@@ -15,6 +20,11 @@ const TournamentList: React.FC<TournamentListProps> = ({
   tournaments,
   isAdmin = false,
 }) => {
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    pageSize: 50,
+    page: 0,
+  });
+
   const columns: GridColDef[] = [
     {
       field: "name",
@@ -89,7 +99,9 @@ const TournamentList: React.FC<TournamentListProps> = ({
       <DataGrid
         rows={rows}
         columns={columns}
-        pageSizeOptions={[5, 10, 25]}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        pageSizeOptions={[5, 10, 25, 50, 100]}
         disableRowSelectionOnClick
         sx={gridStyles}
       />

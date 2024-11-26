@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Button from "@/components/UI/Button/Button";
+import HackPadelLogo from "@/components/Layout/HackPadelLogo/HackPadelLogo";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -46,12 +46,7 @@ const Login = () => {
     <main className="flex min-h-[100vh] items-center justify-center bg-black p-8 text-white">
       <div className="flex w-full flex-col items-center">
         <div className="flex w-full justify-center">
-          <Image
-            src="/img/hack-logo.png"
-            alt="Hack Padel Logo"
-            width={120}
-            height={150}
-          />
+          <HackPadelLogo width={120} height={150} />
         </div>
         <div className="mx-auto mt-8 w-full max-w-xs text-center">
           <div className="login-container flex flex-col gap-4">

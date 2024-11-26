@@ -15,4 +15,8 @@ export class PlayerService {
   async getAllPlayers(): Promise<Player[]> {
     return this.playerRepository.getAllPlayers();
   }
+
+  async deletePlayer(id: string): Promise<void> {
+    await this.playerRepository.deletePlayer(id);
+  }
 }

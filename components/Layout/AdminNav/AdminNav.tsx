@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import HackPadelLogo from "../HackPadelLogo/HackPadelLogo";
 
 const AdminNav: React.FC = () => {
   const [pageActive, setPageActive] = React.useState<string>("");
@@ -14,12 +14,7 @@ const AdminNav: React.FC = () => {
   return (
     <nav className="flex items-center justify-between bg-black px-8 py-4 text-white">
       <Link href="/admin">
-        <Image
-          src="/img/hack-logo.png"
-          alt="Hack Padel Logo"
-          width={120}
-          height={150}
-        />
+        <HackPadelLogo width={120} height={150} />
       </Link>
       <ul className="flex gap-8 font-semibold">
         <li>

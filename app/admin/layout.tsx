@@ -7,11 +7,9 @@ export default function RankingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <AdminNav />
-        <AdminLayout>{children}</AdminLayout>
-      </body>
-    </html>
+    <>
+      <AdminNav />
+      <AdminLayout>{children}</AdminLayout>
+    </>
   );
 }

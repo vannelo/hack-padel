@@ -41,7 +41,7 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
 
     return (
       <td
-        className={`border border-zinc-600 p-2 text-center ${isWinner ? "text-primary" : ""}`}
+        className={`border border-zinc-600 p-2 text-center text-xl ${isWinner ? "text-primary" : ""}`}
       >
         {content}
       </td>
@@ -83,7 +83,7 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
                 renderCell(couple, opponent),
               )}
               <td
-                className={`border border-black border-b-zinc-600 p-2 text-center font-bold ${
+                className={`border border-black border-b-zinc-600 p-2 text-center text-xl font-bold ${
                   leaders.includes(couple.id) ? "text-primary" : ""
                 }`}
               >
