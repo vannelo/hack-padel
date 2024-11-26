@@ -5,18 +5,14 @@ import RankingPlayerListWrapper from "@/components/Ranking/RankingPlayerList/Ran
 
 export default function Jugadores() {
   return (
-    <main className="flex min-h-[100vh] bg-black p-8">
-      <div className="flex w-full flex-col items-center">
-        <div className="flex w-full items-end justify-between">
-          <h2 className="text-2xl font-bold text-white">Lista de jugadores</h2>
-        </div>
-        <Divider />
-        <div className="w-full">
-          <Suspense fallback={<TableLoader />}>
-            <RankingPlayerListWrapper />
-          </Suspense>
-        </div>
+    <>
+      <div className="flex w-full items-end justify-between">
+        <h2 className="text-2xl font-bold text-white">Lista de jugadores</h2>
       </div>
-    </main>
+      <Divider />
+      <Suspense fallback={<TableLoader />}>
+        <RankingPlayerListWrapper />
+      </Suspense>
+    </>
   );
 }

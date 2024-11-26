@@ -5,7 +5,9 @@ import { Tournament } from "@/domain/models/Tournament";
 import { Round } from "@/domain/models/Round";
 import { endRound, updateMatchResults } from "@/app/actions/tournamentActions";
 import Button from "@/components/UI/Button/Button";
-import CoupleName from "@/components/UI/CoupleName/CoupleName";
+import { allScoresFilled, validateScore } from "@/utils/tournamentUtils";
+import { MatchResults } from "@/domain/models/Match";
+import MatchCard from "./MatchCard";
 
 interface RoundManagerProps {
   tournament: Tournament;
@@ -18,9 +20,7 @@ const RoundManager: React.FC<RoundManagerProps> = ({
   currentRound,
   isAdmin,
 }) => {
-  const [matchResults, setMatchResults] = useState<{
-    [key: string]: { couple1Score: number; couple2Score: number };
-  }>({});
+  const [matchResults, setMatchResults] = useState<MatchResults>({});
   const [endingRound, setEndingRound] = useState<boolean>(false);
 
   const handleScoreChange = (
@@ -28,7 +28,7 @@ const RoundManager: React.FC<RoundManagerProps> = ({
     coupleNumber: 1 | 2,
     score: number,
   ) => {
-    if (score > 10 || score < 0) {
+    if (!validateScore(score)) {
       alert("La puntuación debe estar entre 0 y 10.");
       return;
     }
@@ -42,29 +42,16 @@ const RoundManager: React.FC<RoundManagerProps> = ({
     }));
   };
 
-  // Check if all matches have scores for both couples
-  const allScoresFilled = () => {
-    return currentRound.matches.every((match) => {
-      const results = matchResults[match.id];
-      return (
-        results?.couple1Score !== undefined &&
-        results?.couple2Score !== undefined
-      );
-    });
-  };
-
   const handleEndRound = async () => {
     try {
       setEndingRound(true);
-
       await updateMatchResults(tournament.id, currentRound.id, matchResults);
       await endRound(tournament.id, currentRound.id);
-
       window.location.reload();
-      setEndingRound(false);
     } catch (error) {
       console.error("Error ending round:", error);
       alert("Error al finalizar la ronda. Por favor, inténtalo de nuevo.");
+    } finally {
       setEndingRound(false);
     }
   };
@@ -76,77 +63,13 @@ const RoundManager: React.FC<RoundManagerProps> = ({
       </h2>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {currentRound.matches.map((match) => (
-          <div
+          <MatchCard
             key={match.id}
-            className="rounded-3xl border border-zinc-600 p-8 text-center"
-          >
-            <h3 className="mb-4 border border-black border-b-zinc-600 p-2 text-xl font-bold text-primary">
-              Cancha {match.court}
-            </h3>
-            <div className="flex items-center justify-center space-x-4 text-white">
-              <div>
-                <CoupleName couple={match.couple1} />
-                {isAdmin && (
-                  <>
-                    <p className="mt-4 text-[12px] font-bold text-white">
-                      Puntos
-                    </p>
-                    <input
-                      type="number"
-                      min="0"
-                      max={10}
-                      placeholder="0"
-                      value={
-                        matchResults[match.id]?.couple1Score !== undefined
-                          ? matchResults[match.id]?.couple1Score
-                          : ""
-                      }
-                      onChange={(e) =>
-                        handleScoreChange(
-                          match.id,
-                          1,
-                          parseInt(e.target.value, 10),
-                        )
-                      }
-                      className="rounded bg-zinc-600 p-2 text-center text-primary"
-                    />
-                  </>
-                )}
-              </div>
-              <div className="font-bold text-primary">
-                <span className="text-primary">vs</span>
-              </div>
-              <div>
-                <CoupleName couple={match.couple2} />
-                {isAdmin && (
-                  <>
-                    <p className="mt-4 text-[12px] font-bold text-white">
-                      Puntos
-                    </p>
-                    <input
-                      type="number"
-                      min="0"
-                      max={10}
-                      placeholder="0"
-                      value={
-                        matchResults[match.id]?.couple2Score !== undefined
-                          ? matchResults[match.id]?.couple2Score
-                          : ""
-                      }
-                      onChange={(e) =>
-                        handleScoreChange(
-                          match.id,
-                          2,
-                          parseInt(e.target.value, 10),
-                        )
-                      }
-                      className="rounded bg-zinc-600 p-2 text-center text-primary"
-                    />
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
+            match={match}
+            isAdmin={isAdmin}
+            matchResults={matchResults}
+            onScoreChange={handleScoreChange}
+          />
         ))}
       </div>
       {isAdmin && (
@@ -154,7 +77,7 @@ const RoundManager: React.FC<RoundManagerProps> = ({
           <Button
             isLoading={endingRound}
             onClick={handleEndRound}
-            disabled={!allScoresFilled()}
+            disabled={!allScoresFilled(currentRound, matchResults)}
           >
             Terminar Ronda
             <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-black">

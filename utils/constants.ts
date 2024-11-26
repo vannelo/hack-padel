@@ -29,3 +29,12 @@ export const gridStyles = {
   fontWeight: "bold",
   borderColor: "#52525b",
 };
+
+export const appRoutes = {
+  ranking: {
+    home: "/ranking",
+    players: "/ranking/jugadores",
+    tournaments: "/ranking/torneos",
+    tournamentDetail: "/ranking/torneos/:id",
+  },
+};

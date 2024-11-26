@@ -11,3 +11,7 @@ export interface Match {
   couple2Score: number;
   court: number;
 }
+
+export interface MatchResults {
+  [key: string]: { couple1Score: number; couple2Score: number };
+}

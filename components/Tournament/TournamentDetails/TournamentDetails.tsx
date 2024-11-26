@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Tournament } from "@/domain/models/Tournament";
 import ScoreTable from "./ScoreTable";
 import RoundManager from "./RoundManager";
 import Confetti from "react-confetti";
 import { formatDateInSpanish } from "@/utils/helpers";
 import { useTournamentUpdates } from "@/hooks/useTournamentUpdates/useTournamentUpdates";
+import { getWinner } from "@/utils/tournamentUtils";
 
 interface TournamentDetailsProps {
   initialTournament: Tournament;
@@ -17,8 +18,10 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({
   initialTournament,
   isAdmin = false,
 }) => {
-  const [hasConnectionError, setHasConnectionError] = useState(false);
   const tournament = useTournamentUpdates(initialTournament);
+  const currentRound =
+    tournament.rounds.find((round) => round.isActive) ?? null;
+  const winner = getWinner(tournament);
 
   useEffect(() => {
     let errorTimeout: NodeJS.Timeout;
@@ -29,12 +32,10 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({
       );
 
       testConnection.onerror = () => {
-        setHasConnectionError(true);
         testConnection.close();
       };
 
       testConnection.onopen = () => {
-        setHasConnectionError(false);
         testConnection.close();
       };
 
@@ -56,62 +57,8 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({
     };
   }, [tournament.id]);
 
-  const currentRound = tournament.rounds.find((round) => round.isActive);
-
-  // Helper to calculate the total scores for each couple
-  const calculateTotalScores = () => {
-    const scores = new Map<string, number>();
-    tournament.couples.forEach((couple) => {
-      scores.set(couple.id, 0);
-    });
-
-    tournament.rounds.forEach((round) => {
-      round.matches.forEach((match) => {
-        if (
-          match.couple1Score !== undefined &&
-          match.couple2Score !== undefined
-        ) {
-          scores.set(
-            match.couple1Id,
-            (scores.get(match.couple1Id) || 0) + match.couple1Score,
-          );
-          scores.set(
-            match.couple2Id,
-            (scores.get(match.couple2Id) || 0) + match.couple2Score,
-          );
-        }
-      });
-    });
-
-    return scores;
-  };
-
-  // Determine the winner
-  const getWinner = () => {
-    const scores = calculateTotalScores();
-    if (tournament.winnerId) {
-      return tournament.couples.find(
-        (couple) => couple.id === tournament.winnerId,
-      );
-    }
-
-    let highestScore = 0;
-    let winner: any = null;
-
-    scores.forEach((score, coupleId) => {
-      if (score > highestScore) {
-        highestScore = score;
-        winner = tournament.couples.find((couple) => couple.id === coupleId);
-      }
-    });
-
-    return winner;
-  };
-
-  const winner = getWinner();
-
   return (
-    <div className="text-center text-white">
+    <div className="my-8 text-center text-white">
       <div className="mb-4">
         <h2 className="text-3xl font-bold uppercase text-primary">
           {tournament.name}
@@ -121,7 +68,7 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({
         </h3>
       </div>
       <ScoreTable tournament={tournament} />
-      {currentRound && !tournament.isFinished && (
+      {!tournament.isFinished && currentRound && (
         <RoundManager
           tournament={tournament}
           currentRound={currentRound}
