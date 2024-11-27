@@ -3,6 +3,8 @@ import { Suspense } from "react";
 import TableLoader from "@/components/UI/TableLoader/TableLoader";
 import Divider from "@/components/UI/Divider/Divider";
 
+export const revalidate = 0;
+
 export default function Torneos() {
   return (
     <>
