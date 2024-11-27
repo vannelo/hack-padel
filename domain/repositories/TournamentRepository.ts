@@ -189,4 +189,10 @@ export class TournamentRepository {
       data: { currentRound },
     });
   }
+
+  async deleteTournament(id: string): Promise<void> {
+    await prisma.tournament.delete({
+      where: { id },
+    });
+  }
 }

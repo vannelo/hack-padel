@@ -19,20 +19,6 @@ enum Level {
   Segunda
   Primera
 }
-
-model Player {
-  id               String   @id @default(uuid())
-  name             String
-  email            String?
-  age              Int?
-  phone            String?
-  gender           Gender
-  level            Level
-  couplesAsPlayer1 Couple[] @relation("Player1")
-  couplesAsPlayer2 Couple[] @relation("Player2")
-  points           Int       @default(0)
-}
-
 model Tournament {
   id           String   @id @default(uuid())
   name         String
@@ -53,7 +39,7 @@ model Couple {
   player2Id      String
   player2        Player        @relation("Player2", fields: [player2Id], references: [id])
   tournamentId   String
-  tournament     Tournament    @relation(fields: [tournamentId], references: [id])
+  tournament     Tournament    @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   matchesAsCouple1 Match[]     @relation("Couple1")
   matchesAsCouple2 Match[]     @relation("Couple2")
   wonTournaments   Tournament[] @relation("TournamentWinner")
@@ -62,7 +48,7 @@ model Couple {
 model Round {
   id           String   @id @default(uuid())
   tournamentId String
-  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   matches      Match[]
   isActive     Boolean
   roundNumber  Int       
@@ -71,14 +57,27 @@ model Round {
 model Match {
   id            String   @id @default(uuid())
   roundId       String
-  round         Round    @relation(fields: [roundId], references: [id])
+  round         Round    @relation(fields: [roundId], references: [id], onDelete: Cascade)
   couple1Id     String
-  couple1       Couple   @relation("Couple1", fields: [couple1Id], references: [id])
+  couple1       Couple   @relation("Couple1", fields: [couple1Id], references: [id], onDelete: Cascade)
   couple2Id     String
-  couple2       Couple   @relation("Couple2", fields: [couple2Id], references: [id])
+  couple2       Couple   @relation("Couple2", fields: [couple2Id], references: [id], onDelete: Cascade)
   couple1Score  Int?
   couple2Score  Int?
   court         Int
+}
+
+model Player {
+  id               String   @id @default(uuid())
+  name             String
+  email            String?
+  age              Int?
+  phone            String?
+  gender           Gender
+  level            Level
+  couplesAsPlayer1 Couple[] @relation("Player1")
+  couplesAsPlayer2 Couple[] @relation("Player2")
+  points           Int      @default(0)
 }
 
 model User {
@@ -86,6 +85,6 @@ model User {
   email     String   @unique
   password  String
   name      String
-  isAdmin   Boolean  @default(false) 
+  isAdmin   Boolean  @default(false)
   createdAt DateTime @default(now())
 }

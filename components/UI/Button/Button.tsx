@@ -20,7 +20,7 @@ const Button: React.FC<ButtonProps> = ({
   variant = "primary",
 }) => {
   const baseClasses =
-    "min-w-48 rounded-3xl font-bold flex items-center justify-center transition-colors duration-200";
+    "p-4 md:min-w-48 rounded-3xl font-bold flex items-center justify-center transition-colors duration-200";
   const variantClasses = {
     primary: "min-h-12 border border-zinc-600 text-white hover:text-primary",
     secondary: "min-h-10 bg-black text-white text-sm hover:bg-primary-dark",

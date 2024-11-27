@@ -9,8 +9,8 @@ export const revalidate = 0;
 export default function AdminJugadores() {
   return (
     <>
-      <div className="flex w-full justify-between">
-        <h2 className="text-2xl font-bold text-white">Lista de jugadores</h2>
+      <div className="flex w-full items-center justify-between">
+        <h2 className="font-bold text-white md:text-2xl">Lista de jugadores</h2>
         <PlayerCreation />
       </div>
       <Divider />

@@ -10,6 +10,8 @@ import {
 import { Tournament } from "@/domain/models/Tournament";
 import Link from "next/link";
 import { gridStyles } from "@/utils/constants";
+import Modal from "@/components/UI/Modal/Modal";
+import { deleteTournament } from "@/app/actions/tournamentActions";
 
 interface TournamentListProps {
   tournaments: Tournament[];
@@ -24,24 +26,35 @@ const TournamentList: React.FC<TournamentListProps> = ({
     pageSize: 50,
     page: 0,
   });
+  const [selectedTournament, setSelectedTournament] =
+    useState<Tournament | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleRowClick = (tournamentId: string) => {
+    const tournament = tournaments.find((p) => p.id === tournamentId);
+    if (tournament) {
+      setSelectedTournament(tournament);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setSelectedTournament(null);
+    setIsModalOpen(false);
+  };
 
   const columns: GridColDef[] = [
     {
       field: "name",
       headerName: "Nombre",
       flex: 1,
-      renderCell: (params: GridRenderCellParams) => (
-        <Link
-          href={`/${
-            isAdmin
-              ? `admin/torneos/${params.row.id}`
-              : `ranking/torneos/${params.row.id}`
-          }`}
-          passHref
-          className="hover:text-primary"
+      renderCell: (params) => (
+        <span
+          className="cursor-pointer text-primary underline"
+          onClick={() => handleRowClick(params.row.id)}
         >
           {params.value}
-        </Link>
+        </span>
       ),
     },
     { field: "courts", headerName: "Canchas", flex: 1 },
@@ -105,6 +118,41 @@ const TournamentList: React.FC<TournamentListProps> = ({
         disableRowSelectionOnClick
         sx={gridStyles}
       />
+      {selectedTournament && (
+        <Modal
+          open={isModalOpen}
+          onClose={handleCloseModal}
+          title={`Detalles del torneo: ${selectedTournament.name}`}
+        >
+          <div>
+            <p>
+              <strong>Canchas:</strong> {selectedTournament.courts}
+            </p>
+            <p>
+              <strong>Parejas:</strong>{" "}
+              {selectedTournament.couples
+                ? selectedTournament.couples.length
+                : 0}
+            </p>
+            <button
+              className="mt-4 rounded bg-red-500 px-4 py-2 text-white"
+              onClick={async () => {
+                if (
+                  confirm(
+                    `¿Estás seguro que deseas eliminar a ${selectedTournament.name}?`,
+                  )
+                ) {
+                  await deleteTournament(selectedTournament.id);
+                  alert("Jugador eliminado exitosamente");
+                  handleCloseModal();
+                }
+              }}
+            >
+              Eliminar Torneo
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

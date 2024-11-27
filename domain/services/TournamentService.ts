@@ -184,5 +184,7 @@ export class TournamentService {
     return rounds;
   }
 
-  // ... other methods ...
+  async deleteTournament(id: string): Promise<void> {
+    await this.tournamentRepository.deleteTournament(id);
+  }
 }

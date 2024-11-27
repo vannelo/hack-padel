@@ -16,7 +16,6 @@ const PlayerList: React.FC<PlayerListProps> = ({ players }) => {
     pageSize: 50,
     page: 0,
   });
-
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -99,8 +98,6 @@ const PlayerList: React.FC<PlayerListProps> = ({ players }) => {
         disableRowSelectionOnClick
         sx={gridStyles}
       />
-
-      {/* Modal for Player Details */}
       {selectedPlayer && (
         <Modal
           open={isModalOpen}

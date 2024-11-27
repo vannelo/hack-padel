@@ -56,3 +56,8 @@ export const endRound = cache(
     revalidatePath(`/torneos/${tournamentId}`);
   },
 );
+
+export async function deleteTournament(tournamentId: string): Promise<void> {
+  await tournamentService.deleteTournament(tournamentId);
+  revalidatePath("/torneos");
+}
