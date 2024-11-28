@@ -57,12 +57,9 @@ const TournamentList: React.FC<TournamentListProps> = ({
         </span>
       ),
     },
-    { field: "courts", headerName: "Canchas", flex: 1 },
-    { field: "couples", headerName: "Parejas", flex: 1 },
-    { field: "rounds", headerName: "Rondas", flex: 1 },
     {
       field: "activeRound",
-      headerName: "Estado",
+      headerName: "Ronda Activa",
       flex: 1,
       renderCell: (params) => (
         <div style={{ display: "flex", alignItems: "center" }}>

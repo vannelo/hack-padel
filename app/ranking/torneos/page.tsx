@@ -9,7 +9,9 @@ export default function Torneos() {
   return (
     <>
       <div className="flex w-full items-end justify-between">
-        <h2 className="text-2xl font-bold text-white">Lista de torneos</h2>
+        <h2 className="text-xl font-bold text-white md:text-2xl">
+          Lista de torneos
+        </h2>
       </div>
       <Divider />
       <Suspense fallback={<TableLoader />}>
