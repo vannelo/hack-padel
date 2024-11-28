@@ -22,6 +22,11 @@ export const createTournament = cache(
   },
 );
 
+export async function deleteTournament(tournamentId: string): Promise<void> {
+  await tournamentService.deleteTournament(tournamentId);
+  revalidatePath("/torneos");
+}
+
 export const getAllTournaments = cache(async (): Promise<Tournament[]> => {
   const tournaments = await tournamentService.getAllTournaments();
   return tournaments;
@@ -57,7 +62,10 @@ export const endRound = cache(
   },
 );
 
-export async function deleteTournament(tournamentId: string): Promise<void> {
-  await tournamentService.deleteTournament(tournamentId);
-  revalidatePath("/torneos");
+export async function updateMatchScore(
+  matchId: string,
+  coupleNumber: number,
+  score: number,
+): Promise<void> {
+  await tournamentService.updateMatchScore(matchId, coupleNumber, score);
 }

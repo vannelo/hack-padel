@@ -8,6 +8,19 @@ export class PlayerRepository {
     });
   }
 
+  async updatePlayer(id: string, playerData: Partial<Player>): Promise<Player> {
+    return prisma.player.update({
+      where: { id },
+      data: playerData,
+    });
+  }
+
+  async deletePlayer(id: string): Promise<void> {
+    await prisma.player.delete({
+      where: { id },
+    });
+  }
+
   async getPlayerById(id: string): Promise<Player | null> {
     return prisma.player.findUnique({
       where: { id },
@@ -16,11 +29,5 @@ export class PlayerRepository {
 
   async getAllPlayers(): Promise<Player[]> {
     return prisma.player.findMany();
-  }
-
-  async deletePlayer(id: string): Promise<void> {
-    await prisma.player.delete({
-      where: { id },
-    });
   }
 }

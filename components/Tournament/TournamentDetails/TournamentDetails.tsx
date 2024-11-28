@@ -2,12 +2,12 @@
 
 import React, { useEffect } from "react";
 import { Tournament } from "@/domain/models/Tournament";
-import ScoreTable from "./ScoreTable";
 import RoundManager from "./RoundManager";
 import Confetti from "react-confetti";
 import { formatDateInSpanish } from "@/utils/helpers";
 import { useTournamentUpdates } from "@/hooks/useTournamentUpdates/useTournamentUpdates";
 import { getWinner } from "@/utils/tournamentUtils";
+import TournamentManagementScoreTable from "../TournamentManagement/TournamentManagementScoreTable";
 
 interface TournamentDetailsProps {
   initialTournament: Tournament;
@@ -67,14 +67,6 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({
           {formatDateInSpanish(tournament.createdAt)}
         </h3>
       </div>
-      <ScoreTable tournament={tournament} />
-      {!tournament.isFinished && currentRound && (
-        <RoundManager
-          tournament={tournament}
-          currentRound={currentRound}
-          isAdmin={isAdmin}
-        />
-      )}
       {tournament.isFinished && (
         <div className="relative rounded-lg bg-zinc-900 p-6 text-center">
           <Confetti
@@ -92,6 +84,14 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({
           </h3>
         </div>
       )}
+      <div className="mt-4 flex flex-col gap-8 lg:flex-row">
+        <div className="w-full lg:w-1/4">
+          <TournamentManagementScoreTable tournament={tournament} />
+        </div>
+        <div className="w-full lg:w-3/4">
+          <RoundManager tournament={tournament} isAdmin={isAdmin} />
+        </div>
+      </div>
     </div>
   );
 };

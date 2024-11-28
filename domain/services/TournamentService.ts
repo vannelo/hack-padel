@@ -187,4 +187,15 @@ export class TournamentService {
   async deleteTournament(id: string): Promise<void> {
     await this.tournamentRepository.deleteTournament(id);
   }
+
+  async updateMatchScore(
+    matchId: string,
+    coupleNumber: number,
+    score: number,
+  ): Promise<void> {
+    const updateData =
+      coupleNumber === 1 ? { couple1Score: score } : { couple2Score: score };
+
+    await this.tournamentRepository.updateMatch(matchId, updateData);
+  }
 }

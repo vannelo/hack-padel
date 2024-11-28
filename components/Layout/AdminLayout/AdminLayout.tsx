@@ -5,5 +5,5 @@ interface AdminLayoutProps {
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  return <main className="min-h-[100vh] bg-black p-8">{children}</main>;
+  return <main className="min-h-[100vh] bg-black px-8 py-4">{children}</main>;
 }

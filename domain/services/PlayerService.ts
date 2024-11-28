@@ -8,15 +8,19 @@ export class PlayerService {
     return this.playerRepository.createPlayer(playerData);
   }
 
+  async updatePlayer(id: string, playerData: Partial<Player>): Promise<Player> {
+    return this.playerRepository.updatePlayer(id, playerData);
+  }
+
+  async deletePlayer(id: string): Promise<void> {
+    await this.playerRepository.deletePlayer(id);
+  }
+
   async getPlayerById(id: string): Promise<Player | null> {
     return this.playerRepository.getPlayerById(id);
   }
 
   async getAllPlayers(): Promise<Player[]> {
     return this.playerRepository.getAllPlayers();
-  }
-
-  async deletePlayer(id: string): Promise<void> {
-    await this.playerRepository.deletePlayer(id);
   }
 }

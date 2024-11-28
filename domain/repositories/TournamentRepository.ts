@@ -195,4 +195,14 @@ export class TournamentRepository {
       where: { id },
     });
   }
+
+  async updateMatch(
+    matchId: string,
+    updateData: { couple1Score?: number; couple2Score?: number },
+  ): Promise<void> {
+    await prisma.match.update({
+      where: { id: matchId },
+      data: updateData,
+    });
+  }
 }

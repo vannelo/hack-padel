@@ -1,5 +1,5 @@
 import { getTournamentById } from "@/app/actions/tournamentActions";
-import TournamentDetails from "@/components/Tournament/TournamentDetails/TournamentDetails";
+import TournamentManagement from "@/components/Tournament/TournamentManagement/TournamentManagement";
 
 import { notFound } from "next/navigation";
 
@@ -15,5 +15,5 @@ export default async function TournamentPage({
     notFound();
   }
 
-  return <TournamentDetails initialTournament={tournament} isAdmin />;
+  return <TournamentManagement initialTournament={tournament} isAdmin />;
 }
