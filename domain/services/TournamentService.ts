@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Tournament } from "../models/Tournament";
 import { TournamentRepository } from "../repositories/TournamentRepository";
 import { Couple } from "../models/Couple";

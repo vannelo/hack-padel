@@ -16,14 +16,9 @@ import { useRouter } from "next/navigation";
 interface RoundManagerProps {
   tournament: Tournament;
   isAdmin: boolean;
-  onTournamentUpdate: (tournament: Tournament) => void;
 }
 
-const RoundManager: React.FC<RoundManagerProps> = ({
-  tournament,
-  isAdmin,
-  onTournamentUpdate,
-}) => {
+const RoundManager: React.FC<RoundManagerProps> = ({ tournament, isAdmin }) => {
   const [matchResults, setMatchResults] = useState<MatchResults>({});
   const [processingNextRound, setProcesssingNextRound] = useState(false);
   const router = useRouter();

@@ -37,11 +37,7 @@ const TournamentManagement: React.FC<TournamentManagementProps> = ({
         </div>
         <div className="w-full lg:w-3/4">
           {!initialTournament.isFinished && currentRound && (
-            <RoundManager
-              tournament={initialTournament}
-              isAdmin={isAdmin}
-              onTournamentUpdate={() => {}}
-            />
+            <RoundManager tournament={initialTournament} isAdmin={isAdmin} />
           )}
         </div>
       </div>

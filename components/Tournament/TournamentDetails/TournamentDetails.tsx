@@ -2,12 +2,12 @@
 
 import React, { useEffect } from "react";
 import { Tournament } from "@/domain/models/Tournament";
-import RoundManager from "./RoundManager";
 import Confetti from "react-confetti";
 import { formatDateInSpanish } from "@/utils/helpers";
 import { useTournamentUpdates } from "@/hooks/useTournamentUpdates/useTournamentUpdates";
 import { getWinner } from "@/utils/tournamentUtils";
 import TournamentManagementScoreTable from "../TournamentManagement/TournamentManagementScoreTable";
+import RoundManager from "./RoundManager";
 
 interface TournamentDetailsProps {
   initialTournament: Tournament;
