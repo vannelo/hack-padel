@@ -233,4 +233,14 @@ export class TournamentService {
     );
     return tournament.couples.find((couple) => couple.id === winnerId);
   }
+
+  async updateTournamentProgress(
+    tournamentId: string,
+    currentRound: number,
+  ): Promise<void> {
+    await this.tournamentRepository.updateTournamentProgress(
+      tournamentId,
+      currentRound,
+    );
+  }
 }

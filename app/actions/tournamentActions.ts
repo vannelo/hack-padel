@@ -76,3 +76,13 @@ export const markTournamentFinished = cache(async (tournamentId: string) => {
   revalidatePath(`/torneos/${tournamentId}`);
   return updatedTournament;
 });
+
+export const updateTournamentProgress = cache(
+  async (tournamentId: string, currentRound: number): Promise<void> => {
+    await tournamentService.updateTournamentProgress(
+      tournamentId,
+      currentRound,
+    );
+    revalidatePath(`/torneos/${tournamentId}`);
+  },
+);
