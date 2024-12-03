@@ -86,15 +86,12 @@ export const findMatchBetweenCouples = (
   return null;
 };
 
-export const allScoresFilled = (
-  currentRound: Round,
-  matchResults: MatchResults,
-): boolean => {
-  return currentRound.matches.every((match) => {
-    const results = matchResults[match.id];
-    return (
-      results?.couple1Score !== undefined && results?.couple2Score !== undefined
-    );
+export const allScoresFilled = (round: Round, matchResults: MatchResults) => {
+  return round.matches.every((match) => {
+    const scores = matchResults[match.id] || {};
+    const couple1Score = scores.couple1Score ?? match.couple1Score;
+    const couple2Score = scores.couple2Score ?? match.couple2Score;
+    return couple1Score !== null && couple2Score !== null;
   });
 };
 

@@ -198,4 +198,39 @@ export class TournamentService {
 
     await this.tournamentRepository.updateMatch(matchId, updateData);
   }
+
+  async finishTournament(tournamentId: string): Promise<Tournament> {
+    const tournament = await this.getTournamentById(tournamentId);
+
+    if (!tournament) {
+      throw new Error("Tournament not found");
+    }
+
+    const winners = this.calculateWinners(tournament);
+    await this.tournamentRepository.updateTournamentStatus(tournamentId, true);
+
+    // Optionally update winner information in the database if needed
+    // e.g., await this.tournamentRepository.setWinners(tournamentId, winners);
+
+    return await this.getTournamentById(tournamentId); // Fetch updated state
+  }
+
+  private calculateWinners(tournament: Tournament) {
+    // Example: Determine the couple with the most wins or highest points
+    const results = tournament.rounds
+      .flatMap((round) => round.matches)
+      .reduce((acc, match) => {
+        if (match.couple1Score > match.couple2Score) {
+          acc[match.couple1Id] = (acc[match.couple1Id] || 0) + 1;
+        } else if (match.couple2Score > match.couple1Score) {
+          acc[match.couple2Id] = (acc[match.couple2Id] || 0) + 1;
+        }
+        return acc;
+      }, {});
+
+    const winnerId = Object.keys(results).reduce((a, b) =>
+      results[a] > results[b] ? a : b,
+    );
+    return tournament.couples.find((couple) => couple.id === winnerId);
+  }
 }

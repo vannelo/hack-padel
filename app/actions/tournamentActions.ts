@@ -69,3 +69,10 @@ export async function updateMatchScore(
 ): Promise<void> {
   await tournamentService.updateMatchScore(matchId, coupleNumber, score);
 }
+
+export const markTournamentFinished = cache(async (tournamentId: string) => {
+  const updatedTournament =
+    await tournamentService.finishTournament(tournamentId);
+  revalidatePath(`/torneos/${tournamentId}`);
+  return updatedTournament;
+});
