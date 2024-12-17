@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { Match, MatchResults } from "@/domain/models/Match";
 import CoupleScore from "./CoupleScore";
 import Modal from "@/components/UI/Modal/Modal";
 import Button from "@/components/UI/Button/Button";
-import { updateMatchScore } from "@/app/actions/tournamentActions";
 
 interface MatchCardProps {
   match: Match;
@@ -13,6 +12,7 @@ interface MatchCardProps {
   isCurrentRound: boolean;
   matchResults: MatchResults;
   onScoreChange: (matchId: string, coupleNumber: 1 | 2, score: number) => void;
+  onLoadingStateChange: (state: boolean) => void;
 }
 
 const MatchCard: React.FC<MatchCardProps> = ({
@@ -21,15 +21,17 @@ const MatchCard: React.FC<MatchCardProps> = ({
   isCurrentRound,
   matchResults,
   onScoreChange,
+  onLoadingStateChange,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [tempScores, setTempScores] = useState<{
     couple1Score: number | null;
     couple2Score: number | null;
   }>({
-    couple1Score: match.couple1Score || null,
-    couple2Score: match.couple2Score || null,
+    couple1Score:
+      matchResults[match.id]?.couple1Score ?? match.couple1Score ?? null,
+    couple2Score:
+      matchResults[match.id]?.couple2Score ?? match.couple2Score ?? null,
   });
 
   const openModal = () => {
@@ -46,25 +48,15 @@ const MatchCard: React.FC<MatchCardProps> = ({
     setIsModalOpen(false);
   };
 
-  const handleSaveScores = useCallback(async () => {
-    try {
-      setSaving(true);
-      if (tempScores.couple1Score !== null) {
-        await updateMatchScore(match.id, 1, tempScores.couple1Score);
-        onScoreChange(match.id, 1, tempScores.couple1Score);
-      }
-      if (tempScores.couple2Score !== null) {
-        await updateMatchScore(match.id, 2, tempScores.couple2Score);
-        onScoreChange(match.id, 2, tempScores.couple2Score);
-      }
-      closeModal();
-    } catch (error) {
-      console.error("Error saving scores:", error);
-      alert("Error al guardar los puntajes. Por favor, inténtalo de nuevo.");
-    } finally {
-      setSaving(false);
+  const handleSaveScores = async () => {
+    if (tempScores.couple1Score !== null) {
+      await onScoreChange(match.id, 1, tempScores.couple1Score);
     }
-  }, [match.id, tempScores, onScoreChange]);
+    if (tempScores.couple2Score !== null) {
+      await onScoreChange(match.id, 2, tempScores.couple2Score);
+    }
+    closeModal();
+  };
 
   return (
     <div className="rounded-lg border border-zinc-600 bg-zinc-800 p-4 text-center">
@@ -149,9 +141,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
               </div>
             </div>
             <div className="flex justify-end">
-              <Button onClick={handleSaveScores} isLoading={saving}>
-                Guardar
-              </Button>
+              <Button onClick={handleSaveScores}>Guardar</Button>
             </div>
           </div>
         </Modal>

@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Tournament } from "@/domain/models/Tournament";
 import RoundManager from "../TournamentDetails/RoundManager";
-import Confetti from "react-confetti";
-import { formatDateInSpanish } from "@/utils/helpers";
-import { getWinner } from "@/utils/tournamentUtils";
+import { getCurrentRound, getWinner } from "@/utils/tournamentUtils";
 import TournamentManagementScoreTable from "./TournamentManagementScoreTable";
+import TournamentWinners from "../TournamentWinners/TournamentWinners";
+import TournamentTitle from "../TournamentTitle/TournamentTitle";
+import TableLoader from "@/components/UI/TableLoader/TableLoader";
 
 interface TournamentManagementProps {
   initialTournament: Tournament;
@@ -17,47 +18,40 @@ const TournamentManagement: React.FC<TournamentManagementProps> = ({
   initialTournament,
   isAdmin = false,
 }) => {
-  const currentRound =
-    initialTournament.rounds.find((round) => round.isActive) ?? null;
+  const [isLoading, setIsLoading] = useState(false);
+  const currentRound = getCurrentRound(initialTournament);
   const winner = getWinner(initialTournament);
 
+  const handleLoadingState = (state: boolean) => {
+    setIsLoading(state);
+  };
+
   return (
-    <div className="my-2 text-center text-white">
-      <div className="mb-4">
-        <h2 className="text-3xl font-bold uppercase text-primary">
-          {initialTournament.name}
-        </h2>
-        <h3 className="text-zinc-400">
-          {formatDateInSpanish(initialTournament.createdAt)}
-        </h3>
-      </div>
-      <div className="mt-4 flex flex-col gap-8 lg:flex-row">
+    <div className="relative my-2 text-center text-white">
+      {isLoading && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-70">
+          <div className="text-white">
+            <TableLoader />
+          </div>
+        </div>
+      )}
+      <TournamentTitle
+        tournamentName={initialTournament.name}
+        tournamentDate={initialTournament.createdAt}
+      />
+      {initialTournament.isFinished && <TournamentWinners winner={winner} />}
+      <div className="mb-4 mt-4 flex flex-col justify-center gap-8 lg:flex-row">
         <div className="w-full lg:w-1/4">
           <TournamentManagementScoreTable tournament={initialTournament} />
         </div>
         <div className="w-full lg:w-3/4">
-          {!initialTournament.isFinished && currentRound && (
-            <RoundManager tournament={initialTournament} isAdmin={isAdmin} />
-          )}
+          <RoundManager
+            tournament={initialTournament}
+            isAdmin={isAdmin}
+            onLoadingStateChange={handleLoadingState}
+          />
         </div>
       </div>
-      {initialTournament.isFinished && (
-        <div className="relative rounded-lg bg-zinc-900 p-6 text-center">
-          <Confetti
-            width={window.innerWidth}
-            height={window.innerHeight}
-            recycle={false}
-            numberOfPieces={300}
-          />
-          <h2 className="text-2xl font-bold text-white">Torneo Finalizado</h2>
-          <p className="text-white">¡Felicidades a los ganadores!</p>
-          <h3 className="text-4xl font-bold text-white">
-            <span className="text-primary">
-              {winner?.player1.name} / {winner?.player2.name}
-            </span>
-          </h3>
-        </div>
-      )}
     </div>
   );
 };

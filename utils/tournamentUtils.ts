@@ -29,6 +29,10 @@ export const calculateTotalScores = (tournament: Tournament) => {
   return scores;
 };
 
+export const getCurrentRound = (tournament: Tournament) => {
+  return tournament.rounds.find((round) => round.isActive) ?? null;
+};
+
 export const getWinner = (tournament: Tournament) => {
   const scores = calculateTotalScores(tournament);
   if (tournament.winnerId) {

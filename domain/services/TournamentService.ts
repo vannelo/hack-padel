@@ -15,12 +15,6 @@ export class TournamentService {
     courts: number,
     couples: Couple[],
   ): Promise<Tournament> {
-    console.log("TournamentService.createTournament called with:", {
-      name,
-      courts,
-      couples,
-    });
-
     if (!couples || couples.length < 4) {
       throw new Error("At least 4 couples are required to create a tournament");
     }
@@ -49,11 +43,6 @@ export class TournamentService {
       [key: string]: { couple1Score: number; couple2Score: number };
     },
   ): Promise<void> {
-    console.log("Updating match results:", {
-      tournamentId,
-      roundId,
-      matchResults,
-    });
     return this.tournamentRepository.updateMatchResults(
       tournamentId,
       roundId,
@@ -62,29 +51,18 @@ export class TournamentService {
   }
 
   async endRound(tournamentId: string, roundId: string): Promise<void> {
-    console.log("Starting endRound function:", { tournamentId, roundId });
     const tournament = await this.getTournamentById(tournamentId);
     if (!tournament) {
-      console.error("Tournament not found:", tournamentId);
       throw new Error("Tournament not found");
     }
 
-    console.log(
-      "Tournament state before ending round:",
-      JSON.stringify(tournament, null, 2),
-    );
-
     const currentRound = tournament.rounds.find((r) => r.id === roundId);
     if (!currentRound) {
-      console.error("Round not found:", roundId);
       throw new Error("Round not found");
     }
 
-    console.log("Current round number:", currentRound.roundNumber);
-
     // Deactivate the current round
     await this.tournamentRepository.updateRoundStatus(roundId, false);
-    console.log("Current round set to inactive");
 
     // Find the next round by roundNumber
     const nextRound = tournament.rounds.find(
@@ -98,27 +76,19 @@ export class TournamentService {
         tournamentId,
         nextRound.roundNumber,
       );
-      console.log("Moving to next round:", nextRound.roundNumber);
     } else {
       // No more rounds; mark the tournament as finished
       await this.tournamentRepository.updateTournamentStatus(
         tournamentId,
         true,
       );
-      console.log("Tournament finished");
     }
 
     // Fetch and log the updated tournament state
     const updatedTournament = await this.getTournamentById(tournamentId);
-    console.log(
-      "Updated tournament state:",
-      JSON.stringify(updatedTournament, null, 2),
-    );
   }
 
   private generateRounds(couples: Couple[], courts: number): Round[] {
-    console.log("generateRounds called with:", { couples, courts });
-
     if (!couples || couples.length < 2) {
       throw new Error("At least 2 couples are required to create a tournament");
     }

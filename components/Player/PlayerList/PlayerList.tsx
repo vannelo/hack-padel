@@ -26,6 +26,7 @@ const PlayerList: React.FC<PlayerListProps> = ({ players }) => {
     phone: "",
     gender: "",
     level: "",
+    points: 0,
   });
 
   const handleRowClick = (playerId: string) => {
@@ -38,6 +39,7 @@ const PlayerList: React.FC<PlayerListProps> = ({ players }) => {
         phone: player.phone || "",
         gender: player.gender,
         level: player.level,
+        points: player.points ?? 0,
       });
       setIsModalOpen(true);
     }
@@ -114,6 +116,14 @@ const PlayerList: React.FC<PlayerListProps> = ({ players }) => {
     },
     { field: "gender", headerName: "Género", flex: 1 },
     { field: "level", headerName: "Nivel", flex: 1 },
+    {
+      field: "points",
+      headerName: "Puntos",
+      flex: 1,
+      renderCell: (params) => (
+        <span className="text-white">{params.value || 0}</span>
+      ),
+    },
   ];
 
   const rows = players.map((player) => ({

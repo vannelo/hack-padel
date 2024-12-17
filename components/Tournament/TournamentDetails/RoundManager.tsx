@@ -6,7 +6,6 @@ import {
   updateMatchResults,
   endRound,
   markTournamentFinished,
-  updateTournamentProgress,
 } from "@/app/actions/tournamentActions";
 import { MatchResults } from "@/domain/models/Match";
 import MatchCard from "./MatchCard";
@@ -16,90 +15,118 @@ import { useRouter } from "next/navigation";
 interface RoundManagerProps {
   tournament: Tournament;
   isAdmin: boolean;
+  onLoadingStateChange?: (state: boolean) => void;
 }
 
-const RoundManager: React.FC<RoundManagerProps> = ({ tournament, isAdmin }) => {
+const RoundManager: React.FC<RoundManagerProps> = ({
+  tournament,
+  isAdmin,
+  onLoadingStateChange = () => {},
+}) => {
   const [matchResults, setMatchResults] = useState<MatchResults>({});
-  const [processingNextRound, setProcesssingNextRound] = useState(false);
+  const [processingNextRound, setProcessingNextRound] = useState(false);
+  const [triggerNextRound, setTriggerNextRound] = useState(false);
+  const [allMatchesFinished, setAllMatchesFinished] = useState(false);
   const router = useRouter();
 
-  const handleScoreChange = useCallback(
-    (matchId: string, coupleNumber: 1 | 2, score: number) => {
-      setMatchResults((prev) => ({
-        ...prev,
-        [matchId]: {
-          ...prev[matchId],
-          [`couple${coupleNumber}Score`]: score,
-        },
-      }));
-    },
-    [],
-  );
-
-  const checkAllRoundsCompleted = useCallback(() => {
-    return tournament.rounds.every((round) =>
-      round.matches.every(
-        (match) =>
-          match.couple1Score !== null &&
-          match.couple2Score !== null &&
-          match.couple1Score !== undefined &&
-          match.couple2Score !== undefined,
-      ),
-    );
-  }, [tournament]);
+  const currentRound = tournament.rounds.find((round) => round.isActive);
 
   const proceedToNextRound = useCallback(async () => {
-    const currentRound = tournament.rounds.find((round) => round.isActive);
+    if (!currentRound) return;
 
-    if (currentRound && allScoresFilled(currentRound, matchResults)) {
-      try {
-        setProcesssingNextRound(true);
+    try {
+      onLoadingStateChange(true);
+      setProcessingNextRound(true);
 
-        // Update match results and end the current round
-        await updateMatchResults(tournament.id, currentRound.id, matchResults);
-        await endRound(tournament.id, currentRound.id);
+      // Update match results for the current round
+      await updateMatchResults(tournament.id, currentRound.id, matchResults);
 
-        // Check if all rounds are completed
-        const allRoundsCompleted = checkAllRoundsCompleted();
+      // End the current round
+      await endRound(tournament.id, currentRound.id);
 
-        if (allRoundsCompleted) {
-          // Mark the tournament as finished
-          await markTournamentFinished(tournament.id);
-        } else {
-          // Move to the next round
-          const nextRoundIndex =
-            tournament.rounds.findIndex(
-              (round) => round.id === currentRound.id,
-            ) + 1;
-
-          if (nextRoundIndex < tournament.rounds.length) {
-            const updatedRounds = [...tournament.rounds];
-            updatedRounds[nextRoundIndex - 1].isActive = false;
-            updatedRounds[nextRoundIndex].isActive = true;
-
-            // Update the tournament's current round
-            await updateTournamentProgress(tournament.id, nextRoundIndex + 1);
-          }
-        }
-
-        // Refresh the page data
-        router.refresh();
-      } catch (error) {
-        console.error("Error proceeding to next round:", error);
-        alert("Error moving to the next round. Please try again.");
-      } finally {
-        setProcesssingNextRound(false);
-      }
+      // After ending the round, we refresh data to see if there's a next round
+      // or if we've finished all rounds.
+      router.refresh();
+    } catch (error) {
+      console.error("Error proceeding to next round:", error);
+      alert("Error proceeding to the next round. Please try again.");
+    } finally {
+      setProcessingNextRound(false);
+      setTriggerNextRound(false);
+      setMatchResults({});
+      onLoadingStateChange(false);
     }
-  }, [tournament, matchResults, router, checkAllRoundsCompleted]);
+  }, [tournament.id, currentRound, matchResults, onLoadingStateChange, router]);
+
+  // Check if we need to trigger the next round as soon as scores are filled for the current round
+  useEffect(() => {
+    if (
+      !processingNextRound &&
+      currentRound &&
+      allScoresFilled(currentRound, matchResults)
+    ) {
+      setTriggerNextRound(true);
+    }
+  }, [matchResults, currentRound, processingNextRound]);
 
   useEffect(() => {
-    const currentRound = tournament.rounds.find((round) => round.isActive);
-
-    if (currentRound && allScoresFilled(currentRound, matchResults)) {
+    if (triggerNextRound && currentRound) {
       proceedToNextRound();
     }
-  }, [matchResults, tournament.rounds, proceedToNextRound]);
+  }, [triggerNextRound, currentRound, proceedToNextRound]);
+
+  // Determine if all matches in all rounds are finished (no active round and scores are set)
+  useEffect(() => {
+    const noActiveRounds = !tournament.rounds.some((round) => round.isActive);
+    const everyRoundComplete = tournament.rounds.every((round) =>
+      round.matches.every(
+        (m) =>
+          m.couple1Score !== null &&
+          m.couple2Score !== null &&
+          m.couple1Score !== undefined &&
+          m.couple2Score !== undefined,
+      ),
+    );
+
+    // If there's no active round and all rounds' matches have scores,
+    // then allMatchesFinished = true.
+    if (noActiveRounds && everyRoundComplete && !tournament.isFinished) {
+      setAllMatchesFinished(true);
+    } else {
+      setAllMatchesFinished(false);
+    }
+  }, [tournament]);
+
+  const handleSaveScore = async (
+    matchId: string,
+    coupleNumber: 1 | 2,
+    score: number,
+  ) => {
+    // We only update scores in memory here; the actual round update happens
+    // once we detect all matches are filled and proceedToNextRound is triggered.
+    setMatchResults((prev) => ({
+      ...prev,
+      [matchId]: {
+        ...prev[matchId],
+        [`couple${coupleNumber}Score`]: score,
+      },
+    }));
+  };
+
+  const handleEndTournament = async () => {
+    if (!tournament.isFinished && allMatchesFinished) {
+      try {
+        onLoadingStateChange(true);
+        await markTournamentFinished(tournament.id);
+        router.refresh();
+      } catch (error) {
+        console.error("Error ending tournament:", error);
+        alert("Error ending the tournament. Please try again.");
+      } finally {
+        onLoadingStateChange(false);
+      }
+    }
+  };
 
   return (
     <div className="w-full text-white">
@@ -118,15 +145,26 @@ const RoundManager: React.FC<RoundManagerProps> = ({ tournament, isAdmin }) => {
               <MatchCard
                 key={match.id}
                 match={match}
-                isAdmin={isAdmin}
+                isAdmin={isAdmin && round.isActive}
                 isCurrentRound={round.isActive}
                 matchResults={matchResults}
-                onScoreChange={handleScoreChange}
+                onScoreChange={handleSaveScore}
+                onLoadingStateChange={onLoadingStateChange}
               />
             ))}
           </div>
         </div>
       ))}
+      {isAdmin && allMatchesFinished && !tournament.isFinished && (
+        <div className="mt-6 flex justify-center">
+          <button
+            className="rounded-3xl border border-zinc-600 bg-primary px-6 py-2 text-sm font-bold text-black"
+            onClick={handleEndTournament}
+          >
+            Finalizar Torneo
+          </button>
+        </div>
+      )}
     </div>
   );
 };
