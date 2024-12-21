@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState, useTransition, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState, useTransition } from "react";
 import { v4 as uuidv4 } from "uuid";
+
+import { getAllPlayers } from "@/app/actions/playerActions";
 import { createTournament } from "@/app/actions/tournamentActions";
 import Button from "@/components/UI/Button/Button";
-import { Player } from "@/domain/models/Player";
-import { Couple } from "@/domain/models/Couple";
-import { getAllPlayers } from "@/app/actions/playerActions";
 import Divider from "@/components/UI/Divider/Divider";
+import { Couple } from "@/domain/models/Couple";
+import { Player } from "@/domain/models/Player";
 
 interface TournamentFormProps {
   onTournamentCreated: () => void;

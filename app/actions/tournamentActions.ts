@@ -1,26 +1,25 @@
 "use server";
 
-import { tournamentService } from "@/domain";
-import { Tournament } from "@/domain/models/Tournament";
-import { Couple } from "@/domain/models/Couple";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
 
-export const createTournament = cache(
-  async (
-    name: string,
-    courts: number,
-    couples: Couple[],
-  ): Promise<Tournament> => {
-    const newTournament = await tournamentService.createTournament(
-      name,
-      courts,
-      couples,
-    );
-    revalidatePath("/torneos");
-    return newTournament;
-  },
-);
+import { tournamentService } from "@/domain";
+import { Couple } from "@/domain/models/Couple";
+import { Tournament } from "@/domain/models/Tournament";
+
+export async function createTournament(
+  name: string,
+  courts: number,
+  couples: Couple[],
+): Promise<Tournament> {
+  const newTournament = await tournamentService.createTournament(
+    name,
+    courts,
+    couples,
+  );
+  revalidatePath("/torneos");
+  return newTournament;
+}
 
 export async function deleteTournament(tournamentId: string): Promise<void> {
   await tournamentService.deleteTournament(tournamentId);

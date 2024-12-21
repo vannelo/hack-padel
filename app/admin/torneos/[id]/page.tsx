@@ -1,7 +1,7 @@
+import { notFound } from "next/navigation";
+
 import { getTournamentById } from "@/app/actions/tournamentActions";
 import TournamentManagement from "@/components/Tournament/TournamentManagement/TournamentManagement";
-
-import { notFound } from "next/navigation";
 
 export default async function TournamentPage({
   params,

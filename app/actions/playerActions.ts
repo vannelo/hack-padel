@@ -1,8 +1,9 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 import { playerService } from "@/domain";
 import { Player } from "@/domain/models/Player";
-import { revalidatePath } from "next/cache";
 
 export async function createPlayer(playerData: Player): Promise<Player> {
   const newPlayer = await playerService.createPlayer(playerData);

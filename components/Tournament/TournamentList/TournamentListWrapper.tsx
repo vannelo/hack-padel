@@ -1,4 +1,5 @@
 import { getAllTournaments } from "@/app/actions/tournamentActions";
+
 import TournamentList from "./TournamentList";
 
 interface TournamentListWrapperProps {

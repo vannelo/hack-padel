@@ -1,5 +1,6 @@
-import HackPadelLogo from "@/components/Layout/HackPadelLogo/HackPadelLogo";
 import Link from "next/link";
+
+import HackPadelLogo from "@/components/Layout/HackPadelLogo/HackPadelLogo";
 
 export default function Admin() {
   return (

@@ -58,6 +58,23 @@ const TournamentList: React.FC<TournamentListProps> = ({
       ),
     },
     {
+      field: "date",
+      headerName: "Fecha",
+      flex: 1,
+      renderCell: (params) => {
+        const date = new Date(params.value);
+        const day = date.getDate();
+        const month = date.toLocaleString("es-ES", { month: "long" });
+        const year = date.getFullYear();
+
+        const capitalizedMonth = month.charAt(0).toUpperCase() + month.slice(1);
+
+        return (
+          <span className="text-white">{`${day} de ${capitalizedMonth} del ${year}`}</span>
+        );
+      },
+    },
+    {
       field: "activeRound",
       headerName: "Ronda Activa",
       flex: 1,
@@ -102,6 +119,7 @@ const TournamentList: React.FC<TournamentListProps> = ({
         ? tournament.rounds.findIndex((round) => round.isActive) + 1 ||
           "Finalizado"
         : "Finalizado",
+    date: tournament.createdAt,
   }));
 
   return (
