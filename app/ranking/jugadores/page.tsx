@@ -1,7 +1,8 @@
 import { Suspense } from "react";
-import TableLoader from "@/components/UI/TableLoader/TableLoader";
-import Divider from "@/components/UI/Divider/Divider";
+
 import RankingPlayerListWrapper from "@/components/Ranking/RankingPlayerList/RankingPlayerListWrapper";
+import Divider from "@/components/UI/Divider/Divider";
+import TableLoader from "@/components/UI/TableLoader/TableLoader";
 
 export default function Jugadores() {
   return (

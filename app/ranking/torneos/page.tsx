@@ -1,7 +1,8 @@
-import TournamentListWrapper from "@/components/Tournament/TournamentList/TournamentListWrapper";
 import { Suspense } from "react";
-import TableLoader from "@/components/UI/TableLoader/TableLoader";
+
+import TournamentListWrapper from "@/components/Tournament/TournamentList/TournamentListWrapper";
 import Divider from "@/components/UI/Divider/Divider";
+import TableLoader from "@/components/UI/TableLoader/TableLoader";
 
 export const revalidate = 0;
 

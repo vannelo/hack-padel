@@ -1,7 +1,7 @@
+import Link from "next/link";
+
 import HackPadelLogo from "@/components/Layout/HackPadelLogo/HackPadelLogo";
 import { appRoutes } from "@/utils/constants";
-import Image from "next/image";
-import Link from "next/link";
 
 export default function RankingHome() {
   return (

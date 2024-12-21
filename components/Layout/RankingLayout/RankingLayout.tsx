@@ -1,6 +1,8 @@
-import { appRoutes } from "@/utils/constants";
 import Link from "next/link";
 import { ReactNode } from "react";
+
+import { appRoutes } from "@/utils/constants";
+
 import HackPadelLogo from "../HackPadelLogo/HackPadelLogo";
 
 interface AdminLayoutProps {

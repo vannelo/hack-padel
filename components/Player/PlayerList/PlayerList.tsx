@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
 import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import React, { useState } from "react";
+
+import { deletePlayer, updatePlayer } from "@/app/actions/playerActions";
+import Modal from "@/components/UI/Modal/Modal";
 import { Player } from "@/domain/models/Player";
 import { gridStyles } from "@/utils/constants";
-import Modal from "@/components/UI/Modal/Modal";
-import { deletePlayer, updatePlayer } from "@/app/actions/playerActions";
 
 interface PlayerListProps {
   players: Player[];
@@ -20,12 +21,12 @@ const PlayerList: React.FC<PlayerListProps> = ({ players }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Partial<Player>>({
     name: "",
     email: "",
     phone: "",
-    gender: "",
-    level: "",
+    gender: undefined,
+    level: undefined,
     points: 0,
   });
 
@@ -62,7 +63,7 @@ const PlayerList: React.FC<PlayerListProps> = ({ players }) => {
     if (!selectedPlayer) return;
 
     try {
-      // @ts-ignore
+      // eslint-disable-next-line
       await updatePlayer(selectedPlayer.id, formData);
       alert("Jugador actualizado exitosamente");
       handleCloseModal();
@@ -210,7 +211,7 @@ const PlayerList: React.FC<PlayerListProps> = ({ players }) => {
                 <input
                   type="email"
                   name="email"
-                  value={formData.email}
+                  value={formData.email || ""}
                   onChange={handleInputChange}
                   className="block w-full border p-2"
                 />
@@ -220,7 +221,7 @@ const PlayerList: React.FC<PlayerListProps> = ({ players }) => {
                 <input
                   type="text"
                   name="phone"
-                  value={formData.phone}
+                  value={formData.phone || ""}
                   onChange={handleInputChange}
                   className="block w-full border p-2"
                 />

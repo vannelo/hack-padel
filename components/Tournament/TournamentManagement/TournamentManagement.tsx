@@ -1,13 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Tournament } from "@/domain/models/Tournament";
-import RoundManager from "../TournamentDetails/RoundManager";
-import { getCurrentRound, getWinner } from "@/utils/tournamentUtils";
-import TournamentManagementScoreTable from "./TournamentManagementScoreTable";
-import TournamentWinners from "../TournamentWinners/TournamentWinners";
-import TournamentTitle from "../TournamentTitle/TournamentTitle";
+
 import TableLoader from "@/components/UI/TableLoader/TableLoader";
+import { Tournament } from "@/domain/models/Tournament";
+import { getWinner } from "@/utils/tournamentUtils";
+
+import RoundManager from "../TournamentDetails/RoundManager";
+import TournamentTitle from "../TournamentTitle/TournamentTitle";
+import TournamentWinners from "../TournamentWinners/TournamentWinners";
+import TournamentManagementScoreTable from "./TournamentManagementScoreTable";
 
 interface TournamentManagementProps {
   initialTournament: Tournament;
@@ -19,7 +21,6 @@ const TournamentManagement: React.FC<TournamentManagementProps> = ({
   isAdmin = false,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const currentRound = getCurrentRound(initialTournament);
   const winner = getWinner(initialTournament);
 
   const handleLoadingState = (state: boolean) => {

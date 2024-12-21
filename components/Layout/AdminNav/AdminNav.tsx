@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import React from "react";
+
 import HackPadelLogo from "../HackPadelLogo/HackPadelLogo";
 
 const AdminNav: React.FC = () => {

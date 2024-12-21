@@ -1,17 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
 import {
   DataGrid,
   GridColDef,
   GridPaginationModel,
   GridRenderCellParams,
 } from "@mui/x-data-grid";
-import { Tournament } from "@/domain/models/Tournament";
 import Link from "next/link";
-import { gridStyles } from "@/utils/constants";
-import Modal from "@/components/UI/Modal/Modal";
+import React, { useState } from "react";
+
 import { deleteTournament } from "@/app/actions/tournamentActions";
+import Modal from "@/components/UI/Modal/Modal";
+import { Tournament } from "@/domain/models/Tournament";
+import { gridStyles } from "@/utils/constants";
 
 interface TournamentListProps {
   tournaments: Tournament[];

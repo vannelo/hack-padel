@@ -1,5 +1,6 @@
-import { getTournamentById } from "@/app/actions/tournamentActions";
 import { NextRequest } from "next/server";
+
+import { getTournamentById } from "@/app/actions/tournamentActions";
 
 export async function GET(request: NextRequest) {
   try {

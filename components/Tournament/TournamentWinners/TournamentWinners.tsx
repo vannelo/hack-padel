@@ -4,6 +4,7 @@ import React from "react";
 import Confetti from "react-confetti";
 
 interface TournamentWinnersProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   winner: any;
 }
 

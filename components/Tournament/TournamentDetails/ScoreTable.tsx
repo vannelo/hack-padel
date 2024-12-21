@@ -1,10 +1,11 @@
 import React from "react";
-import { Tournament } from "@/domain/models/Tournament";
+
 import CoupleName from "@/components/UI/CoupleName/CoupleName";
+import { Tournament } from "@/domain/models/Tournament";
 import {
   calculateTotalScores,
-  identifyLeaders,
   findMatchBetweenCouples,
+  identifyLeaders,
 } from "@/utils/tournamentUtils";
 
 interface ScoreTableProps {
@@ -15,6 +16,7 @@ const ScoreTable: React.FC<ScoreTableProps> = ({ tournament }) => {
   const totalScores = calculateTotalScores(tournament);
   const leaders = identifyLeaders(tournament, totalScores);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderCell = (couple: any, opponent: any) => {
     if (couple.id === opponent.id) {
       return <td className="border border-zinc-600 p-2 text-center">-</td>;

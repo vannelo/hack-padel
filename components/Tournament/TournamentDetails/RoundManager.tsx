@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { Tournament } from "@/domain/models/Tournament";
+import { useRouter } from "next/navigation";
+import React, { useCallback, useEffect, useState } from "react";
+
 import {
-  updateMatchResults,
   endRound,
   markTournamentFinished,
+  updateMatchResults,
 } from "@/app/actions/tournamentActions";
 import { MatchResults } from "@/domain/models/Match";
-import MatchCard from "./MatchCard";
+import { Tournament } from "@/domain/models/Tournament";
 import { allScoresFilled } from "@/utils/tournamentUtils";
-import { useRouter } from "next/navigation";
+
+import MatchCard from "./MatchCard";
 
 interface RoundManagerProps {
   tournament: Tournament;

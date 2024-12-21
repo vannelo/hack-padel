@@ -3,6 +3,7 @@ import CoupleName from "@/components/UI/CoupleName/CoupleName";
 import { MatchResults } from "@/domain/models/Match";
 
 interface CoupleScoreProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   couple: any;
   coupleNumber: 1 | 2;
   matchId: string;

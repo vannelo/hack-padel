@@ -1,10 +1,11 @@
 "use client";
 
+import { Gender, Level } from "@prisma/client";
 import React, { useState, useTransition } from "react";
 import { v4 as uuidv4 } from "uuid";
+
 import { createPlayer } from "@/app/actions/playerActions";
 import Button from "@/components/UI/Button/Button";
-import { Gender, Level } from "@prisma/client";
 import Divider from "@/components/UI/Divider/Divider";
 
 interface PlayerFormProps {

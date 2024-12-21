@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Tournament } from "@/domain/models/Tournament";
 import Confetti from "react-confetti";
-import { formatDateInSpanish } from "@/utils/helpers";
+
+import { Tournament } from "@/domain/models/Tournament";
 import { useTournamentUpdates } from "@/hooks/useTournamentUpdates/useTournamentUpdates";
+import { formatDateInSpanish } from "@/utils/helpers";
 import { getWinner } from "@/utils/tournamentUtils";
+
 import TournamentManagementScoreTable from "../TournamentManagement/TournamentManagementScoreTable";
 import RoundManager from "./RoundManager";
 
@@ -19,8 +21,6 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({
   isAdmin = false,
 }) => {
   const tournament = useTournamentUpdates(initialTournament);
-  const currentRound =
-    tournament.rounds.find((round) => round.isActive) ?? null;
   const winner = getWinner(tournament);
 
   useEffect(() => {

@@ -1,6 +1,6 @@
-import HackPadelLogo from "@/components/Layout/HackPadelLogo/HackPadelLogo";
-import Image from "next/image";
 import Link from "next/link";
+
+import HackPadelLogo from "@/components/Layout/HackPadelLogo/HackPadelLogo";
 
 export default function Home() {
   return (

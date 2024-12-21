@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Button from "@/components/UI/Button/Button";
+import { useState } from "react";
+
 import HackPadelLogo from "@/components/Layout/HackPadelLogo/HackPadelLogo";
+import Button from "@/components/UI/Button/Button";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -37,6 +38,7 @@ const Login = () => {
       } else {
         alert("Login failed!");
       }
+      // eslint-disable-next-line
     } catch (err: any) {
       setError(err.message);
     }

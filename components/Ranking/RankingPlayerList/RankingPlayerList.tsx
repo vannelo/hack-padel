@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import React, { useState } from "react";
+
 import { Player } from "@/domain/models/Player";
 import { gridStyles } from "@/utils/constants";
-import Button from "@/components/UI/Button/Button";
 
 interface RankingPlayerListProps {
   players: Player[];

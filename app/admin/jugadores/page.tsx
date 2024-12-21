@@ -1,8 +1,9 @@
-import PlayerCreation from "@/components/Player/PlayerCreation/PlayerCreation";
 import { Suspense } from "react";
-import TableLoader from "@/components/UI/TableLoader/TableLoader";
+
+import PlayerCreation from "@/components/Player/PlayerCreation/PlayerCreation";
 import PlayerListWrapper from "@/components/Player/PlayerList/PlayerListWrapper";
 import Divider from "@/components/UI/Divider/Divider";
+import TableLoader from "@/components/UI/TableLoader/TableLoader";
 
 export const revalidate = 0;
 

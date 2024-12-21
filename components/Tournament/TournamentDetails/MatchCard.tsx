@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Match, MatchResults } from "@/domain/models/Match";
-import CoupleScore from "./CoupleScore";
-import Modal from "@/components/UI/Modal/Modal";
+
 import Button from "@/components/UI/Button/Button";
+import Modal from "@/components/UI/Modal/Modal";
+import { Match, MatchResults } from "@/domain/models/Match";
+
+import CoupleScore from "./CoupleScore";
 
 interface MatchCardProps {
   match: Match;
@@ -21,7 +23,6 @@ const MatchCard: React.FC<MatchCardProps> = ({
   isCurrentRound,
   matchResults,
   onScoreChange,
-  onLoadingStateChange,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tempScores, setTempScores] = useState<{

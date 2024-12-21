@@ -55,6 +55,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   };
 
   const handleAddCouple = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const newCouple: any = {
       id: uuidv4(),
       player1Id: "",
@@ -77,6 +78,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
       id: playerId,
       name: playerName,
     };
+    // eslint-disable-next-line
     // @ts-ignore
     updatedCouples[index][playerKey] = player;
     updatedCouples[index][`${playerKey}Id`] = playerId;
