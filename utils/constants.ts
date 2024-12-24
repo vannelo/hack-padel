@@ -31,6 +31,11 @@ export const gridStyles = {
 };
 
 export const appRoutes = {
+  admin: {
+    home: "/admin",
+    players: "/admin/jugadores",
+    tournaments: "/admin/torneos",
+  },
   ranking: {
     home: "/ranking",
     players: "/ranking/jugadores",
@@ -38,3 +43,14 @@ export const appRoutes = {
     tournamentDetail: "/ranking/torneos/:id",
   },
 };
+
+export const ADMIN_MENU_ITEMS = [
+  {
+    label: "Jugadores",
+    href: appRoutes.admin.players,
+  },
+  {
+    label: "Torneos",
+    href: appRoutes.admin.tournaments,
+  },
+];

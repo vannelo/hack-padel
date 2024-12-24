@@ -7,10 +7,8 @@ import TableLoader from "@/components/UI/TableLoader/TableLoader";
 export default function Jugadores() {
   return (
     <>
-      <div className="flex w-full items-end justify-between">
-        <h2 className="text-xl font-bold text-white md:text-2xl">
-          Lista de jugadores
-        </h2>
+      <div className="flex w-full items-end justify-center">
+        <h2 className="text-xl font-bold text-white md:text-2xl">Jugadores</h2>
       </div>
       <Divider />
       <Suspense fallback={<TableLoader />}>

@@ -3,11 +3,7 @@
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 
-import {
-  endRound,
-  markTournamentFinished,
-  updateMatchResults,
-} from "@/app/actions/tournamentActions";
+import { endRound, updateMatchResults } from "@/app/actions/tournamentActions";
 import { MatchResults } from "@/domain/models/Match";
 import { Tournament } from "@/domain/models/Tournament";
 import { allScoresFilled } from "@/utils/tournamentUtils";
@@ -30,6 +26,8 @@ const RoundManager: React.FC<RoundManagerProps> = ({
   const [triggerNextRound, setTriggerNextRound] = useState(false);
   const [allMatchesFinished, setAllMatchesFinished] = useState(false);
   const router = useRouter();
+
+  console.log("allMatchesFinished", allMatchesFinished);
 
   const currentRound = tournament.rounds.find((round) => round.isActive);
 
@@ -93,6 +91,7 @@ const RoundManager: React.FC<RoundManagerProps> = ({
     // If there's no active round and all rounds' matches have scores,
     // then allMatchesFinished = true.
     if (noActiveRounds && everyRoundComplete && !tournament.isFinished) {
+      console.log("finishing tournament 1");
       setAllMatchesFinished(true);
     } else {
       setAllMatchesFinished(false);
@@ -113,21 +112,6 @@ const RoundManager: React.FC<RoundManagerProps> = ({
         [`couple${coupleNumber}Score`]: score,
       },
     }));
-  };
-
-  const handleEndTournament = async () => {
-    if (!tournament.isFinished && allMatchesFinished) {
-      try {
-        onLoadingStateChange(true);
-        await markTournamentFinished(tournament.id);
-        router.refresh();
-      } catch (error) {
-        console.error("Error ending tournament:", error);
-        alert("Error ending the tournament. Please try again.");
-      } finally {
-        onLoadingStateChange(false);
-      }
-    }
   };
 
   return (
@@ -157,16 +141,6 @@ const RoundManager: React.FC<RoundManagerProps> = ({
           </div>
         </div>
       ))}
-      {isAdmin && allMatchesFinished && !tournament.isFinished && (
-        <div className="mt-6 flex justify-center">
-          <button
-            className="rounded-3xl border border-zinc-600 bg-primary px-6 py-2 text-sm font-bold text-black"
-            onClick={handleEndTournament}
-          >
-            Finalizar Torneo
-          </button>
-        </div>
-      )}
     </div>
   );
 };

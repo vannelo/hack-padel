@@ -4,10 +4,11 @@ import { revalidatePath } from "next/cache";
 
 import { playerService } from "@/domain";
 import { Player } from "@/domain/models/Player";
+import { appRoutes } from "@/utils/constants";
 
 export async function createPlayer(playerData: Player): Promise<Player> {
   const newPlayer = await playerService.createPlayer(playerData);
-  revalidatePath("/jugadores");
+  revalidatePath(appRoutes.admin.players);
   return newPlayer;
 }
 
@@ -16,12 +17,12 @@ export async function updatePlayer(
   playerData: Partial<Player>,
 ): Promise<void> {
   await playerService.updatePlayer(playerId, playerData);
-  revalidatePath("/jugadores");
+  revalidatePath(appRoutes.admin.players);
 }
 
 export async function deletePlayer(playerId: string): Promise<void> {
   await playerService.deletePlayer(playerId);
-  revalidatePath("/jugadores");
+  revalidatePath(appRoutes.admin.players);
 }
 
 export async function getAllPlayers(): Promise<Player[]> {

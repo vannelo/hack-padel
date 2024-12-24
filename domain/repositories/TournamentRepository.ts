@@ -1,9 +1,8 @@
-// @ts-nocheck
+import { prisma } from "@/lib/prisma";
 
-import { Tournament } from "../models/Tournament";
 import { Couple } from "../models/Couple";
 import { Round } from "../models/Round";
-import { prisma } from "@/lib/prisma";
+import { Tournament } from "../models/Tournament";
 
 export class TournamentRepository {
   async createTournament(
@@ -12,6 +11,8 @@ export class TournamentRepository {
     couples: Couple[],
     rounds: Round[],
   ): Promise<Tournament> {
+    // eslint-disable-next-line
+    // @ts-ignore
     return prisma.$transaction(
       async (prisma) => {
         // First, create the tournament
@@ -71,6 +72,8 @@ export class TournamentRepository {
   }
 
   async getTournamentById(id: string): Promise<Tournament | null> {
+    //eslint-disable-next-line
+    // @ts-ignore
     return prisma.tournament.findUnique({
       where: { id },
       include: {
@@ -108,6 +111,8 @@ export class TournamentRepository {
   }
 
   async getAllTournaments(): Promise<Tournament[]> {
+    // eslint-disable-next-line
+    // @ts-ignore
     return prisma.tournament.findMany({
       orderBy: {
         createdAt: "desc",
@@ -203,6 +208,34 @@ export class TournamentRepository {
     await prisma.match.update({
       where: { id: matchId },
       data: updateData,
+    });
+  }
+
+  async updatePlayerPoints(
+    playerId: string,
+    pointsToAdd: number,
+  ): Promise<void> {
+    console.log("playerId", playerId);
+    console.log("pointsToAdd", pointsToAdd);
+    await prisma.player.update({
+      where: { id: playerId },
+      data: {
+        points: {
+          increment: pointsToAdd,
+        },
+      },
+    });
+  }
+
+  async updateTournamentWinner(
+    tournamentId: string,
+    winnerCoupleId: string,
+  ): Promise<void> {
+    await prisma.tournament.update({
+      where: { id: tournamentId },
+      data: {
+        winnerId: winnerCoupleId,
+      },
     });
   }
 }

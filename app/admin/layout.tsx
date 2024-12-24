@@ -1,15 +1,9 @@
-import AdminLayout from "@/components/Layout/AdminLayout/AdminLayout";
-import AdminNav from "@/components/Layout/AdminNav/AdminNav";
+import PageLayout from "@/components/Layout/PageLayout/PageLayout";
 
 export default function RankingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <AdminNav />
-      <AdminLayout>{children}</AdminLayout>
-    </>
-  );
+  return <PageLayout isAdmin>{children}</PageLayout>;
 }

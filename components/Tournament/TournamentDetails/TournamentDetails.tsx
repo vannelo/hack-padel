@@ -21,6 +21,7 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({
   isAdmin = false,
 }) => {
   const tournament = useTournamentUpdates(initialTournament);
+
   const winner = getWinner(tournament);
 
   useEffect(() => {
@@ -67,7 +68,6 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({
           {formatDateInSpanish(tournament.createdAt)}
         </h3>
       </div>
-      <h1>HOLA</h1>
       {tournament.isFinished && (
         <div className="relative rounded-lg bg-zinc-900 p-6 text-center">
           <Confetti

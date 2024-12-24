@@ -1,5 +1,5 @@
-import RankingLayout from "@/components/Layout/RankingLayout/RankingLayout";
+import PageLayout from "@/components/Layout/PageLayout/PageLayout";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <RankingLayout>{children}</RankingLayout>;
+  return <PageLayout>{children}</PageLayout>;
 }

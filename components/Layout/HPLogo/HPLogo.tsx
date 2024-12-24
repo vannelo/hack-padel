@@ -13,11 +13,7 @@ const ORIGINAL_WIDTH = 300;
 const ORIGINAL_HEIGHT = 150;
 const ASPECT_RATIO = ORIGINAL_WIDTH / ORIGINAL_HEIGHT;
 
-const HackPadelLogo: React.FC<HackPadelLogoProps> = ({
-  className,
-  width,
-  height,
-}) => {
+const HPLogo: React.FC<HackPadelLogoProps> = ({ className, width, height }) => {
   const [dimensions, setDimensions] = useState({
     width: ORIGINAL_WIDTH,
     height: ORIGINAL_HEIGHT,
@@ -46,4 +42,4 @@ const HackPadelLogo: React.FC<HackPadelLogoProps> = ({
   );
 };
 
-export default HackPadelLogo;
+export default HPLogo;

@@ -9,10 +9,8 @@ export const revalidate = 0;
 export default function Torneos() {
   return (
     <>
-      <div className="flex w-full items-end justify-between">
-        <h2 className="text-xl font-bold text-white md:text-2xl">
-          Lista de torneos
-        </h2>
+      <div className="flex w-full items-end justify-center">
+        <h2 className="text-xl font-bold text-white md:text-2xl">Torneos</h2>
       </div>
       <Divider />
       <Suspense fallback={<TableLoader />}>

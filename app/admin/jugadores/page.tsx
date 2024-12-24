@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import ListHeader from "@/components/Layout/ListHeader/ListHeader";
 import PlayerCreation from "@/components/Player/PlayerCreation/PlayerCreation";
 import PlayerListWrapper from "@/components/Player/PlayerList/PlayerListWrapper";
 import Divider from "@/components/UI/Divider/Divider";
@@ -10,10 +11,9 @@ export const revalidate = 0;
 export default function AdminJugadores() {
   return (
     <>
-      <div className="flex w-full items-center justify-between">
-        <h2 className="font-bold text-white md:text-2xl">Lista de jugadores</h2>
+      <ListHeader title="Lista de jugadores">
         <PlayerCreation />
-      </div>
+      </ListHeader>
       <Divider />
       <Suspense fallback={<TableLoader />}>
         <PlayerListWrapper />

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import HackPadelLogo from "@/components/Layout/HackPadelLogo/HackPadelLogo";
+import HackPadelLogo from "@/components/Layout/HPLogo/HPLogo";
 import { appRoutes } from "@/utils/constants";
 
 export default function RankingHome() {

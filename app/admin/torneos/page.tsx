@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import ListHeader from "@/components/Layout/ListHeader/ListHeader";
 import TournamentCreation from "@/components/Tournament/TournamentCreation/TournamentCreation";
 import TournamentListWrapper from "@/components/Tournament/TournamentList/TournamentListWrapper";
 import Divider from "@/components/UI/Divider/Divider";
@@ -10,10 +11,9 @@ export const revalidate = 0;
 export default function Torneos() {
   return (
     <>
-      <div className="flex w-full items-center justify-between">
-        <h2 className="font-bold text-white md:text-2xl">Lista de torneos</h2>
+      <ListHeader title="Lista de torneos">
         <TournamentCreation />
-      </div>
+      </ListHeader>
       <Divider />
       <Suspense fallback={<TableLoader />}>
         <TournamentListWrapper isAdmin />

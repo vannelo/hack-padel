@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cache } from "react";
 
 import { tournamentService } from "@/domain";
 import { Couple } from "@/domain/models/Couple";
 import { Tournament } from "@/domain/models/Tournament";
+import { appRoutes } from "@/utils/constants";
 
 export async function createTournament(
   name: string,
@@ -17,49 +17,48 @@ export async function createTournament(
     courts,
     couples,
   );
-  revalidatePath("/torneos");
+  revalidatePath(appRoutes.admin.tournaments);
   return newTournament;
 }
 
 export async function deleteTournament(tournamentId: string): Promise<void> {
   await tournamentService.deleteTournament(tournamentId);
-  revalidatePath("/torneos");
+  revalidatePath(appRoutes.admin.tournaments);
 }
 
-export const getAllTournaments = cache(async (): Promise<Tournament[]> => {
+export async function getAllTournaments(): Promise<Tournament[]> {
   const tournaments = await tournamentService.getAllTournaments();
   return tournaments;
-});
+}
 
-export const getTournamentById = cache(
-  async (id: string): Promise<Tournament | null> => {
-    return await tournamentService.getTournamentById(id);
-  },
-);
+export async function getTournamentById(
+  id: string,
+): Promise<Tournament | null> {
+  return await tournamentService.getTournamentById(id);
+}
 
-export const updateMatchResults = cache(
-  async (
-    tournamentId: string,
-    roundId: string,
-    matchResults: {
-      [key: string]: { couple1Score: number; couple2Score: number };
-    },
-  ): Promise<void> => {
-    await tournamentService.updateMatchResults(
-      tournamentId,
-      roundId,
-      matchResults,
-    );
-    revalidatePath(`/torneos/${tournamentId}`);
+export async function updateMatchResults(
+  tournamentId: string,
+  roundId: string,
+  matchResults: {
+    [key: string]: { couple1Score: number; couple2Score: number };
   },
-);
+): Promise<void> {
+  await tournamentService.updateMatchResults(
+    tournamentId,
+    roundId,
+    matchResults,
+  );
+  revalidatePath(`${appRoutes.admin.tournaments}/${tournamentId}`);
+}
 
-export const endRound = cache(
-  async (tournamentId: string, roundId: string): Promise<void> => {
-    await tournamentService.endRound(tournamentId, roundId);
-    revalidatePath(`/torneos/${tournamentId}`);
-  },
-);
+export async function endRound(
+  tournamentId: string,
+  roundId: string,
+): Promise<void> {
+  await tournamentService.endRound(tournamentId, roundId);
+  revalidatePath(`${appRoutes.admin.tournaments}/${tournamentId}`);
+}
 
 export async function updateMatchScore(
   matchId: string,
@@ -69,19 +68,10 @@ export async function updateMatchScore(
   await tournamentService.updateMatchScore(matchId, coupleNumber, score);
 }
 
-export const markTournamentFinished = cache(async (tournamentId: string) => {
-  const updatedTournament =
-    await tournamentService.finishTournament(tournamentId);
-  revalidatePath(`/torneos/${tournamentId}`);
-  return updatedTournament;
-});
-
-export const updateTournamentProgress = cache(
-  async (tournamentId: string, currentRound: number): Promise<void> => {
-    await tournamentService.updateTournamentProgress(
-      tournamentId,
-      currentRound,
-    );
-    revalidatePath(`/torneos/${tournamentId}`);
-  },
-);
+export async function updateTournamentProgress(
+  tournamentId: string,
+  currentRound: number,
+): Promise<void> {
+  await tournamentService.updateTournamentProgress(tournamentId, currentRound);
+  revalidatePath(`${appRoutes.admin.tournaments}/${tournamentId}`);
+}

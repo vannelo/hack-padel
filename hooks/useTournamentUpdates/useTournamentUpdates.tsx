@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import { Tournament } from "@/domain/models/Tournament";
 
 export function useTournamentUpdates(initialTournament: Tournament) {
   const [tournament, setTournament] = useState<Tournament>(initialTournament);
   const [error, setError] = useState<boolean>(false);
+  console.log("error", error);
 
   useEffect(() => {
     let retryTimeout: NodeJS.Timeout;

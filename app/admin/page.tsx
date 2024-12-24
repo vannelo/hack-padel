@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-import HackPadelLogo from "@/components/Layout/HackPadelLogo/HackPadelLogo";
+import HackPadelLogo from "@/components/Layout/HPLogo/HPLogo";
+import { appRoutes } from "@/utils/constants";
 
 export default function Admin() {
   return (
@@ -8,11 +9,11 @@ export default function Admin() {
       <HackPadelLogo />
       <h3 className="mt-4">Admin</h3>
       <div className="flex items-center justify-center">
-        <Link href="/admin/jugadores" className="p-2 text-primary">
+        <Link href={appRoutes.admin.players} className="p-2 text-primary">
           Jugadores
         </Link>
         |
-        <Link href="/admin/torneos" className="p-2 text-primary">
+        <Link href={appRoutes.admin.tournaments} className="p-2 text-primary">
           Torneos
         </Link>
       </div>

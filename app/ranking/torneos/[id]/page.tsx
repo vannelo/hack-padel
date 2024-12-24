@@ -8,8 +8,7 @@ export default async function TournamentPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const id = (await params).id;
-  const tournament = await getTournamentById(id);
+  const tournament = await getTournamentById((await params).id);
 
   if (!tournament) {
     notFound();
