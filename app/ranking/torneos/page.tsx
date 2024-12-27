@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import TableHeader from "@/components/Table/TableHeader/TableHeader";
 import TournamentListWrapper from "@/components/Tournament/TournamentList/TournamentListWrapper";
 import Divider from "@/components/UI/Divider/Divider";
 import TableLoader from "@/components/UI/TableLoader/TableLoader";
@@ -9,9 +10,7 @@ export const revalidate = 0;
 export default function Torneos() {
   return (
     <>
-      <div className="flex w-full items-end justify-center">
-        <h2 className="text-xl font-bold text-white md:text-2xl">Torneos</h2>
-      </div>
+      <TableHeader title="Torneos" />
       <Divider />
       <Suspense fallback={<TableLoader />}>
         <TournamentListWrapper />

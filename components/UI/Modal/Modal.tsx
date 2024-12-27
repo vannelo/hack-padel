@@ -18,18 +18,19 @@ const Modal: React.FC<ModalProps> = ({ open, onClose, title, children }) => {
       fullWidth
       sx={{
         ".MuiDialog-paper": {
-          backgroundColor: "#c0ff00",
-          border: "1px solid #black",
+          backgroundColor: "black",
+          border: "1px solid white",
           borderRadius: "24px",
-          color: "black",
+          color: "white",
           padding: "24px",
         },
       }}
     >
       <DialogTitle
         sx={{
-          marginBottom: "32px",
-          color: "black",
+          marginBottom: "16px",
+          color: "white",
+          fontSize: "20px",
         }}
       >
         {title}

@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { getAllPlayers } from "@/app/actions/playerActions";
 import { createTournament } from "@/app/actions/tournamentActions";
+import Plus from "@/components/Icons/Plus/Plus";
 import Button from "@/components/UI/Button/Button";
 import Divider from "@/components/UI/Divider/Divider";
 import { Couple } from "@/domain/models/Couple";
@@ -65,6 +66,11 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
       tournamentId: "",
     };
     setCouples([...couples, newCouple]);
+  };
+
+  const handleDeleteCouple = (index: number) => {
+    const updatedCouples = couples.filter((_, i) => i !== index);
+    setCouples(updatedCouples);
   };
 
   const handleCoupleChange = (
@@ -132,7 +138,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="text-black">
+    <form onSubmit={handleSubmit} className="text-white">
       <label htmlFor="name" className="mb-2 block text-left text-sm font-bold">
         Nombre del torneo
       </label>
@@ -162,9 +168,9 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                 courts: court,
               }))
             }
-            className={`flex h-12 w-12 items-center justify-center rounded-full border-2 text-lg font-bold ${
+            className={`text-md flex h-8 w-8 items-center justify-center rounded-full border-2 font-bold ${
               tournamentData.courts === court
-                ? "border-black bg-black text-white"
+                ? "border-white bg-primary text-black"
                 : "border-white bg-white text-black"
             }`}
           >
@@ -173,81 +179,90 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
         ))}
       </div>
       <div className="mb-4">
-        <h3 className="mb-2 text-left text-sm font-bold">Parejas</h3>
-        {couples.map((couple, index) => (
-          <div key={couple.id} className="mb-2">
-            <div className="flex space-x-2">
-              {(["player1", "player2"] as const).map((playerKey) => (
-                <div key={playerKey} className="relative w-1/2">
-                  <input
-                    type="text"
-                    value={couple[playerKey].name}
-                    onChange={(e) => {
-                      setSearchInputs({
-                        ...searchInputs,
-                        [`${index}-${playerKey}`]: e.target.value,
-                      });
-                      handleCoupleChange(index, playerKey, "", e.target.value);
-                      setOpenDropdown({ index, player: playerKey });
-                    }}
-                    onFocus={() =>
-                      setOpenDropdown({ index, player: playerKey })
-                    }
-                    onBlur={() => setTimeout(() => setOpenDropdown(null), 200)}
-                    className="w-full rounded border p-2 text-sm text-black"
-                    placeholder={`Jugador ${playerKey === "player1" ? "1" : "2"}`}
-                    required
-                  />
-                  {openDropdown?.index === index &&
-                    openDropdown.player === playerKey &&
-                    searchInputs[`${index}-${playerKey}`]?.length >= 3 && (
-                      <ul className="absolute z-10 mt-1 max-h-40 w-full overflow-y-auto border border-gray-300 bg-white text-black">
-                        {filterPlayers(
-                          searchInputs[`${index}-${playerKey}`] || "",
+        <div className="my-4">
+          <h3 className="mb-2 text-left text-sm font-bold">Parejas</h3>
+          {couples.map((couple, index) => (
+            <div key={couple.id} className="mb-2">
+              <div className="flex space-x-2">
+                {(["player1", "player2"] as const).map((playerKey) => (
+                  <div key={playerKey} className="relative w-1/2">
+                    <input
+                      type="text"
+                      value={couple[playerKey].name}
+                      onChange={(e) => {
+                        setSearchInputs({
+                          ...searchInputs,
+                          [`${index}-${playerKey}`]: e.target.value,
+                        });
+                        handleCoupleChange(
                           index,
                           playerKey,
-                        ).map((filteredPlayer) => (
-                          <li
-                            key={filteredPlayer.id}
-                            className="cursor-pointer p-2 hover:bg-gray-100"
-                            onMouseDown={(e) => {
-                              e.preventDefault();
-                              handleCoupleChange(
-                                index,
-                                playerKey,
-                                filteredPlayer.id,
-                                filteredPlayer.name,
-                              );
-                              setOpenDropdown(null);
-                            }}
-                          >
-                            {filteredPlayer.name}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-        <div className="flex justify-start">
-          <Button type="button" onClick={handleAddCouple} variant="secondary">
-            Agregar pareja
-            <div className="flex h-4 w-4 items-center justify-center rounded-full bg-primary">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-3 w-3 text-black"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+                          "",
+                          e.target.value,
+                        );
+                        setOpenDropdown({ index, player: playerKey });
+                      }}
+                      onFocus={() =>
+                        setOpenDropdown({ index, player: playerKey })
+                      }
+                      onBlur={() =>
+                        setTimeout(() => setOpenDropdown(null), 200)
+                      }
+                      className="w-full rounded border p-2 text-sm text-black"
+                      placeholder={`Jugador ${playerKey === "player1" ? "1" : "2"}`}
+                      required
+                    />
+                    {openDropdown?.index === index &&
+                      openDropdown.player === playerKey &&
+                      searchInputs[`${index}-${playerKey}`]?.length >= 3 && (
+                        <ul className="absolute z-10 mt-1 max-h-40 w-full overflow-y-auto border border-gray-300 bg-white text-black">
+                          {filterPlayers(
+                            searchInputs[`${index}-${playerKey}`] || "",
+                            index,
+                            playerKey,
+                          ).map((filteredPlayer) => (
+                            <li
+                              key={filteredPlayer.id}
+                              className="cursor-pointer p-2 hover:bg-gray-100"
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                handleCoupleChange(
+                                  index,
+                                  playerKey,
+                                  filteredPlayer.id,
+                                  filteredPlayer.name,
+                                );
+                                setOpenDropdown(null);
+                              }}
+                            >
+                              {filteredPlayer.name}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                  </div>
+                ))}
+              </div>
+              <Button
+                type="button"
+                onClick={() => handleDeleteCouple(index)}
+                size="sm"
+                className="mt-2"
               >
-                <path
-                  fillRule="evenodd"
-                  d="M10 2a1 1 0 00-1 1v6H3a1 1 0 100 2h6v6a1 1 0 102 0v-6h6a1 1 0 100-2h-6V3a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
+                Eliminar pareja
+              </Button>
             </div>
+          ))}
+        </div>
+        <div className="flex justify-start">
+          <Button
+            type="button"
+            onClick={handleAddCouple}
+            variant="primary"
+            size="sm"
+          >
+            Agregar pareja
+            <Plus />
           </Button>
         </div>
       </div>

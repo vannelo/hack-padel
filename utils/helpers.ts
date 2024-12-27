@@ -1,5 +1,6 @@
 import { Tournament } from "@/domain/models/Tournament";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const formatCoupleName = (couple: any) => {
   return `${couple.player1.name} / ${couple.player2.name}`;
 };
@@ -32,4 +33,8 @@ export const formatDateInSpanish = (date: Date | string): string => {
   const formattedDate = formatter.format(new Date(date));
 
   return formattedDate.charAt(0).toLowerCase() + formattedDate.slice(1);
+};
+
+export const createTournamentSSEUrl = (tournamentId: string) => {
+  return `/api/tournaments/${tournamentId}/sse`;
 };

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { getTournamentById } from "@/app/actions/tournamentActions";
-import TournamentDetails from "@/components/Tournament/TournamentDetails/TournamentDetails";
+import TournamentView from "@/components/Tournament/TournamentView/TournamentView";
 
 export default async function TournamentPage({
   params,
@@ -14,5 +14,5 @@ export default async function TournamentPage({
     notFound();
   }
 
-  return <TournamentDetails initialTournament={tournament} />;
+  return <TournamentView initialTournament={tournament} />;
 }

@@ -40,7 +40,6 @@ const TournamentManagement: React.FC<TournamentManagementProps> = ({
         tournamentName={initialTournament.name}
         tournamentDate={initialTournament.createdAt}
       />
-      <h1>HOLA</h1>
       {initialTournament.isFinished && <TournamentWinners winner={winner} />}
       <div className="mb-4 mt-4 flex flex-col justify-center gap-8 lg:flex-row">
         <div className="w-full lg:w-1/4">
