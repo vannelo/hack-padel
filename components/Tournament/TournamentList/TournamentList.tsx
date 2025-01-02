@@ -76,20 +76,6 @@ const TournamentList: React.FC<TournamentListProps> = ({
       },
     },
     {
-      field: "activeRound",
-      headerName: "Ronda Activa",
-      flex: 1,
-      renderCell: (params) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          {params.value === "Finalizado" ? (
-            <span className="text-zinc-500">Finalizado</span>
-          ) : (
-            <span className="text-white">{params.value}</span>
-          )}
-        </div>
-      ),
-    },
-    {
       field: "actions",
       headerName: "",
       flex: 1,

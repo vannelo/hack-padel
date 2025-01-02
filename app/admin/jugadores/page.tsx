@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 
 import PlayerCreation from "@/components/Player/PlayerCreation/PlayerCreation";
-import PlayerListWrapper from "@/components/Player/PlayerList/PlayerListWrapper";
+import PlayerTableWrapper from "@/components/Player/PlayerTable/PlayerTableWrapper";
 import TableHeader from "@/components/Table/TableHeader/TableHeader";
 import Divider from "@/components/UI/Divider/Divider";
-import TableLoader from "@/components/UI/TableLoader/TableLoader";
+import TableLoader from "@/components/Table/TableLoader/TableLoader";
 
 export const revalidate = 0;
 
@@ -16,7 +16,7 @@ export default function AdminJugadores() {
       </TableHeader>
       <Divider />
       <Suspense fallback={<TableLoader />}>
-        <PlayerListWrapper />
+        <PlayerTableWrapper />
       </Suspense>
     </>
   );

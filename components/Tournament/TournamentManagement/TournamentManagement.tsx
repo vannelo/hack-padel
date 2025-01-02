@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 
-import TableLoader from "@/components/UI/TableLoader/TableLoader";
+import TableLoader from "@/components/Table/TableLoader/TableLoader";
 import { Tournament } from "@/domain/models/Tournament";
 import { getWinner } from "@/utils/tournamentUtils";
 

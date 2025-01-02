@@ -19,6 +19,10 @@ const Nav: React.FC<NavProps> = ({ isAdmin }) => {
     setPageActive(window.location.pathname);
   }, []);
 
+  const handleNavigation = (href: string) => {
+    setPageActive(href);
+  };
+
   return (
     <nav className="bg-black py-4 text-white">
       <div
@@ -92,7 +96,10 @@ const Nav: React.FC<NavProps> = ({ isAdmin }) => {
                         ? "text-primary"
                         : "hover:text-primary"
                     }`}
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={() => {
+                      handleNavigation(item.href);
+                      setIsMenuOpen(false);
+                    }}
                   >
                     {item.label}
                   </Link>

@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 
-import RankingPlayerListWrapper from "@/components/Ranking/RankingPlayerList/RankingPlayerListWrapper";
+import RankingTableWrapper from "@/components/Ranking/RankingTable/RankingTableWrapper";
 import TableHeader from "@/components/Table/TableHeader/TableHeader";
+import TableLoader from "@/components/Table/TableLoader/TableLoader";
 import Divider from "@/components/UI/Divider/Divider";
-import TableLoader from "@/components/UI/TableLoader/TableLoader";
 
 export default function Jugadores() {
   return (
@@ -11,7 +11,7 @@ export default function Jugadores() {
       <TableHeader title="Jugadores" />
       <Divider />
       <Suspense fallback={<TableLoader />}>
-        <RankingPlayerListWrapper />
+        <RankingTableWrapper />
       </Suspense>
     </>
   );

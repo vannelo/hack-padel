@@ -1,6 +1,6 @@
 "use client";
 
-const Plus: React.FC = ({}) => {
+const PlusIcon: React.FC = ({}) => {
   return (
     <div className="flex h-4 w-4 items-center justify-center rounded-full bg-primary">
       <svg
@@ -19,4 +19,4 @@ const Plus: React.FC = ({}) => {
   );
 };
 
-export default Plus;
+export default PlusIcon;

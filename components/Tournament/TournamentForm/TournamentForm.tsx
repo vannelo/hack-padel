@@ -5,11 +5,11 @@ import { v4 as uuidv4 } from "uuid";
 
 import { getAllPlayers } from "@/app/actions/playerActions";
 import { createTournament } from "@/app/actions/tournamentActions";
-import Plus from "@/components/Icons/Plus/Plus";
+import Plus from "@/components/Icons/PlusIcon/PlusIcon";
 import Button from "@/components/UI/Button/Button";
 import Divider from "@/components/UI/Divider/Divider";
 import { Couple } from "@/domain/models/Couple";
-import { Player } from "@/domain/models/Player";
+import { ExtendedPlayer } from "@/domain/models/Player";
 
 interface TournamentFormProps {
   onTournamentCreated: () => void;
@@ -23,7 +23,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
     courts: 1,
   });
   const [couples, setCouples] = useState<Couple[]>([]);
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [players, setPlayers] = useState<ExtendedPlayer[]>([]);
   const [isPending, startTransition] = useTransition();
   const [openDropdown, setOpenDropdown] = useState<{
     index: number;
@@ -56,8 +56,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   };
 
   const handleAddCouple = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const newCouple: any = {
+    const newCouple = {
       id: uuidv4(),
       player1Id: "",
       player1: { id: "", name: "", gender: "", level: "" },
@@ -84,8 +83,6 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
       id: playerId,
       name: playerName,
     };
-    // eslint-disable-next-line
-    // @ts-ignore
     updatedCouples[index][playerKey] = player;
     updatedCouples[index][`${playerKey}Id`] = playerId;
     setCouples(updatedCouples);

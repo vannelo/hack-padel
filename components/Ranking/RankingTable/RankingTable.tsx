@@ -6,11 +6,11 @@ import React, { useState } from "react";
 import { Player } from "@/domain/models/Player";
 import { gridStyles } from "@/utils/constants";
 
-interface RankingPlayerListProps {
+interface RankingTableProps {
   players: Player[];
 }
 
-const RankingPlayerList: React.FC<RankingPlayerListProps> = ({ players }) => {
+const RankingTable: React.FC<RankingTableProps> = ({ players }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("Todos");
 
   const categories = [
@@ -89,4 +89,4 @@ const RankingPlayerList: React.FC<RankingPlayerListProps> = ({ players }) => {
   );
 };
 
-export default RankingPlayerList;
+export default RankingTable;

@@ -8,13 +8,15 @@ import { createPlayer } from "@/app/actions/playerActions";
 import Button from "@/components/UI/Button/Button";
 import Divider from "@/components/UI/Divider/Divider";
 
-interface PlayerFormProps {
+interface PlayerCreationFormProps {
   onPlayerCreated: () => void;
 }
 
 // TODO: Add form library and input components
 
-const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
+const PlayerCreationForm: React.FC<PlayerCreationFormProps> = ({
+  onPlayerCreated,
+}) => {
   const [playerData, setPlayerData] = useState({
     name: "",
     email: "",
@@ -153,4 +155,4 @@ const PlayerForm: React.FC<PlayerFormProps> = ({ onPlayerCreated }) => {
   );
 };
 
-export default PlayerForm;
+export default PlayerCreationForm;
